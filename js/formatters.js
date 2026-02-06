@@ -17,9 +17,9 @@ function formatCurrency(input) {
 function numberToCurrency(value) {
   if (value === null || value === undefined || isNaN(value)) return '';
 
-  return Number(value).toLocaleString('en-US', {
+  return Number(value).toLocaleString('pt-BR', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'BRL'
   });
 }
 

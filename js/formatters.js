@@ -6,9 +6,21 @@ function formatCurrency(input) {
       return;
    }
 
-   value = (parseInt(value, 10) / 100).toFixed(2);
-   value = value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-   input.value = 'R$ ' + value;
+   const number = Number(value) / 100;
+
+   input.value = number.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+   });
+}
+
+function numberToCurrency(value) {
+  if (value === null || value === undefined || isNaN(value)) return '';
+
+  return Number(value).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  });
 }
 
 function parseCurrency(value) {

@@ -74,6 +74,7 @@
    <h2>Compromissos do mês</h2>
 
    <select id="filterMonth">
+      <option value="all">Ano inteiro</option>
       <option value="1">Janeiro</option>
       <option value="2">Fevereiro</option>
       <option value="3">Março</option>
@@ -92,6 +93,22 @@
    <button onclick="listCommitments()">Buscar</button>
 
    <ul id="commitmentsList"></ul>
+
+   <table border="1" width="100%">
+      <thead>
+         <tr>
+            <th>Descrição</th>
+            <th>Categoria</th>
+            <th>Parcela</th>
+            <th>Valor</th>
+            <th>Vencimento</th>
+            <th>Pagamento</th>
+            <th>Pago</th>
+            <th>Ações</th>
+         </tr>
+      </thead>
+      <tbody id="commitmentsGrid"></tbody>
+   </table>
 
 </body>
 

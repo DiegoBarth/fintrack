@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+   <meta charset="UTF-8">
+   <title>FinTrack</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+   <h2>Novo gasto</h2>
+
+   <form id="form">
+      <input type="date" id="date" required><br><br>
+      <input type="text" id="description" placeholder="Descrição" required><br><br>
+      <input type="text" id="category" placeholder="Categoria"><br><br>
+      <input type="number" step="0.01" id="value" placeholder="Valor" required><br><br>
+
+      <select id="person">
+         <option>Diego</option>
+         <option>Pamela</option>
+      </select><br><br>
+
+      <button>Salvar</button>
+   </form>
+
+   <p id="msg"></p>
+
+   <script>
+      const URL = 'https://script.google.com/macros/s/AKfycbztaKHZIjuxK2RGcV95gsa07GwzPyWGPqjMnoNWFGYBh_GCF-7aZFyH2_apwLZCdpAhQg/exec';
+
+      document.getElementById('form').addEventListener('submit', async e => {
+         e.preventDefault();
+
+         const payload = {
+            data: date.value,
+            descricao: description.value,
+            categoria: category.value,
+            valor: value.value,
+            pessoa: person.value
+         };
+
+         await fetch(URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+         });
+
+         msg.innerText = 'Gasto salvo 💸';
+         e.target.reset();
+      });
+   </script>
+
+</body>
+
+</html>

@@ -1,76 +1,16 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang="en">
 
 <head>
-   <meta charset="UTF-8">
-   <title>FinTrack</title>
-   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-   <script src="js/api.js" defer></script>
-   <script src="js/expense.js" defer></script>
-   <script src="js/formatters.js" defer></script>
+   <meta charset="UTF-8" />
+   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>fintrack</title>
 </head>
 
 <body>
-   <h2>Novo gasto</h2>
-
-   <form id="form-expense">
-      <input type="date" id="date" required><br><br>
-      <input type="text" id="description" placeholder="Descrição" required><br><br>
-
-      <select id="category" required>
-         <option value="">Selecione</option>
-         <option>Alimentação</option>
-         <option>Banco</option>
-         <option>Beleza</option>
-         <option>Casa</option>
-         <option>Educação</option>
-         <option>Empréstimos</option>
-         <option>Investimento</option>
-         <option>Lazer</option>
-         <option>Pets</option>
-         <option>Presentes</option>
-         <option>Roupas</option>
-         <option>Saúde</option>
-         <option>Serviços</option>
-         <option>Streaming</option>
-         <option>Telefonia</option>
-         <option>Transporte</option>
-         <option>Viagem</option>
-      </select><br><br>
-
-      <input type="text" id="amount" placeholder="R$ 0,00" inputmode="numeric" required><br><br>
-
-      <button>Salvar</button>
-   </form>
-
-   <p id="msg"></p>
-
-   <hr>
-
-   <h2>Consultar gastos</h2>
-
-   <select id="month">
-      <option value="1">Janeiro</option>
-      <option value="2">Fevereiro</option>
-      <option value="3">Março</option>
-      <option value="4">Abril</option>
-      <option value="5">Maio</option>
-      <option value="6">Junho</option>
-      <option value="7">Julho</option>
-      <option value="8">Agosto</option>
-      <option value="9">Setembro</option>
-      <option value="10">Outubro</option>
-      <option value="11">Novembro</option>
-      <option value="12">Dezembro</option>
-   </select>
-
-   <input type="number" id="year" value="2026">
-
-   <button id="btn-search">Buscar</button>
-
-   <ul id="list"></ul>
-
+   <div id="root"></div>
+   <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>

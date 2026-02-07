@@ -24,7 +24,7 @@ export function Home() {
 
    return (
       <div style={{ padding: 16 }}>
-         <h1>Dashboard</h1>
+         <h1>Home</h1>
 
          <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
             <select value={month} onChange={e => setMonth(e.target.value)}>

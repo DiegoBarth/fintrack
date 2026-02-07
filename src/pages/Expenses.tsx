@@ -4,30 +4,35 @@ import { ExpenseForm } from '../components/expenses/ExpenseForm';
 import { ExpenseGrid } from '../components/expenses/ExpenseGrid';
 import type { Expense } from '../types/Expense';
 import { numberToCurrency, dateBRToISO, currencyToNumber } from '../utils/formatters';
+import { usePeriod } from '../contexts/PeriodContext';
+import { useNavigate } from 'react-router-dom';
 
 export function Expenses() {
-   const today = new Date();
-
-   const [month, setMonth] = useState(String(today.getMonth() + 1));
-   const [year, setYear] = useState(String(today.getFullYear()));
+   const { month, year } = usePeriod();
    const [expenses, setExpenses] = useState<Expense[]>([]);
    const [editingRow, setEditingRow] = useState<number | null>(null);
    const [editedAmount, setEditedAmount] = useState('');
    const [editedDate, setEditedDate] = useState('');
+   const [loading, setLoading] = useState(false);
+   const navigate = useNavigate();
 
    async function fetchExpenses() {
-      const res = await listExpenses(month, year);
-      setExpenses(res);
+      setLoading(true);
+      try {
+         const res = await listExpenses(month, String(year));
+         setExpenses(res);
+      } catch (error) {
+         console.error("Failed to fetch expenses:", error);
+      } finally {
+         setLoading(false);
+      }
    }
 
    async function handleDelete(rowIndex: number) {
       if (!confirm('Deseja realmente excluir este gasto?')) return;
 
       await deleteExpense(rowIndex);
-
-      setExpenses(prev =>
-         prev.filter(item => item.rowIndex !== rowIndex)
-      );
+      setExpenses(prev => prev.filter(item => item.rowIndex !== rowIndex));
    }
 
    function handleEdit(expense: Expense) {
@@ -55,10 +60,17 @@ export function Expenses() {
 
    useEffect(() => {
       fetchExpenses();
-   }, []);
+   }, [month, year]);
 
    return (
       <>
+         <button
+            style={{ marginBottom: 16 }}
+            onClick={() => navigate('/')}
+         >
+            ← Voltar para Home
+         </button>
+
          <h2>Novo gasto</h2>
          <ExpenseForm onSave={fetchExpenses} />
 
@@ -66,37 +78,22 @@ export function Expenses() {
 
          <h2>Consultar gastos</h2>
 
-         <select value={month} onChange={e => setMonth(e.target.value)}>
-            <option value="all">Ano todo</option>
-            <option value="1">Janeiro</option>
-            <option value="2">Fevereiro</option>
-            <option value="3">Março</option>
-            <option value="4">Abril</option>
-            <option value="5">Maio</option>
-            <option value="6">Junho</option>
-            <option value="7">Julho</option>
-            <option value="8">Agosto</option>
-            <option value="9">Setembro</option>
-            <option value="10">Outubro</option>
-            <option value="11">Novembro</option>
-            <option value="12">Dezembro</option>
-         </select>
-
-         <input value={year} onChange={e => setYear(e.target.value)} />
-         <button onClick={fetchExpenses}>Buscar</button>
-
-         <ExpenseGrid
-            expenses={expenses}
-            onDelete={handleDelete}
-            editingRow={editingRow}
-            editedAmount={editedAmount}
-            editedDate={editedDate}
-            onEdit={handleEdit}
-            onCancelEdit={cancelEdit}
-            onSave={handleSaveEdit}
-            onChangeAmount={setEditedAmount}
-            onChangeDate={setEditedDate}
-         />
+         {loading ? (
+            <p>Carregando...</p>
+         ) : (
+            <ExpenseGrid
+               expenses={expenses}
+               onDelete={handleDelete}
+               editingRow={editingRow}
+               editedAmount={editedAmount}
+               editedDate={editedDate}
+               onEdit={handleEdit}
+               onCancelEdit={cancelEdit}
+               onSave={handleSaveEdit}
+               onChangeAmount={setEditedAmount}
+               onChangeDate={setEditedDate}
+            />
+         )}
       </>
    );
 }

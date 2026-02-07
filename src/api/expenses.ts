@@ -1,40 +1,62 @@
 import { apiGet, apiPost } from './client';
 import type { Expense } from '../types/Expense';
+import { expensesCache } from '../cache/ExpensesCache';
 
-export function createExpense(payload: {
+export async function createExpense(payload: {
    date: string;
    description: string;
    category: string;
    amount: number;
-}) {
-   return apiPost({
+}, month: string, year: string) {
+   const res = await apiPost({
       action: 'createExpense',
       ...payload
    });
+
+   console.log(month, year);
+
+   // expensesCache.set(month, year, payload);
+
+   return res;
 }
 
-export function listExpenses(month: string, year: string) {
-   return apiGet<Expense[]>({
+export async function listExpenses(month: string, year: string) {
+   const cached = expensesCache.get(month, year);
+   if (cached) return cached;
+
+   const data = await apiGet<Expense[]>({
       action: 'listExpenses',
       month,
       year
    });
+
+   expensesCache.set(month, year, data);
+
+   return data;
 }
 
-export function deleteExpense(rowIndex: number) {
-   return apiPost({
+export async function deleteExpense(rowIndex: number, month: string, year: string) {
+   const res = await apiPost({
       action: 'deleteExpense',
       rowIndex
    });
+
+   expensesCache.remove(month, year, rowIndex);
+
+   return res;
 }
 
-export function updateExpense(payload: {
+export async function updateExpense(payload: {
    rowIndex: number;
    amount: number;
    date: string;
-}) {
-   return apiPost({
+}, month: string, year: string) {
+   const res = await apiPost({
       action: 'updateExpense',
       ...payload
    });
+
+   expensesCache.update(month, year, payload);
+
+   return res;
 }

@@ -1,0 +1,52 @@
+type CacheMap<T> = Record<string, T[]>;
+
+export function createListCache<T extends { rowIndex: number }>() {
+   const cache: CacheMap<T> = {};
+
+   function getKey(month: string, year: number | string) {
+      return `${year}-${month}`;
+   }
+
+   function get(month: string, year: number | string) {
+      return cache[getKey(month, year)];
+   }
+
+   function set(month: string, year: number | string, data: T[]) {
+      cache[getKey(month, year)] = data;
+   }
+
+   function remove(month: string, year: number | string, rowIndex: number) {
+      const key = getKey(month, year);
+      if (!cache[key]) return;
+
+      cache[key] = cache[key].filter(i => i.rowIndex !== rowIndex);
+   }
+
+   function update(month: string, year: number | string, payload: Partial<T> & { rowIndex: number }) {
+      const key = getKey(month, year);
+      if (!cache[key]) return;
+
+      cache[key] = cache[key].map(i =>
+         i.rowIndex === payload.rowIndex
+            ? { ...i, ...payload }
+            : i
+      );
+   }
+
+   function clear(month?: string, year?: number | string) {
+      if (!month || !year) {
+         Object.keys(cache).forEach(k => delete cache[k]);
+         return;
+      }
+      delete cache[getKey(month, year)];
+   }
+
+   return {
+      getKey,
+      get,
+      set,
+      update,
+      remove,
+      clear
+   };
+}

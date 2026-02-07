@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { createExpense } from '../../api/expenses';
 import { currencyToNumber, formatCurrency } from '../../utils/formatters';
+import { usePeriod } from '../../contexts/PeriodContext';
 
 interface Props {
    onSave: () => void;
 }
 
 export function ExpenseForm({ onSave }: Props) {
+   const { month, year } = usePeriod();
    const [date, setDate] = useState('');
    const [description, setDescription] = useState('');
    const [category, setCategory] = useState('');
@@ -26,7 +28,7 @@ export function ExpenseForm({ onSave }: Props) {
          description,
          category,
          amount: amountNumber
-      });
+      }, month, String(year));
 
       onSave();
       alert('Gasto salvo 💸');

@@ -31,7 +31,7 @@ export function Expenses() {
    async function handleDelete(rowIndex: number) {
       if (!confirm('Deseja realmente excluir este gasto?')) return;
 
-      await deleteExpense(rowIndex);
+      await deleteExpense(rowIndex, month, String(year));
       setExpenses(prev => prev.filter(item => item.rowIndex !== rowIndex));
    }
 
@@ -52,7 +52,7 @@ export function Expenses() {
          rowIndex: editingRow,
          amount: currencyToNumber(editedAmount),
          date: editedDate
-      });
+      }, month, String(year));
 
       setEditingRow(null);
       fetchExpenses();

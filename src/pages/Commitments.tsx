@@ -24,7 +24,7 @@ export function Commitments() {
 
    async function handleSave(payload: any) {
       if (payload.type === 'card') {
-         await createCard(payload);
+         await createCard(payload, month, String(year));
       } else {
          await createCommitment(payload);
       }
@@ -46,7 +46,7 @@ export function Commitments() {
    async function handleDelete(rowIndex: number) {
       if (!confirm('Deseja realmente excluir este compromisso?')) return;
 
-      await deleteCommitment(rowIndex);
+      await deleteCommitment(rowIndex, month, String(year));
       setCommitments(prev => prev.filter(c => c.rowIndex !== rowIndex));
    }
 
@@ -67,7 +67,7 @@ export function Commitments() {
          rowIndex: editingRow,
          amount: currencyToNumber(editedAmount),
          paymentDate: editedDate
-      });
+      }, month, String(year));
 
       setEditingRow(null);
       fetchCommitments();

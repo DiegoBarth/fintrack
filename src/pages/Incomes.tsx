@@ -35,7 +35,7 @@ export function Incomes() {
          rowIndex: editingRow,
          amount: currencyToNumber(editedAmount),
          receivedDate: editedDate
-      });
+      }, month, String(year));
 
       setEditingRow(null);
       fetchIncomes();
@@ -44,7 +44,7 @@ export function Incomes() {
    async function handleDelete(rowIndex: number) {
       if (!confirm('Deseja realmente excluir esta receita?')) return;
 
-      await deleteIncome(rowIndex);
+      await deleteIncome(rowIndex, month, String(year));
       setIncomes(prev => prev.filter(item => item.rowIndex !== rowIndex));
    }
 

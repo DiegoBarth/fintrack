@@ -3,8 +3,7 @@ import { Home } from './pages/Home';
 import { Incomes } from './pages/Incomes';
 import { Expenses } from './pages/Expenses';
 import { Commitments } from './pages/Commitments';
-
-
+import { Dashboard } from './pages/Dashboard';
 
 function App() {
    return (
@@ -13,6 +12,7 @@ function App() {
          <Route path="/incomes" element={<Incomes />} />
          <Route path="/expenses" element={<Expenses />} />
          <Route path="/commitments" element={<Commitments />} />
+         <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
    );
 }

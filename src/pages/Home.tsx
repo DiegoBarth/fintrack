@@ -52,7 +52,7 @@ export function Home() {
                <button onClick={() => navigate('/incomes')}>➕ Receitas</button>
                <button onClick={() => navigate('/expenses')}>➖ Gastos</button>
                <button onClick={() => navigate('/commitments')}>📅 Compromissos</button>
-               <button disabled>📊 Dashboard (em breve)</button>
+               <button onClick={() => navigate('/dashboard')}>📊 Dashboard</button>
             </div>
          </section>
       </div>

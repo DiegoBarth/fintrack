@@ -12,7 +12,10 @@ export function MonthlySummary() {
       totalCommitments: 0,
       totalReceivedAmount: 0,
       totalPaidExpenses: 0,
-      totalPaidCommitments: 0
+      totalPaidCommitments: 0,
+      totalReceivedInMonth: 0,
+      totalPaidExpensesInMonth: 0,
+      totalPaidCommitmentsInMonth: 0
    });
 
    const [loading, setLoading] = useState(false);
@@ -35,9 +38,9 @@ export function MonthlySummary() {
 
    const balance = summary.totalIncomes - summary.totalExpenses - summary.totalCommitments;
 
-   const projectedBalance = summary.totalIncomes        - summary.totalExpenses     - summary.totalCommitments;
-   const currentBalance   = summary.totalReceivedAmount - summary.totalPaidExpenses - summary.totalPaidCommitments;
-   
+   const projectedBalance = summary.totalIncomes - summary.totalExpenses - summary.totalCommitments;
+   const currentBalance = summary.totalReceivedAmount - summary.totalPaidExpenses - summary.totalPaidCommitments;
+
    return (
       <div style={{ display: 'grid', gap: 12 }}>
          <SummaryCard

@@ -6,7 +6,7 @@ import { PeriodProvider } from './contexts/PeriodContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
    <React.StrictMode>
-      <BrowserRouter basename="/fintrack">
+      <BrowserRouter basename="/fintrack/">
          <PeriodProvider>
             <App />
          </PeriodProvider>

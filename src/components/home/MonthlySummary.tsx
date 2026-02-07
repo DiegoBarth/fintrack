@@ -9,7 +9,10 @@ export function MonthlySummary() {
    const [summary, setSummary] = useState<FullSummary>({
       totalIncomes: 0,
       totalExpenses: 0,
-      totalCommitments: 0
+      totalCommitments: 0,
+      totalReceivedAmount: 0,
+      totalPaidExpenses: 0,
+      totalPaidCommitments: 0
    });
 
    const [loading, setLoading] = useState(false);
@@ -32,6 +35,9 @@ export function MonthlySummary() {
 
    const balance = summary.totalIncomes - summary.totalExpenses - summary.totalCommitments;
 
+   const projectedBalance = summary.totalIncomes        - summary.totalExpenses     - summary.totalCommitments;
+   const currentBalance   = summary.totalReceivedAmount - summary.totalPaidExpenses - summary.totalPaidCommitments;
+   
    return (
       <div style={{ display: 'grid', gap: 12 }}>
          <SummaryCard
@@ -56,6 +62,19 @@ export function MonthlySummary() {
             title="Saldo"
             amount={balance}
             color={balance >= 0 ? '#2ecc71' : '#e74c3c'}
+            loading={loading}
+         />
+
+         <SummaryCard
+            title="Saldo Atual"
+            amount={currentBalance}
+            color={currentBalance >= 0 ? '#2ecc71' : '#e74c3c'}
+            loading={loading}
+         />
+         <SummaryCard
+            title="Saldo Final do Mês"
+            amount={projectedBalance}
+            color={projectedBalance >= 0 ? '#3498db' : '#e67e22'}
             loading={loading}
          />
       </div>

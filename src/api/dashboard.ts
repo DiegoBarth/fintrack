@@ -5,14 +5,14 @@ import type {
    CreditCardSummary
 } from '../types/Dashboard';
 
-export function fetchMonthlyBalance(year: string) {
+export function listMonthlyBalance(year: string) {
    return apiGet<MonthlyBalanceHistory[]>({
       action: 'getMonthlyBalance',
       year
    });
 }
 
-export function fetchTopCategories(month: string, year: string) {
+export function listTopCategories(month: string, year: string) {
    return apiGet<CategorySummary[]>({
       action: 'getTopCategories',
       month,
@@ -20,7 +20,7 @@ export function fetchTopCategories(month: string, year: string) {
    });
 }
 
-export function fetchCreditCardsSummary(month: string, year: string) {
+export function listCardsSummary(month: string, year: string) {
    return apiGet<CreditCardSummary[]>({
       action: 'getCreditCardsSummary',
       month,

@@ -5,8 +5,8 @@ import { ExpenseGrid } from '../components/expenses/ExpenseGrid';
 import type { Expense } from '../types/Expense';
 import { numberToCurrency, currencyToNumber } from '../utils/formatters';
 import { usePeriod } from '../contexts/PeriodContext';
-import { useNavigate } from 'react-router-dom';
 import { expensesCache } from '../cache/ExpensesCache';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * Page component to manage variable expenses.

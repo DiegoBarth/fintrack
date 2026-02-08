@@ -2,11 +2,13 @@ import type { FullSummary } from '../../types/FullSummary';
 import { numberToCurrency } from '../../utils/formatters';
 
 interface ProgressProps {
-   summary: FullSummary;
+   summary: FullSummary | null;
    loading: boolean;
 }
 
 export function IncomeExpenseProgress({ summary, loading }: ProgressProps) {
+   if(!summary) return;
+   
    if (loading) return <p>Carregando progresso...</p>;
 
    const incomePercentage = summary.totalIncomes

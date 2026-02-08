@@ -3,26 +3,31 @@ import { listIncomes, deleteIncome, updateIncome } from '../api/incomes';
 import type { Income } from '../types/Income';
 import { IncomeForm } from '../components/incomes/IncomeForm';
 import { IncomeGrid } from '../components/incomes/IncomeGrid';
-import { numberToCurrency, dateBRToISO, currencyToNumber } from '../utils/formatters';
+import {
+   numberToCurrency,
+   dateBRToISO,
+   currencyToNumber
+} from '../utils/formatters';
 import { usePeriod } from '../contexts/PeriodContext';
 import { useNavigate } from 'react-router-dom';
+import { incomesCache } from '../cache/IncomesCache';
 
 export function Incomes() {
-   const { month, year } = usePeriod(); // Consome o contexto global
+   const { month, year } = usePeriod();
    const [incomes, setIncomes] = useState<Income[]>([]);
    const [editingRow, setEditingRow] = useState<number | null>(null);
-   const [editedAmount, setEditedAmount] = useState('');
+   const [editedValue, setEditedValue] = useState('');
    const [editedDate, setEditedDate] = useState('');
    const [loading, setLoading] = useState(false);
    const navigate = useNavigate();
 
-   async function fetchIncomes() {
+   async function loadData() {
       setLoading(true);
       try {
-         const res = await listIncomes(month, String(year));
-         setIncomes(res);
+         const response = await listIncomes(month, String(year));
+         setIncomes(response);
       } catch (error) {
-         console.error("Failed to fetch incomes:", error);
+         console.error("Error loading incomes:", error);
       } finally {
          setLoading(false);
       }
@@ -33,25 +38,29 @@ export function Incomes() {
 
       await updateIncome({
          rowIndex: editingRow,
-         amount: currencyToNumber(editedAmount),
+         amount: currencyToNumber(editedValue),
          receivedDate: editedDate
       }, month, String(year));
 
       setEditingRow(null);
-      fetchIncomes();
+
+      const updated = incomesCache.get(month, year) || [];
+      setIncomes(updated);
    }
 
    async function handleDelete(rowIndex: number) {
       if (!confirm('Deseja realmente excluir esta receita?')) return;
 
       await deleteIncome(rowIndex, month, String(year));
-      setIncomes(prev => prev.filter(item => item.rowIndex !== rowIndex));
+
+      const updated = incomesCache.get(month, year) || [];
+      setIncomes(updated);
    }
 
    function handleEdit(income: Income) {
       setEditingRow(income.rowIndex);
-      setEditedAmount(numberToCurrency(income.amount));
-      setEditedDate(income.expectedDate ? dateBRToISO(income.expectedDate) : '');
+      setEditedValue(numberToCurrency(income.amount));
+      setEditedDate(income.receivedDate ? dateBRToISO(income.receivedDate) : '');
    }
 
    function cancelEdit() {
@@ -59,11 +68,11 @@ export function Incomes() {
    }
 
    useEffect(() => {
-      fetchIncomes();
+      loadData();
    }, [month, year]);
 
    return (
-      <>
+      <div style={{ padding: 16 }}>
          <button
             style={{ marginBottom: 16 }}
             onClick={() => navigate('/')}
@@ -72,27 +81,32 @@ export function Incomes() {
          </button>
 
          <h2>Nova receita</h2>
-         <IncomeForm onSave={fetchIncomes} />
+         <IncomeForm
+            onSave={() => {
+               const updated = incomesCache.get(month, year) || [];
+               setIncomes([...updated]);
+            }}
+         />
 
-         <hr />
+         <hr style={{ margin: '24px 0' }} />
          <h2>Consultar receitas</h2>
 
          {loading ? (
-            <p>Carregando...</p>
+            <p>Carregando receitas...</p>
          ) : (
             <IncomeGrid
                incomes={incomes}
                onDelete={handleDelete}
                editingRow={editingRow}
-               editedAmount={editedAmount}
+               editedValue={editedValue}
                editedDate={editedDate}
                onEdit={handleEdit}
                onCancelEdit={cancelEdit}
                onSave={handleSaveEdit}
-               onChangeAmount={setEditedAmount}
+               onChangeValue={setEditedValue}
                onChangeDate={setEditedDate}
             />
          )}
-      </>
+      </div>
    );
 }

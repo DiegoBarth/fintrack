@@ -3,16 +3,16 @@ import { numberToCurrency, formatCurrency } from '../../utils/formatters';
 
 interface Props {
    commitments: Commitment[];
-   onDelete: (rowIndex: number) => void;
+   onDelete: (rowIndex: number, scope?: 'single' | 'future' | 'all') => Promise<void>;
 
    editingRow: number | null;
-   editedAmount: string;
+   editedValue: string;
    editedDate: string;
 
    onEdit: (commitment: Commitment) => void;
    onCancelEdit: () => void;
-   onSave: () => void;
-   onChangeAmount: (amount: string) => void;
+   onSave: (scope?: 'single' | 'future') => Promise<void>;
+   onChangeValue: (value: string) => void;
    onChangeDate: (date: string) => void;
 }
 
@@ -20,12 +20,12 @@ export function CommitmentGrid({
    commitments,
    onDelete,
    editingRow,
-   editedAmount,
+   editedValue,
    editedDate,
    onEdit,
    onCancelEdit,
    onSave,
-   onChangeAmount,
+   onChangeValue,
    onChangeDate
 }: Props) {
    return (
@@ -49,17 +49,13 @@ export function CommitmentGrid({
                <tr key={c.rowIndex}>
                   <td>{c.description}</td>
                   <td>{c.category}</td>
-                  <td>
-                     {c.installment
-                        ? `${c.installment}/${c.totalInstallments}`
-                        : '-'}
-                  </td>
+                  <td>{c.installment ? `${c.installment}/${c.totalInstallments}` : '-'}</td>
                   <td>
                      {editingRow === c.rowIndex ? (
                         <input
                            type="text"
-                           value={editedAmount}
-                           onChange={e => onChangeAmount(formatCurrency(e.target.value))}
+                           value={editedValue}
+                           onChange={e => onChangeValue(formatCurrency(e.target.value))}
                         />
                      ) : (
                         numberToCurrency(c.amount)
@@ -83,11 +79,21 @@ export function CommitmentGrid({
                   <td>
                      {editingRow !== c.rowIndex && (
                         <>
-                           <button onClick={() => onEdit(c)}>
-                              Editar
-                           </button>
+                           <button onClick={() => onEdit(c)}>Editar</button>
 
-                           <button onClick={() => onDelete(c.rowIndex)}>
+                           <button onClick={() => {
+                              let scope: 'single' | 'future' | 'all' = 'single';
+
+                              if (c.type === 'fixed') {
+                                 const resposta = prompt(
+                                    'Excluir apenas esta parcela (single), todas futuras (future) ou todas (all)?',
+                                    'single'
+                                 );
+                                 if (!resposta || !['single', 'future', 'all'].includes(resposta)) return;
+                                 scope = resposta as 'single' | 'future' | 'all';
+                              }
+                              onDelete(c.rowIndex, scope);
+                           }}>
                               Excluir
                            </button>
                         </>
@@ -95,13 +101,24 @@ export function CommitmentGrid({
 
                      {editingRow === c.rowIndex && (
                         <>
-                           <button onClick={onSave}>
+                           <button onClick={() => {
+                              let scope: 'single' | 'future' = 'single';
+
+                              if (c.type === 'fixed') {
+                                 const resposta = prompt(
+                                    'Salvar apenas esta parcela (single) ou todas futuras (future)?',
+                                    'single'
+                                 );
+                                 if (!resposta || !['single', 'future'].includes(resposta)) return;
+                                 scope = resposta as 'single' | 'future';
+                              }
+
+                              onSave(scope);
+                           }}>
                               Salvar
                            </button>
 
-                           <button onClick={onCancelEdit}>
-                              Cancelar edição
-                           </button>
+                           <button onClick={onCancelEdit}>Cancelar edição</button>
                         </>
                      )}
 
@@ -109,6 +126,6 @@ export function CommitmentGrid({
                </tr>
             ))}
          </tbody>
-      </table>
+      </table >
    );
 }

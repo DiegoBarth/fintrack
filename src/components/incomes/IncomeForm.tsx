@@ -26,7 +26,7 @@ export function IncomeForm({ onSave }: Props) {
          receivedDate,
          description,
          amount: amountNumber
-      }, "1", "2026");
+      });
 
       onSave();
       alert('Receita salva 💸');

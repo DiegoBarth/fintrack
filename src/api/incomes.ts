@@ -1,19 +1,20 @@
 import { apiGet, apiPost } from './client';
 import type { Income } from '../types/Income';
 import { incomesCache } from '../cache/IncomesCache';
+import { formatDateBR } from '../utils/formatters';
 
 export async function createIncome(payload: {
    expectedDate: string;
    receivedDate: string;
    description: string;
    amount: number;
-}, month: string, year: string) {
-   const res = await apiPost({
+}) {
+   const res = await apiPost<Income>({
       action: 'createIncome',
       ...payload
    });
 
-   console.log(month, year);
+   incomesCache.add(res, 'expectedDate');
 
    return res;
 }
@@ -40,7 +41,7 @@ export async function deleteIncome(rowIndex: number, month: string, year: string
    });
 
    incomesCache.remove(month, year, rowIndex);
-   
+
    return res;
 }
 
@@ -53,6 +54,8 @@ export async function updateIncome(payload: {
       action: 'updateIncome',
       ...payload
    });
+
+   payload.receivedDate = formatDateBR(payload.receivedDate);
 
    incomesCache.update(month, year, payload);
 

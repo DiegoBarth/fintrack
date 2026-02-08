@@ -3,26 +3,31 @@ import { listExpenses, deleteExpense, updateExpense } from '../api/expenses';
 import { ExpenseForm } from '../components/expenses/ExpenseForm';
 import { ExpenseGrid } from '../components/expenses/ExpenseGrid';
 import type { Expense } from '../types/Expense';
-import { numberToCurrency, dateBRToISO, currencyToNumber } from '../utils/formatters';
+import {
+   numberToCurrency,
+   dateBRToISO,
+   currencyToNumber
+} from '../utils/formatters';
 import { usePeriod } from '../contexts/PeriodContext';
 import { useNavigate } from 'react-router-dom';
+import { expensesCache } from '../cache/ExpensesCache';
 
 export function Expenses() {
    const { month, year } = usePeriod();
    const [expenses, setExpenses] = useState<Expense[]>([]);
    const [editingRow, setEditingRow] = useState<number | null>(null);
-   const [editedAmount, setEditedAmount] = useState('');
+   const [editedValue, setEditedValue] = useState('');
    const [editedDate, setEditedDate] = useState('');
    const [loading, setLoading] = useState(false);
    const navigate = useNavigate();
 
-   async function fetchExpenses() {
+   async function loadData() {
       setLoading(true);
       try {
-         const res = await listExpenses(month, String(year));
-         setExpenses(res);
+         const response = await listExpenses(month, String(year));
+         setExpenses(response);
       } catch (error) {
-         console.error("Failed to fetch expenses:", error);
+         console.error("Error loading expenses:", error);
       } finally {
          setLoading(false);
       }
@@ -32,12 +37,14 @@ export function Expenses() {
       if (!confirm('Deseja realmente excluir este gasto?')) return;
 
       await deleteExpense(rowIndex, month, String(year));
-      setExpenses(prev => prev.filter(item => item.rowIndex !== rowIndex));
+
+      const updated = expensesCache.get(month, year) || [];
+      setExpenses(updated);
    }
 
    function handleEdit(expense: Expense) {
       setEditingRow(expense.rowIndex);
-      setEditedAmount(numberToCurrency(expense.amount));
+      setEditedValue(numberToCurrency(expense.amount));
       setEditedDate(dateBRToISO(expense.paymentDate));
    }
 
@@ -50,20 +57,22 @@ export function Expenses() {
 
       await updateExpense({
          rowIndex: editingRow,
-         amount: currencyToNumber(editedAmount),
-         date: editedDate
+         amount: currencyToNumber(editedValue),
+         paymentDate: editedDate
       }, month, String(year));
 
       setEditingRow(null);
-      fetchExpenses();
+
+      const updated = expensesCache.get(month, year) || [];
+      setExpenses(updated);
    }
 
    useEffect(() => {
-      fetchExpenses();
+      loadData();
    }, [month, year]);
 
    return (
-      <>
+      <div style={{ padding: 16 }}>
          <button
             style={{ marginBottom: 16 }}
             onClick={() => navigate('/')}
@@ -72,9 +81,14 @@ export function Expenses() {
          </button>
 
          <h2>Novo gasto</h2>
-         <ExpenseForm onSave={fetchExpenses} />
+         <ExpenseForm
+            onSave={() => {
+               const updated = expensesCache.get(month, year) || [];
+               setExpenses([...updated]);
+            }}
+         />
 
-         <hr />
+         <hr style={{ margin: '24px 0' }} />
 
          <h2>Consultar gastos</h2>
 
@@ -85,15 +99,15 @@ export function Expenses() {
                expenses={expenses}
                onDelete={handleDelete}
                editingRow={editingRow}
-               editedAmount={editedAmount}
+               editedValue={editedValue}
                editedDate={editedDate}
                onEdit={handleEdit}
                onCancelEdit={cancelEdit}
                onSave={handleSaveEdit}
-               onChangeAmount={setEditedAmount}
+               onChangeValue={setEditedValue}
                onChangeDate={setEditedDate}
             />
          )}
-      </>
+      </div>
    );
 }

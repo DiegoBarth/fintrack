@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { currencyToNumber, formatCurrency } from '../../utils/formatters';
+import { createCard, createCommitment } from '../../api/commitments';
 
 interface Props {
-   onSave: (payload: any) => Promise<void>;
+   onSave: () => void;
 }
 
 export function CommitmentForm({ onSave }: Props) {
@@ -14,36 +15,47 @@ export function CommitmentForm({ onSave }: Props) {
    const [amount, setAmount] = useState('');
    const [dueDate, setDueDate] = useState('');
 
-   // credit card
+   const [months, setMonths] = useState(1);
    const [card, setCard] = useState('');
    const [totalAmount, setTotalAmount] = useState('');
    const [totalInstallments, setTotalInstallments] = useState<number | ''>('');
    const [cardDueDate, setCardDueDate] = useState('');
 
-   function handleSubmit(e: React.FormEvent) {
+   useEffect(() => {
+      if (type === 'fixed' && dueDate) {
+         const data = new Date(dueDate);
+         const monthsLeft = 12 - data.getMonth();
+         setMonths(monthsLeft);
+      }
+   }, [type, dueDate]);
+
+   async function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
 
       if (!type) return;
 
       if (type === 'credit_card') {
-         onSave({
+         await createCard({
             type: 'credit_card',
             description,
             category,
             card,
             totalAmount: currencyToNumber(totalAmount),
-            installments: totalInstallments,
+            installments: Number(totalInstallments),
             dueDate: cardDueDate
          });
       } else {
-         onSave({
+         await createCommitment({
             type,
             description,
             category,
             amount: currencyToNumber(amount),
-            dueDate
+            dueDate,
+            months: type === 'fixed' ? months : 1
          });
       }
+
+      onSave();
 
       // Reset
       setDescription('');
@@ -51,6 +63,7 @@ export function CommitmentForm({ onSave }: Props) {
       setType('');
       setAmount('');
       setDueDate('');
+      setMonths(1);
       setCard('');
       setTotalAmount('');
       setTotalInstallments('');
@@ -111,9 +124,7 @@ export function CommitmentForm({ onSave }: Props) {
             <>
                <input
                   value={amount}
-                  onChange={(e) => {
-                     setAmount(formatCurrency(e.target.value));
-                  }}
+                  onChange={e => setAmount(formatCurrency(e.target.value))}
                   placeholder="R$ 0,00"
                />
 
@@ -126,15 +137,26 @@ export function CommitmentForm({ onSave }: Props) {
                />
 
                <br /><br />
+
+               {type === 'fixed' && (
+                  <>
+                     <label>Repetir por (meses):</label>
+                     <input
+                        type="number"
+                        min={1}
+                        max={12}
+                        value={months}
+                        onChange={e => setMonths(Number(e.target.value))}
+                     />
+                     <br /><br />
+                  </>
+               )}
             </>
          )}
 
          {type === 'credit_card' && (
             <>
-               <select
-                  value={card}
-                  onChange={e => setCard(e.target.value)}
-               >
+               <select value={card} onChange={e => setCard(e.target.value)}>
                   <option value="">Selecione o cartão</option>
                   <option>Bradesco</option>
                   <option>Itaú</option>
@@ -145,9 +167,7 @@ export function CommitmentForm({ onSave }: Props) {
 
                <input
                   value={totalAmount}
-                  onChange={(e) => {
-                     setTotalAmount(formatCurrency(e.target.value));
-                  }}
+                  onChange={e => setTotalAmount(formatCurrency(e.target.value))}
                   placeholder="Valor total"
                />
 
@@ -158,9 +178,7 @@ export function CommitmentForm({ onSave }: Props) {
                   min={1}
                   max={60}
                   value={totalInstallments}
-                  onChange={e => {
-                     setTotalInstallments(Number(e.target.value));
-                  }}
+                  onChange={e => setTotalInstallments(Number(e.target.value))}
                   placeholder="Total de parcelas"
                />
 

@@ -3,16 +3,16 @@ import { numberToCurrency, formatCurrency } from '../../utils/formatters';
 
 interface Props {
    expenses: Expense[];
-   onDelete: (rowIndex: number) => void;
+   onDelete: (rowIndex: number) => Promise<void>;
 
    editingRow: number | null;
-   editedAmount: string;
+   editedValue: string;
    editedDate: string;
 
    onEdit: (expense: Expense) => void;
    onCancelEdit: () => void;
-   onSave: () => void;
-   onChangeAmount: (amount: string) => void;
+   onSave: () => Promise<void>;
+   onChangeValue: (value: string) => void;
    onChangeDate: (date: string) => void;
 }
 
@@ -20,12 +20,12 @@ export function ExpenseGrid({
    expenses,
    onDelete,
    editingRow,
-   editedAmount,
+   editedValue,
    editedDate,
    onEdit,
    onCancelEdit,
    onSave,
-   onChangeAmount,
+   onChangeValue,
    onChangeDate
 }: Props) {
 
@@ -51,8 +51,8 @@ export function ExpenseGrid({
                      {editingRow === e.rowIndex ? (
                         <input
                            type="text"
-                           value={editedAmount}
-                           onChange={event => onChangeAmount(formatCurrency(event.target.value))}
+                           value={editedValue}
+                           onChange={event => onChangeValue(formatCurrency(event.target.value))}
                         />
                      ) : (
                         numberToCurrency(e.amount)

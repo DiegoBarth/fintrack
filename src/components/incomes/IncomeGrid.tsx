@@ -3,16 +3,16 @@ import { numberToCurrency, formatCurrency } from '../../utils/formatters';
 
 interface Props {
    incomes: Income[];
-   onDelete: (rowIndex: number) => void;
+   onDelete: (rowIndex: number) => Promise<void>;
 
    editingRow: number | null;
-   editedAmount: string;
+   editedValue: string;
    editedDate: string;
 
    onEdit: (income: Income) => void;
    onCancelEdit: () => void;
-   onSave: () => void;
-   onChangeAmount: (amount: string) => void;
+   onSave: () => Promise<void>;
+   onChangeValue: (value: string) => void;
    onChangeDate: (date: string) => void;
 }
 
@@ -20,12 +20,12 @@ export function IncomeGrid({
    incomes,
    onDelete,
    editingRow,
-   editedAmount,
+   editedValue,
    editedDate,
    onEdit,
    onCancelEdit,
    onSave,
-   onChangeAmount,
+   onChangeValue,
    onChangeDate
 }: Props) {
 
@@ -63,8 +63,8 @@ export function IncomeGrid({
                      {editingRow === item.rowIndex ? (
                         <input
                            type="text"
-                           value={editedAmount}
-                           onChange={e => onChangeAmount(formatCurrency(e.target.value))}
+                           value={editedValue}
+                           onChange={e => onChangeValue(formatCurrency(e.target.value))}
                         />
                      ) : (
                         numberToCurrency(item.amount)

@@ -26,12 +26,12 @@ export async function createCommitment(payload: {
    dueDate: string;
    months?: number;
 }) {
-   const res = await apiPost<Commitment>({
+   const res = await apiPost<Commitment[]>({
       action: 'createCommitment',
       ...payload
    });
 
-   commitmentsCache.add(res, 'dueDate');
+   res.forEach(p => commitmentsCache.add(p, 'dueDate'));
 
    return res;
 }
@@ -45,12 +45,12 @@ export async function createCard(payload: {
    installments: number;
    dueDate: string;
 }) {
-   const res = await apiPost<Commitment>({
+   const res = await apiPost<Commitment[]>({
       action: 'createCard',
       ...payload
    });
 
-   commitmentsCache.add(res, 'dueDate');
+   res.forEach(p => commitmentsCache.add(p, 'dueDate'));
 
    return res;
 }

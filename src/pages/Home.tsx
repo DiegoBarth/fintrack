@@ -1,6 +1,9 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePeriod } from '../contexts/PeriodContext';
 import { MonthlySummary } from '../components/home/MonthlySummary';
+import { Alerts } from '../components/Alerts';
+import { fetchAllData } from '../api/home';
 
 export function Home() {
    const navigate = useNavigate();
@@ -22,6 +25,13 @@ export function Home() {
       { value: '12', label: 'Dezembro' },
    ];
 
+   useEffect(() => {
+      async function preload() {
+         await fetchAllData(month, String(year));
+      }
+      preload();
+   }, [month, year]);
+
    return (
       <div style={{ padding: 16 }}>
          <h1>Home</h1>
@@ -41,6 +51,8 @@ export function Home() {
                onChange={e => setYear(Number(e.target.value))}
             />
          </div>
+
+         <Alerts />
 
          <MonthlySummary />
 

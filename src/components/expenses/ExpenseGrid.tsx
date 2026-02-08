@@ -3,85 +3,105 @@ import { numberToCurrency, formatCurrency } from '../../utils/formatters';
 
 interface Props {
    expenses: Expense[];
-   onDelete: (rowIndex: number) => Promise<void>;
-
+   onDelete: (rowIndex: number) => void;
    editingRow: number | null;
-   editedValue: string;
-
+   editedAmount: string;
+   isPersisting: boolean;
    onEdit: (expense: Expense) => void;
    onCancelEdit: () => void;
-   onSave: () => Promise<void>;
-   onChangeValue: (value: string) => void;
+   onSave: () => void;
+   onChangeAmount: (amount: string) => void;
 }
 
+/**
+ * Data grid for displaying and editing variable expenses.
+ * Uses inline editing for the amount field.
+ */
 export function ExpenseGrid({
    expenses,
    onDelete,
    editingRow,
-   editedValue,
+   editedAmount,
+   isPersisting,
    onEdit,
    onCancelEdit,
    onSave,
-   onChangeValue
+   onChangeAmount
 }: Props) {
 
    return (
-      <table border={1} width="100%">
+      <table border={1} style={{ width: '100%', borderCollapse: 'collapse' }}>
          <thead>
-            <tr>
-               <th>Descrição</th>
-               <th>Categoria</th>
-               <th>Valor</th>
-               <th>Data</th>
-               <th>Ações</th>
+            <tr style={{ background: '#f4f4f4' }}>
+               <th style={{ padding: '8px' }}>Descrição</th>
+               <th style={{ padding: '8px' }}>Categoria</th>
+               <th style={{ padding: '8px' }}>Valor</th>
+               <th style={{ padding: '8px' }}>Data</th>
+               <th style={{ padding: '8px' }}>Ações</th>
             </tr>
          </thead>
 
          <tbody>
-            {expenses.map(e => (
-
-               <tr key={e.rowIndex}>
-                  <td>{e.description}</td>
-                  <td>{e.category}</td>
-                  <td>
-                     {editingRow === e.rowIndex ? (
+            {expenses.map(expense => (
+               <tr key={expense.rowIndex} style={{ textAlign: 'center' }}>
+                  <td style={{ padding: '8px' }}>{expense.description}</td>
+                  <td style={{ padding: '8px' }}>{expense.category}</td>
+                  <td style={{ padding: '8px' }}>
+                     {editingRow === expense.rowIndex ? (
                         <input
                            type="text"
-                           value={editedValue}
-                           onChange={event => onChangeValue(formatCurrency(event.target.value))}
+                           value={editedAmount}
+                           onChange={e => onChangeAmount(formatCurrency(e.target.value))}
+                           disabled={isPersisting}
+                           autoFocus
                         />
                      ) : (
-                        numberToCurrency(e.amount)
+                        numberToCurrency(expense.amount)
                      )}
                   </td>
 
-                  <td>{e.paymentDate}</td>
+                  <td style={{ padding: '8px' }}>{expense.paymentDate}</td>
 
-                  <td>
-                     {editingRow !== e.rowIndex && (
-                        <>
-                           <button onClick={() => onEdit(e)}>
+                  <td style={{ padding: '8px' }}>
+                     {/* Default View Mode */}
+                     {editingRow !== expense.rowIndex && (
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                           <button
+                              onClick={() => onEdit(expense)}
+                              disabled={isPersisting}
+                           >
                               Editar
                            </button>
 
-                           <button onClick={() => onDelete(e.rowIndex)}>
+                           <button
+                              onClick={() => onDelete(expense.rowIndex)}
+                              disabled={isPersisting}
+                              style={{ color: '#dc3545' }}
+                           >
                               Excluir
                            </button>
-                        </>
+                        </div>
                      )}
 
-                     {editingRow === e.rowIndex && (
-                        <>
-                           <button onClick={onSave}>
-                              Salvar
+                     {/* Inline Edit Mode */}
+                     {editingRow === expense.rowIndex && (
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                           <button
+                              onClick={onSave}
+                              disabled={isPersisting}
+                              style={{ fontWeight: 'bold', color: '#28a745' }}
+                           >
+                              {isPersisting ? 'Salvando...' : 'Salvar'}
                            </button>
 
-                           <button onClick={onCancelEdit}>
-                              Cancelar edição
+                           <button
+                              onClick={onCancelEdit}
+                              disabled={isPersisting}
+                           >
+                              Cancelar
                            </button>
-                        </>
+                        </div>
                      )}
-
                   </td>
                </tr>
             ))}

@@ -3,62 +3,101 @@ import { listExpenses, deleteExpense, updateExpense } from '../api/expenses';
 import { ExpenseForm } from '../components/expenses/ExpenseForm';
 import { ExpenseGrid } from '../components/expenses/ExpenseGrid';
 import type { Expense } from '../types/Expense';
-import {
-   numberToCurrency, currencyToNumber  } from '../utils/formatters';
+import { numberToCurrency, currencyToNumber } from '../utils/formatters';
 import { usePeriod } from '../contexts/PeriodContext';
 import { useNavigate } from 'react-router-dom';
 import { expensesCache } from '../cache/ExpensesCache';
 
+/**
+ * Page component to manage variable expenses.
+ * Handles loading, editing, and deleting expenses with persistence and cache sync.
+ */
 export function Expenses() {
    const { month, year } = usePeriod();
    const [expenses, setExpenses] = useState<Expense[]>([]);
    const [editingRow, setEditingRow] = useState<number | null>(null);
-   const [editedValue, setEditedValue] = useState('');
+   const [editedAmount, setEditedAmount] = useState('');
    const [loading, setLoading] = useState(false);
+   const [isPersisting, setIsPersisting] = useState(false);
+   
    const navigate = useNavigate();
 
+   /**
+    * Fetches the expenses for the currently selected period.
+    */
    async function loadData() {
       setLoading(true);
       try {
-         const response = await listExpenses(month, String(year));
-         setExpenses(response);
+         const res = await listExpenses(month, String(year));
+         setExpenses(res);
       } catch (error) {
-         console.error("Error loading expenses:", error);
+         console.error("Failed to load expenses:", error);
       } finally {
          setLoading(false);
       }
    }
 
+   /**
+    * Handles the deletion of an expense record.
+    * @param rowIndex - The unique identifier for the row in the spreadsheet.
+    */
    async function handleDelete(rowIndex: number) {
       if (!confirm('Deseja realmente excluir este gasto?')) return;
 
-      await deleteExpense(rowIndex, month, String(year));
+      setIsPersisting(true);
+      try {
+         await deleteExpense(rowIndex, month, String(year));
 
-      const updated = expensesCache.get(month, year) || [];
-      setExpenses(updated);
+         const updated = expensesCache.get(month, year) || [];
+         setExpenses(updated);
+      } catch (error) {
+         console.error("Failed to delete expense:", error);
+      } finally {
+         setIsPersisting(false);
+      }
    }
 
+   /**
+    * Prepares a row for inline editing by populating temporary state.
+    */
    function handleEdit(expense: Expense) {
       setEditingRow(expense.rowIndex);
-      setEditedValue(numberToCurrency(expense.amount));
+      setEditedAmount(numberToCurrency(expense.amount));
    }
 
+   /**
+    * Clears the editing state without saving changes.
+    */
    function cancelEdit() {
       setEditingRow(null);
    }
 
+   /**
+    * Persists the edited amount to the server and updates local state/cache.
+    */
    async function handleSaveEdit() {
-      if (editingRow === null) return;
+      if (editingRow === null || isPersisting) return;
 
-      await updateExpense({
-         rowIndex: editingRow,
-         amount: currencyToNumber(editedValue)
-      }, month, String(year));
+      setIsPersisting(true);
+      try {
+         await updateExpense(
+            {
+               rowIndex: editingRow,
+               amount: currencyToNumber(editedAmount)
+            },
+            month,
+            String(year)
+         );
 
-      setEditingRow(null);
+         setEditingRow(null);
 
-      const updated = expensesCache.get(month, year) || [];
-      setExpenses(updated);
+         const updated = expensesCache.get(month, year) || [];
+         setExpenses(updated);
+      } catch (error) {
+         console.error("Failed to update expense amount:", error);
+      } finally {
+         setIsPersisting(false);
+      }
    }
 
    useEffect(() => {
@@ -87,17 +126,18 @@ export function Expenses() {
          <h2>Consultar gastos</h2>
 
          {loading ? (
-            <p>Carregando...</p>
+            <p>Carregando gastos...</p>
          ) : (
             <ExpenseGrid
                expenses={expenses}
                onDelete={handleDelete}
                editingRow={editingRow}
-               editedValue={editedValue}
+               editedAmount={editedAmount}
                onEdit={handleEdit}
                onCancelEdit={cancelEdit}
                onSave={handleSaveEdit}
-               onChangeValue={setEditedValue}
+               onChangeAmount={setEditedAmount}
+               isPersisting={isPersisting}
             />
          )}
       </div>

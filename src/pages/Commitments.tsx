@@ -5,67 +5,103 @@ import {
    updateCommitment
 } from '../api/commitments';
 import type { Commitment } from '../types/Commitment';
-import {
-   numberToCurrency,
-   dateBRToISO,
-   currencyToNumber
-} from '../utils/formatters';
+import { numberToCurrency, dateBRToISO, currencyToNumber } from '../utils/formatters';
 import { CommitmentGrid } from '../components/commitments/CommitmentGrid';
 import { CommitmentForm } from '../components/commitments/CommitmentForm';
 import { usePeriod } from '../contexts/PeriodContext';
 import { useNavigate } from 'react-router-dom';
 import { commitmentsCache } from '../cache/CommitmentsCache';
 
+/**
+ * Page component for managing recurring and fixed commitments.
+ * Supports scoped operations (single, future, or all occurrences).
+ */
 export function Commitments() {
    const { month, year } = usePeriod();
    const [commitments, setCommitments] = useState<Commitment[]>([]);
    const [editingRow, setEditingRow] = useState<number | null>(null);
-   const [editedValue, setEditedValue] = useState('');
+   const [editedAmount, setEditedAmount] = useState('');
    const [editedDate, setEditedDate] = useState('');
    const [loading, setLoading] = useState(false);
+   const [isPersisting, setIsPersisting] = useState(false);
+
    const navigate = useNavigate();
 
+   /**
+    * Loads commitments for the selected period from the API.
+    */
    async function loadData() {
       setLoading(true);
       try {
-         const response = await listCommitments(month, String(year));
-         setCommitments(response);
+         const res = await listCommitments(month, String(year));
+         setCommitments(res);
       } catch (error) {
-         console.error("Error fetching commitments:", error);
+         console.error("Failed to fetch commitments:", error);
       } finally {
          setLoading(false);
       }
    }
 
+   /**
+    * Handles the update of a commitment with scoped persistence.
+    * @param scope - Defines if the change affects only the 'single' record or 'future' ones.
+    */
    async function handleSaveEdit(scope: 'single' | 'future' = 'single') {
-      if (editingRow === null) return;
+      if (editingRow === null || isPersisting) return;
 
-      await updateCommitment({
-         rowIndex: editingRow,
-         amount: currencyToNumber(editedValue),
-         paymentDate: editedDate,
-         scope
-      }, month, String(year));
+      setIsPersisting(true);
 
-      setEditingRow(null);
-      const updated = commitmentsCache.get(month, year) || [];
-      setCommitments(updated);
+      try {
+         await updateCommitment({
+            rowIndex: editingRow,
+            amount: currencyToNumber(editedAmount),
+            paymentDate: editedDate,
+            scope
+         }, month, String(year));
+
+         setEditingRow(null);
+         const updated = commitmentsCache.get(month, year) || [];
+         setCommitments(updated);
+      } catch (error) {
+         console.error("Failed to update commitment:", error);
+      } finally {
+         setIsPersisting(false);
+      }
    }
 
+   /**
+    * Handles commitment deletion with multiple scope options.
+    * @param rowIndex - The target row to delete.
+    * @param scope - 'single', 'future', or 'all' occurrences.
+    */
    async function handleDelete(rowIndex: number, scope: 'single' | 'future' | 'all' = 'single') {
-      if (!confirm('Deseja realmente excluir este compromisso?')) return;
+      if (!confirm('Deseja realmente excluir?')) return;
 
-      await deleteCommitment(rowIndex, month, String(year), scope);
-      const updated = commitmentsCache.get(month, year) || [];
-      setCommitments(updated);
+      setIsPersisting(true);
+
+      try {
+         await deleteCommitment(rowIndex, month, String(year), scope);
+         const updated = commitmentsCache.get(month, year) || [];
+         setCommitments(updated);
+      } catch (error) {
+         console.error("Failed to delete commitment:", error);
+      } finally {
+         setIsPersisting(false);
+      }
    }
 
+   /**
+    * Prepares a commitment for editing, formatting the amount and date.
+    */
    function handleEdit(commitment: Commitment) {
       setEditingRow(commitment.rowIndex);
-      setEditedValue(numberToCurrency(commitment.amount));
+      setEditedAmount(numberToCurrency(commitment.amount));
       setEditedDate(commitment.paymentDate ? dateBRToISO(commitment.paymentDate) : '');
    }
 
+   /**
+    * Cancels the current editing session.
+    */
    function cancelEdit() {
       setEditingRow(null);
    }
@@ -98,13 +134,14 @@ export function Commitments() {
                commitments={commitments}
                onDelete={handleDelete}
                editingRow={editingRow}
-               editedValue={editedValue}
+               editedAmount={editedAmount}
                editedDate={editedDate}
                onEdit={handleEdit}
                onCancelEdit={cancelEdit}
                onSave={handleSaveEdit}
-               onChangeValue={setEditedValue}
+               onChangeAmount={setEditedAmount}
                onChangeDate={setEditedDate}
+               isPersisting={isPersisting}
             />
          )}
       </div>

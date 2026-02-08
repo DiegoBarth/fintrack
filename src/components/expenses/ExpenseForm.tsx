@@ -3,48 +3,88 @@ import { createExpense } from '../../api/expenses';
 import { currencyToNumber, formatCurrency } from '../../utils/formatters';
 
 interface Props {
+   /** Callback function to refresh the list after a successful save */
    onSave: () => void;
 }
 
+/**
+ * Form component to register new variable expenses.
+ * Includes category selection and automatic currency formatting.
+ */
 export function ExpenseForm({ onSave }: Props) {
    const [date, setDate] = useState('');
    const [description, setDescription] = useState('');
    const [category, setCategory] = useState('');
    const [amount, setAmount] = useState('');
+   const [isPersisting, setIsPersisting] = useState(false);
 
-   async function handleSave(e: React.FormEvent) {
+   /**
+    * Handles the expense creation process.
+    * Validates the amount and synchronizes with the server.
+    */
+   async function handleSubmit(e: React.FormEvent) {
       e.preventDefault();
 
-      const amountNumber = currencyToNumber(amount);
-      if (amountNumber <= 0) {
+      const numericAmount = currencyToNumber(amount);
+      if (numericAmount <= 0) {
          alert('Valor inválido');
          return;
       }
 
-      await createExpense({
-         date,
-         description,
-         category,
-         amount: amountNumber
-      });
+      setIsPersisting(true);
 
-      onSave();
-      alert('Gasto salvo 💸');
-      
-      // Reset
-      setDate('');
-      setDescription('');
-      setCategory('');
-      setAmount('');
+      try {
+         await createExpense({
+            date,
+            description,
+            category,
+            amount: numericAmount
+         });
+
+         onSave();
+         alert('Gasto salvo 💸');
+
+         // Reset form fields
+         setDate('');
+         setDescription('');
+         setCategory('');
+         setAmount('');
+      } catch (error) {
+         console.error("Failed to save expense:", error);
+         alert('Erro ao salvar gasto.');
+      } finally {
+         setIsPersisting(false);
+      }
    }
 
    return (
-      <form onSubmit={handleSave}>
-         <input type="date" value={date} onChange={e => setDate(e.target.value)} />
-         <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Descrição" />
+      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+         <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label style={{ fontSize: '12px' }}>Data</label>
+            <input
+               type="date"
+               value={date}
+               onChange={e => setDate(e.target.value)}
+               disabled={isPersisting}
+               required
+            />
+         </div>
 
-         <select value={category} onChange={e => setCategory(e.target.value)}>
-            <option value="">Selecione</option>
+         <input
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            placeholder="Descrição"
+            disabled={isPersisting}
+            required
+         />
+
+         <select
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+            disabled={isPersisting}
+            required
+         >
+            <option value="">Selecione a Categoria</option>
             <option>Alimentação</option>
             <option>Banco</option>
             <option>Beleza</option>
@@ -68,9 +108,17 @@ export function ExpenseForm({ onSave }: Props) {
             value={amount}
             onChange={(e) => setAmount(formatCurrency(e.target.value))}
             placeholder="R$ 0,00"
+            disabled={isPersisting}
+            required
          />
 
-         <button>Salvar</button>
+         <button
+            type="submit"
+            disabled={isPersisting}
+            style={{ padding: '0 20px', height: '30px' }}
+         >
+            {isPersisting ? 'Salvando...' : 'Salvar'}
+         </button>
       </form>
    );
 }

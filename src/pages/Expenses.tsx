@@ -4,10 +4,7 @@ import { ExpenseForm } from '../components/expenses/ExpenseForm';
 import { ExpenseGrid } from '../components/expenses/ExpenseGrid';
 import type { Expense } from '../types/Expense';
 import {
-   numberToCurrency,
-   dateBRToISO,
-   currencyToNumber
-} from '../utils/formatters';
+   numberToCurrency, currencyToNumber  } from '../utils/formatters';
 import { usePeriod } from '../contexts/PeriodContext';
 import { useNavigate } from 'react-router-dom';
 import { expensesCache } from '../cache/ExpensesCache';
@@ -17,7 +14,6 @@ export function Expenses() {
    const [expenses, setExpenses] = useState<Expense[]>([]);
    const [editingRow, setEditingRow] = useState<number | null>(null);
    const [editedValue, setEditedValue] = useState('');
-   const [editedDate, setEditedDate] = useState('');
    const [loading, setLoading] = useState(false);
    const navigate = useNavigate();
 
@@ -45,7 +41,6 @@ export function Expenses() {
    function handleEdit(expense: Expense) {
       setEditingRow(expense.rowIndex);
       setEditedValue(numberToCurrency(expense.amount));
-      setEditedDate(dateBRToISO(expense.paymentDate));
    }
 
    function cancelEdit() {
@@ -57,8 +52,7 @@ export function Expenses() {
 
       await updateExpense({
          rowIndex: editingRow,
-         amount: currencyToNumber(editedValue),
-         paymentDate: editedDate
+         amount: currencyToNumber(editedValue)
       }, month, String(year));
 
       setEditingRow(null);
@@ -100,12 +94,10 @@ export function Expenses() {
                onDelete={handleDelete}
                editingRow={editingRow}
                editedValue={editedValue}
-               editedDate={editedDate}
                onEdit={handleEdit}
                onCancelEdit={cancelEdit}
                onSave={handleSaveEdit}
                onChangeValue={setEditedValue}
-               onChangeDate={setEditedDate}
             />
          )}
       </div>

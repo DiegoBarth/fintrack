@@ -7,13 +7,11 @@ interface Props {
 
    editingRow: number | null;
    editedValue: string;
-   editedDate: string;
 
    onEdit: (expense: Expense) => void;
    onCancelEdit: () => void;
    onSave: () => Promise<void>;
    onChangeValue: (value: string) => void;
-   onChangeDate: (date: string) => void;
 }
 
 export function ExpenseGrid({
@@ -21,12 +19,10 @@ export function ExpenseGrid({
    onDelete,
    editingRow,
    editedValue,
-   editedDate,
    onEdit,
    onCancelEdit,
    onSave,
-   onChangeValue,
-   onChangeDate
+   onChangeValue
 }: Props) {
 
    return (
@@ -59,18 +55,7 @@ export function ExpenseGrid({
                      )}
                   </td>
 
-                  <td>
-                     {editingRow === e.rowIndex ? (
-                        <input
-                           type="date"
-                           value={editedDate}
-                           onChange={event => onChangeDate(event.target.value)}
-                        />
-                     ) : (
-                        e.paymentDate
-                     )}
-                  </td>
-
+                  <td>{e.paymentDate}</td>
 
                   <td>
                      {editingRow !== e.rowIndex && (

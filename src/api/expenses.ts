@@ -1,7 +1,6 @@
 import { apiGet, apiPost } from './client';
 import type { Expense } from '../types/Expense';
 import { expensesCache } from '../cache/ExpensesCache';
-import { formatDateBR } from '../utils/formatters';
 
 export async function createExpense(payload: {
    date: string;
@@ -48,14 +47,11 @@ export async function deleteExpense(rowIndex: number, month: string, year: strin
 export async function updateExpense(payload: {
    rowIndex: number;
    amount: number;
-   paymentDate: string;
 }, month: string, year: string) {
    const res = await apiPost({
       action: 'updateExpense',
       ...payload
    });
-
-   payload.paymentDate = formatDateBR(payload.paymentDate);
 
    expensesCache.update(month, year, payload);
 

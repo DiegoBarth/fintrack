@@ -55,7 +55,7 @@ export async function updateIncome(payload: {
       ...payload
    });
 
-   payload.receivedDate = formatDateBR(payload.receivedDate);
+   payload.receivedDate = payload.receivedDate ? formatDateBR(payload.receivedDate) : '';
 
    incomesCache.update(month, year, payload);
 

@@ -78,7 +78,7 @@ export async function updateCommitment(
       ...payload
    });
 
-   payload.paymentDate = formatDateBR(payload.paymentDate);
+   payload.paymentDate = payload.paymentDate ? formatDateBR(payload.paymentDate) : '';
 
    commitmentsCache.update(month, year, payload)
 

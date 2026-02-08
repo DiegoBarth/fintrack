@@ -25,11 +25,7 @@ export function CreditCards({ cards, loading }: CreditCardsProps) {
                   justifyContent: 'space-between',
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
                }}>
-                  <img
-                     src={card.image}
-                     alt={card.cardName}
-                     style={{ width: '100%', borderRadius: 8, marginBottom: 12 }}
-                  />
+                  <img src={`${import.meta.env.BASE_URL}cartoes/${card.image}.jpg`} alt={card.cardName} style={{ width: '100%', borderRadius: 8 }} />
                   <h3 style={{ margin: '0 0 8px 0' }}>{card.cardName}</h3>
 
                   <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>

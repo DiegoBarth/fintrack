@@ -9,6 +9,10 @@ export function createListCache<T extends { rowIndex: number }>() {
       return `${yearStr}-${monthStr}`;
    }
 
+   function getAll() {
+      return Object.values(cache).flat();
+   }
+
    function get(month: string, year: number | string) {
       return cache[getKey(month, year)];
    }
@@ -26,7 +30,7 @@ export function createListCache<T extends { rowIndex: number }>() {
       const key = getKey(month, year);
 
       if (!cache[key]) cache[key] = [];
-      
+
       if (!cache[key].some(c => c.rowIndex === item.rowIndex)) {
          cache[key].push(item);
       }
@@ -60,6 +64,7 @@ export function createListCache<T extends { rowIndex: number }>() {
 
    return {
       getKey,
+      getAll,
       get,
       set,
       add,

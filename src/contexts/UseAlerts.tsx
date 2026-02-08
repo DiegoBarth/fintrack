@@ -1,5 +1,4 @@
 import { commitmentsCache } from '../cache/CommitmentsCache';
-import { usePeriod } from '../contexts/PeriodContext';
 import { useMemo, useState, useEffect } from 'react';
 
 function resetTime(date: Date) {
@@ -9,7 +8,6 @@ function resetTime(date: Date) {
 }
 
 export function useAlerts() {
-   const { month, year } = usePeriod();
    const [tick, setTick] = useState(0);
 
    useEffect(() => {
@@ -28,7 +26,8 @@ export function useAlerts() {
    return useMemo(() => {
       const today = resetTime(new Date());
 
-      const pendingCommitments = (commitmentsCache.get(month, year) || [])
+      const pendingCommitments = commitmentsCache
+         .getAll()
          .filter(c => !c.paymentDate && !c.paid);
 
       const dueToday = pendingCommitments.filter(c => {
@@ -49,5 +48,5 @@ export function useAlerts() {
          today: dueToday,
          week: dueThisWeek
       };
-   }, [month, year, tick]);
+   }, [tick]);
 }

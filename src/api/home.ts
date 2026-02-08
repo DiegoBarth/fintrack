@@ -22,11 +22,23 @@ export function fetchFullSummary(month: string, year: string) {
 }
 
 export async function fetchAllData(month: string, year: string) {
-   const cachedCommitments = commitmentsCache.get(month, year);
-   const cachedIncomes = incomesCache.get(month, year);
-   const cachedExpenses = expensesCache.get(month, year);
+   const cachedIncomes =
+      month === 'all'
+         ? incomesCache.getAll()
+         : incomesCache.get(month, year);
 
-   if (cachedCommitments && cachedIncomes && cachedExpenses) {
+   const cachedExpenses =
+      month === 'all'
+         ? expensesCache.getAll()
+         : expensesCache.get(month, year);
+
+
+   const cachedCommitments =
+      month === 'all'
+         ? commitmentsCache.getAll()
+         : commitmentsCache.get(month, year);
+
+   if (cachedIncomes || cachedExpenses || cachedCommitments) {
       return {
          commitments: cachedCommitments,
          incomes: cachedIncomes,

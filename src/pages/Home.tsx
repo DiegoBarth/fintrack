@@ -1,72 +1,62 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { PeriodFilters } from "../components/home/PeriodFilters";
+import { Alerts } from "../components/home/Alerts";
+import { MonthlySummary } from "../components/home/MonthlySummary";
+import { QuickActions } from '../components/home/QuickActions';
 import { usePeriod } from '../contexts/PeriodContext';
-import { MonthlySummary } from '../components/home/MonthlySummary';
-import { Alerts } from '../components/Alerts';
-import { fetchAllData } from '../api/home';
+import { fetchFullSummary } from '../api/home';
 
+/**
+ * Main Dashboard Home Page.
+ * Orchestrates global filters, alerts, financial summaries, and quick action shortcuts.
+ */
 export function Home() {
-   const navigate = useNavigate();
    const { month, setMonth, year, setYear } = usePeriod();
 
-   const months = [
-      { value: 'all', label: 'Ano inteiro' },
-      { value: '1', label: 'Janeiro' },
-      { value: '2', label: 'Fevereiro' },
-      { value: '3', label: 'Março' },
-      { value: '4', label: 'Abril' },
-      { value: '5', label: 'Maio' },
-      { value: '6', label: 'Junho' },
-      { value: '7', label: 'Julho' },
-      { value: '8', label: 'Agosto' },
-      { value: '9', label: 'Setembro' },
-      { value: '10', label: 'Outubro' },
-      { value: '11', label: 'Novembro' },
-      { value: '12', label: 'Dezembro' },
-   ];
-
+   /**
+    * Preloads or refreshes data whenever the selected period changes.
+    */
    useEffect(() => {
-      async function preload() {
-         await fetchAllData(month, String(year));
+      async function preloadData() {
+         try {
+            await fetchFullSummary(month, String(year));
+         } catch (error) {
+            console.error("Failed to sync home data:", error);
+         }
       }
-      preload();
+      preloadData();
    }, [month, year]);
 
    return (
-      <div style={{ padding: 16 }}>
-         <h1>Home</h1>
+      <div className="min-h-screen bg-background">
+         <div className="mx-auto max-w-lg px-4 py-6 md:max-w-2xl lg:max-w-4xl">
 
-         <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-            <select value={month} onChange={e => setMonth(e.target.value)}>
-               {months.map(m => (
-                  <option key={m.value} value={m.value}>
-                     {m.label}
-                  </option>
-               ))}
-            </select>
+            {/* Control Header */}
+            <header className="mb-6">
+               <h1 className="mb-4 text-2xl font-bold text-foreground">Início</h1>
+               <PeriodFilters
+                  month={month}
+                  year={year}
+                  onMonthChange={setMonth}
+                  onYearChange={setYear}
+               />
+            </header>
 
-            <input
-               type="number"
-               value={year}
-               onChange={e => setYear(Number(e.target.value))}
-            />
+            {/* Critical Alerts (Today/Week) */}
+            <section className="mb-6">
+               <Alerts />
+            </section>
+
+            {/* Financial Metrics Cards */}
+            <section className="mb-6">
+               <MonthlySummary />
+            </section>
+
+            {/* Quick Access to Forms/Modules */}
+            <section>
+               <QuickActions />
+            </section>
          </div>
-
-         <Alerts />
-
-         <MonthlySummary />
-
-         <hr style={{ margin: '24px 0' }} />
-
-         <section style={{ display: 'grid', gap: 12 }}>
-            <h2>Ações rápidas</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-               <button onClick={() => navigate('/incomes')}>➕ Receitas</button>
-               <button onClick={() => navigate('/expenses')}>➖ Gastos</button>
-               <button onClick={() => navigate('/commitments')}>📅 Compromissos</button>
-               <button onClick={() => navigate('/dashboard')}>📊 Dashboard</button>
-            </div>
-         </section>
       </div>
-   );
+   )
 }

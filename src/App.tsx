@@ -4,6 +4,7 @@ import { Incomes } from './pages/Incomes';
 import { Expenses } from './pages/Expenses';
 import { Commitments } from './pages/Commitments';
 import { Dashboard } from './pages/Dashboard';
+import './index.css';
 
 function App() {
    return (

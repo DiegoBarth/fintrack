@@ -1,7 +1,7 @@
-import { apiGet, apiPost } from './client';
-import type { Income } from '../types/Income';
-import { incomesCache } from '../cache/IncomesCache';
-import { formatDateBR } from '../utils/formatters';
+import { apiGet, apiPost } from '@/api/client';
+import { incomesCache } from '@/cache/IncomesCache';
+import type { Income } from '@/types/Income';
+import { formatDateBR } from '@/utils/formatters';
 
 export async function createIncome(payload: {
    expectedDate: string;

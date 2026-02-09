@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { useDashboard } from '../contexts/DashboardContext'
+import { useDashboard } from '@/contexts/DashboardContext'
 
 import { YearlyBalanceChart } from '@/components/dashboard/YearlyBalanceChart'
 import { TopCategories } from '@/components/dashboard/TopCategories'
-import { CreditCards } from '../components/dashboard/CreditCards'
+import { CreditCards } from '@/components/dashboard/CreditCards'
 import { IncomeExpenseProgress } from '@/components/dashboard/IncomeExpenseProgress'
-import { DashboardSkeleton } from '../components/dashboard/DashboardSkeleton'
+import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton'
 
 export function Dashboard() {
    const {

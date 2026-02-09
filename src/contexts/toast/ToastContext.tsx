@@ -1,0 +1,72 @@
+import React, { createContext, useContext, useState, useCallback } from 'react';
+import ToastContainer from '@/contexts/toast/ToastContainer';
+
+interface Toast {
+   id: string;
+   message: string;
+   type: 'success' | 'error' | 'info' | 'warning';
+   duration?: number;
+}
+
+interface ToastContextType {
+   toasts: Toast[];
+   add: (message: string, type: Toast['type'], duration?: number) => void;
+   remove: (id: string) => void;
+   clear: () => void;
+}
+
+const ToastContext = createContext<ToastContextType | undefined>(undefined);
+
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+   const [toasts, setToasts] = useState<Toast[]>([]);
+
+   const add = useCallback((
+      message: string,
+      type: Toast['type'],
+      duration: number = 3000
+   ) => {
+      const id = Math.random().toString(36).substr(2, 9);
+      const newToast: Toast = { id, message, type, duration };
+
+      setToasts(prev => [...prev, newToast]);
+
+      if (duration > 0) {
+         setTimeout(() => {
+            remove(id);
+         }, duration);
+      }
+   }, []);
+
+   const remove = useCallback((id: string) => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+   }, []);
+
+   const clear = useCallback(() => {
+      setToasts([]);
+   }, []);
+
+   return (
+      <ToastContext.Provider value={{ toasts, add, remove, clear }}>
+         {children}
+         <ToastContainer toasts={toasts} onRemove={remove} />
+      </ToastContext.Provider>
+   );
+}
+
+export function useToast() {
+   const context = useContext(ToastContext);
+
+   if (!context) {
+      throw new Error('useToast deve ser usado dentro de ToastProvider');
+   }
+
+   return {
+      success: (msg: string, duration?: number) => context.add(msg, 'success', duration),
+      error: (msg: string, duration?: number) => context.add(msg, 'error', duration),
+      info: (msg: string, duration?: number) => context.add(msg, 'info', duration),
+      warning: (msg: string, duration?: number) => context.add(msg, 'warning', duration),
+      clear: () => context.clear(),
+   };
+}
+
+export type { Toast };

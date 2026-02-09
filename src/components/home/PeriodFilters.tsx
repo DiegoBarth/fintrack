@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react"
-import { Button } from "../ui/Button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { Button } from "@/components/ui/Button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { usePeriod } from "@/contexts/PeriodContext"
 
 interface PeriodFiltersProps {

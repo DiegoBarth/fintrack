@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { updateCommitment, deleteCommitment } from '@/api/commitments'
+import { updateCommitment, deleteCommitment } from '@/api/endpoints/commitments'
 import { usePeriod } from '@/contexts/PeriodContext'
-import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '../ui/ModalBase'
 import type { Commitment } from '@/types/Commitment'
+import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
+import { BaseModal } from '@/components/ui/ModalBase'
 
 interface EditCommitmentModalProps {
    isOpen: boolean

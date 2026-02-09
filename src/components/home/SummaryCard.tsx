@@ -1,4 +1,4 @@
-import { numberToCurrency } from "../../utils/formatters"
+import { numberToCurrency } from "@/utils/formatters"
 
 interface SummaryCardProps {
    title: string

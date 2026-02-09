@@ -1,8 +1,8 @@
 import { useAlerts } from "@/contexts/UseAlerts";
 import type { Commitment } from "@/types/Commitment";
 import { useState } from "react";
-import { CommitmentModal } from "./CommitmentsModal";
-import { EditCommitmentModal } from "../commitments/EditCommitmentModal";
+import { EditCommitmentModal } from "@/components/commitments/EditCommitmentModal";
+import { CommitmentModal } from "@/components/home/CommitmentsModal";
 
 interface AlertCardProps {
    title: string;

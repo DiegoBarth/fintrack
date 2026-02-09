@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { updateExpense, deleteExpense } from '@/api/expenses'
+import { updateExpense, deleteExpense } from '@/api/endpoints/expenses'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '../ui/ModalBase'
+import { BaseModal } from '@/components/ui/ModalBase'
 import type { Expense } from '@/types/Expense'
 
 interface EditExpenseModalProps {

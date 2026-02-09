@@ -1,11 +1,11 @@
-import { apiGet } from './client';
-import type { FullSummary } from '../types/FullSummary';
-import type { Commitment } from '../types/Commitment';
-import type { Income } from '../types/Income';
-import type { Expense } from '../types/Expense';
-import { commitmentsCache } from '../cache/CommitmentsCache';
-import { incomesCache } from '../cache/IncomesCache';
-import { expensesCache } from '../cache/ExpensesCache';
+import { commitmentsCache } from '@/cache/CommitmentsCache';
+import { expensesCache } from '@/cache/ExpensesCache';
+import { incomesCache } from '@/cache/IncomesCache';
+import type { Commitment } from '@/types/Commitment';
+import type { Expense } from '@/types/Expense';
+import type { Income } from '@/types/Income';
+import type { FullSummary } from '@/types/FullSummary';
+import { apiGet } from '@/api/client';
 
 export interface AppData {
    commitments: Commitment[];

@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { fetchFullSummary } from '../api/home';
-import type { FullSummary } from '../types/FullSummary';
+import { fetchFullSummary } from '@/api/home';
+import type { FullSummary } from '@/types/FullSummary';
 
 interface PeriodContextType {
    month: string;

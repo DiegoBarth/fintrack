@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { listExpenses } from '@/api/expenses'
+import { listExpenses } from '@/api/endpoints/expenses'
 import type { Expense } from '@/types/Expense'
 import { ExpenseList } from '@/components/expenses/ExpenseList'
 import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'

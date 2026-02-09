@@ -1,9 +1,5 @@
-import { apiGet } from './client';
-import type {
-   CategorySummary,
-   MonthlyBalanceHistory,
-   CreditCardSummary
-} from '../types/Dashboard';
+import { apiGet } from '@/api/client';
+import type { CategorySummary, MonthlyBalanceHistory, CreditCardSummary } from '@/types/Dashboard';
 
 export function listMonthlyBalance(year: string) {
    return apiGet<MonthlyBalanceHistory[]>({

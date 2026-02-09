@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { createCommitment, createCard } from '@/api/commitments'
+import { createCommitment, createCard } from '@/api/endpoints/commitments'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '../ui/ModalBase'
-import { CustomSelect } from '../ui/SelectCustomizado'
+import { BaseModal } from '@/components/ui/ModalBase'
+import { CustomSelect } from '@/components//ui/SelectCustomizado'
 
 interface AddCommitmentModalProps {
    isOpen: boolean

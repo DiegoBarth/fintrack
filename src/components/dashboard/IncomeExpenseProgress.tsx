@@ -1,5 +1,5 @@
-import type { FullSummary } from '../../types/FullSummary'
-import { numberToCurrency } from '../../utils/formatters'
+import type { FullSummary } from '@/types/FullSummary'
+import { numberToCurrency } from '@/utils/formatters'
 
 interface Props {
    summary: FullSummary | null

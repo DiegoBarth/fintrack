@@ -1,6 +1,6 @@
 import { Plus, Minus, Calendar, Wallet, TrendingUp } from "lucide-react"
-import { SummaryCard } from "./SummaryCard"
-import { usePeriod } from '../../contexts/PeriodContext';
+import { usePeriod } from '@/contexts/PeriodContext';
+import { SummaryCard } from "@/components/home/SummaryCard"
 
 /**
  * Container component that calculates and displays the financial summary for the selected month.

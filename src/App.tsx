@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { GoogleLogin, googleLogout } from "@react-oauth/google";
-import { Home } from "./pages/Home";
-import { Expenses } from "./pages/Expenses";
-import { Commitments } from "./pages/Commitments";
-import { Incomes } from "./pages/Incomes";
-import { Dashboard } from "./pages/Dashboard";
-import { verifyEmailAuthorization } from "./api/home";
+import { Home } from "@/pages/Home";
+import { Expenses } from "@/pages/Expenses";
+import { Commitments } from "@/pages/Commitments";
+import { Incomes } from "@/pages/Incomes";
+import { Dashboard } from "@/pages/Dashboard";
+import { verifyEmailAuthorization } from "@/api/home";
 
 const AUTH_TIMEOUT = 1000 * 60 * 60 * 24 * 7; // 7 days
 

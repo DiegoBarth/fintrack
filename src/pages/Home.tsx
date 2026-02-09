@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { PeriodFilters } from "../components/home/PeriodFilters";
-import { Alerts } from "../components/home/Alerts";
-import { MonthlySummary } from "../components/home/MonthlySummary";
-import { QuickActions } from '../components/home/QuickActions';
-import { usePeriod } from '../contexts/PeriodContext';
-import { fetchFullSummary } from '../api/home';
+import { PeriodFilters } from "@/components/home/PeriodFilters";
+import { Alerts } from "@/components/home/Alerts";
+import { MonthlySummary } from "@/components/home/MonthlySummary";
+import { QuickActions } from '@/components/home/QuickActions';
+import { usePeriod } from '@/contexts/PeriodContext';
+import { fetchFullSummary } from '@/api/home';
 
 interface Props {
    onLogout: () => void

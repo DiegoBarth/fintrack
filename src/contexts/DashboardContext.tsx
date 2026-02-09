@@ -1,16 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import {
-   listMonthlyBalance,
-   listTopCategories,
-   listCardsSummary
-} from '../api/dashboard';
-import { usePeriod } from './PeriodContext';
-import type {
-   MonthlyBalanceHistory,
-   CategorySummary,
-   CreditCardSummary
-} from '../types/Dashboard';
-import type { FullSummary } from '../types/FullSummary';
+import { listMonthlyBalance, listTopCategories, listCardsSummary } from '@/api/endpoints/dashboard';
+import type { MonthlyBalanceHistory, CategorySummary, CreditCardSummary } from '@/types/Dashboard';
+import type { FullSummary } from '@/types/FullSummary';
+import { usePeriod } from '@/contexts/PeriodContext';
 
 interface DashboardContextType {
    yearlyBalance: MonthlyBalanceHistory[];

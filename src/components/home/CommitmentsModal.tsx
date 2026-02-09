@@ -1,6 +1,6 @@
-import type { Commitment } from '@/types/Commitment'
 import { useState, useEffect } from 'react'
 import { X, Calendar, CheckCircle } from 'lucide-react'
+import type { Commitment } from '@/types/Commitment'
 
 interface CommitmentModalProps {
    isOpen: boolean

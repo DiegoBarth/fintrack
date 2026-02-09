@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { updateIncome, deleteIncome } from '@/api/incomes'
+import { updateIncome, deleteIncome } from '@/api/endpoints/incomes'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { numberToCurrency, currencyToNumber, dateBRToISO, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '../ui/ModalBase'
+import { BaseModal } from '@/components/ui/ModalBase'
 import type { Income } from '@/types/Income'
 
 interface EditIncomeModalProps {

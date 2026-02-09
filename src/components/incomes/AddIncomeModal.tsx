@@ -1,8 +1,7 @@
-import { useState } from 'react'
-import { createIncome } from '@/api/incomes'
+import { useState, useEffect } from 'react'
+import { createIncome } from '@/api/endpoints/incomes'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '../ui/ModalBase'
-import { useEffect } from 'react'
+import { BaseModal } from '@/components/ui/ModalBase'
 
 interface AddIncomeModalProps {
    isOpen: boolean

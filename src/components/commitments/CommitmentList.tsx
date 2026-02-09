@@ -1,5 +1,5 @@
 import type { Commitment } from "@/types/Commitment";
-import { formatCurrency, numberToCurrency } from "@/utils/formatters"; // Exemplo de nome traduzido
+import { numberToCurrency } from "@/utils/formatters";
 
 interface Props {
    commitments: Commitment[];

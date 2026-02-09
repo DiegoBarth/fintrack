@@ -1,9 +1,8 @@
-import { useState } from 'react'
-import { createExpense } from '@/api/expenses'
+import { useState, useEffect } from 'react'
+import { createExpense } from '@/api/endpoints/expenses'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '../ui/ModalBase'
-import { CustomSelect } from '../ui/SelectCustomizado'
-import { useEffect } from 'react'
+import { BaseModal } from '@/components/ui/ModalBase'
+import { CustomSelect } from '@/components/ui/SelectCustomizado'
 
 interface AddExpenseModalProps {
    isOpen: boolean

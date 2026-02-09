@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import type { CreditCardSummary } from '../../types/Dashboard'
-import { numberToCurrency } from '../../utils/formatters'
+import type { CreditCardSummary } from '@/types/Dashboard'
+import { numberToCurrency } from '@/utils/formatters'
 
 interface Props {
    cards: CreditCardSummary[]

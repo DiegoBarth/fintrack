@@ -1,6 +1,6 @@
-import { apiGet, apiPost } from './client';
-import type { Expense } from '../types/Expense';
-import { expensesCache } from '../cache/ExpensesCache';
+import { apiGet, apiPost } from '@/api/client';
+import { expensesCache } from '@/cache/ExpensesCache';
+import type { Expense } from '@/types/Expense';
 
 export async function createExpense(payload: {
    date: string;

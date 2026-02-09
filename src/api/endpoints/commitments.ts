@@ -1,7 +1,7 @@
-import { apiGet, apiPost } from './client';
-import type { Commitment } from '../types/Commitment';
-import { commitmentsCache } from '../cache/CommitmentsCache';
-import { formatDateBR } from '../utils/formatters';
+import { apiGet, apiPost } from '@/api/client';
+import { commitmentsCache } from '@/cache/CommitmentsCache';
+import type { Commitment } from '@/types/Commitment';
+import { formatDateBR } from '@/utils/formatters';
 
 export async function listCommitments(month: string, year: string) {
    const cached = commitmentsCache.get(month, year);

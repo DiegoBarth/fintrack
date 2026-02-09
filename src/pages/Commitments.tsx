@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { listCommitments } from '@/api/commitments'
+import { listCommitments } from '@/api/endpoints/commitments'
 import type { Commitment } from '@/types/Commitment'
 import { CommitmentList } from '@/components/commitments/CommitmentList'
 import { AddCommitmentModal } from '@/components/commitments/AddCommitmentModal'

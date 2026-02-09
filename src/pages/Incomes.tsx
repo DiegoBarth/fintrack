@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { listIncomes } from '@/api/incomes'
+import { listIncomes } from '@/api/endpoints/incomes'
 import type { Income } from '@/types/Income'
 import { IncomeList } from '@/components/incomes/IncomeList'
 import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'

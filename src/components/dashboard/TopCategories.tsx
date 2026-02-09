@@ -1,5 +1,5 @@
-import type { CategorySummary } from '../../types/Dashboard'
-import { numberToCurrency } from '../../utils/formatters'
+import type { CategorySummary } from '@/types/Dashboard'
+import { numberToCurrency } from '@/utils/formatters'
 
 interface TopCategoriesProps {
    categories: CategorySummary[]

@@ -1,13 +1,5 @@
-import {
-   AreaChart,
-   Area,
-   XAxis,
-   YAxis,
-   Tooltip,
-   ResponsiveContainer,
-   CartesianGrid,
-} from 'recharts'
-import type { MonthlyBalanceHistory } from '../../types/Dashboard'
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
+import type { MonthlyBalanceHistory } from '@/types/Dashboard'
 
 interface YearlyBalanceProps {
    data: MonthlyBalanceHistory[]

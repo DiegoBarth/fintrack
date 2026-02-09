@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createIncome } from '@/api/incomes'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '../ui/ModalBase'
+import { useEffect } from 'react'
 
 interface AddIncomeModalProps {
    isOpen: boolean
@@ -19,6 +20,16 @@ export function AddIncomeModal({ isOpen, onClose, onSave }: AddIncomeModalProps)
    const [receivedDate, setReceivedDate] = useState('')
    const [amount, setAmount] = useState('')
    const [isLoading, setIsLoading] = useState(false)
+
+   useEffect(() => {
+      if (!isOpen) {
+         setDescription('')
+         setExpectedDate('')
+         setReceivedDate('')
+         setAmount('')
+         setIsLoading(false)
+      }
+   }, [isOpen])
 
    /**
     * Validates required fields and calls the API to persist the new income.

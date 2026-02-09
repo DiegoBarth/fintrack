@@ -3,6 +3,7 @@ import { createExpense } from '@/api/expenses'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '../ui/ModalBase'
 import { CustomSelect } from '../ui/SelectCustomizado'
+import { useEffect } from 'react'
 
 interface AddExpenseModalProps {
    isOpen: boolean
@@ -27,6 +28,16 @@ export function AddExpenseModal({ isOpen, onClose, onSave }: AddExpenseModalProp
    const [amount, setAmount] = useState('')
    const [category, setCategory] = useState('');
    const [isLoading, setIsLoading] = useState(false)
+
+   useEffect(() => {
+      if (!isOpen) {
+         setDescription('')
+         setDate('')
+         setCategory('')
+         setAmount('')
+         setIsLoading(false)
+      }
+   }, [isOpen])
 
    /**
     * Validates and submits the new expense to the API.

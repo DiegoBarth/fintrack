@@ -1,13 +1,7 @@
-"use client"
-
 import { ChevronDown } from "lucide-react"
 import { Button } from "../ui/Button"
-import {
-   DropdownMenu,
-   DropdownMenuContent,
-   DropdownMenuItem,
-   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { usePeriod } from "@/contexts/PeriodContext"
 
 interface PeriodFiltersProps {
    month: string
@@ -36,8 +30,6 @@ const months = [
    { value: "12", label: "Dezembro" },
 ]
 
-const years = [2020, 2021, 2022, 2023, 2024, 2025, 2026]
-
 /**
  * Component to toggle between different months and years.
  * Uses Radix UI Dropdown Menu for selection.
@@ -48,6 +40,12 @@ export function PeriodFilters({
    onMonthChange,
    onYearChange,
 }: PeriodFiltersProps) {
+   const { summary } = usePeriod();
+
+   const years = summary?.availableYears
+      ?.slice()
+      .sort((a, b) => a - b) ?? [];
+
    const currentMonthLabel = months.find((m) => m.value === month)?.label || "Ano Inteiro"
 
    return (

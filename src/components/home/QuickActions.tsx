@@ -11,24 +11,24 @@ interface QuickAction {
 }
 
 /**
- * Navigation component that provides fast access to main application modules.
- * Used primarily on the Home dashboard for better mobile/desktop UX.
+ * Component providing quick navigation buttons for the main features of the app.
+ * Optimized for touch targets and visual clarity on the Home screen.
  */
 export function QuickActions() {
    const navigate = useNavigate();
 
    const actions: QuickAction[] = [
       {
-         id: "new-expense",
-         label: "Novo Gasto",
-         icon: <Minus className="h-5 w-5" />,
-         onClick: () => navigate('/expenses'),
-      },
-      {
          id: "new-income",
-         label: "Nova Receita",
+         label: "Receitas",
          icon: <Plus className="h-5 w-5" />,
          onClick: () => navigate('/incomes'),
+      },
+      {
+         id: "new-expense",
+         label: "Gastos",
+         icon: <Minus className="h-5 w-5" />,
+         onClick: () => navigate('/expenses'),
       },
       {
          id: "commitments",

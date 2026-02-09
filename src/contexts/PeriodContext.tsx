@@ -39,7 +39,8 @@ const initialSummary: FullSummary = {
    totalPaidCommitments: 0,
    totalReceivedInMonth: 0,
    totalPaidExpensesInMonth: 0,
-   totalPaidCommitmentsInMonth: 0
+   totalPaidCommitmentsInMonth: 0,
+   availableYears: []
 };
 
 export const PeriodContext = createContext<PeriodContextType>({

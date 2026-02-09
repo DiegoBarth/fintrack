@@ -32,7 +32,7 @@ export function Home() {
          <div className="mx-auto max-w-lg px-4 py-6 md:max-w-2xl lg:max-w-4xl">
 
             {/* Control Header */}
-            <header className="mb-6">
+            <header className="mb-4">
                <h1 className="mb-4 text-2xl font-bold text-foreground">Início</h1>
                <PeriodFilters
                   month={month}
@@ -43,7 +43,7 @@ export function Home() {
             </header>
 
             {/* Critical Alerts (Today/Week) */}
-            <section className="mb-6">
+            <section className="mb-4">
                <Alerts />
             </section>
 
@@ -53,7 +53,7 @@ export function Home() {
             </section>
 
             {/* Quick Access to Forms/Modules */}
-            <section>
+            <section className="sticky bottom-0 bg-white">
                <QuickActions />
             </section>
          </div>

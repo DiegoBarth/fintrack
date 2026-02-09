@@ -10,4 +10,6 @@ export interface FullSummary {
    totalReceivedInMonth: number;
    totalPaidExpensesInMonth: number;
    totalPaidCommitmentsInMonth: number;
+
+   availableYears: Array<number>
 }

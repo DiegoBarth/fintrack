@@ -1,4 +1,3 @@
-import { ChevronRight } from "lucide-react"
 import { numberToCurrency } from "../../utils/formatters"
 
 interface SummaryCardProps {
@@ -47,8 +46,6 @@ export function SummaryCard({
                )}
             </div>
          </div>
-
-         <ChevronRight className="h-5 w-5 text-muted-foreground" />
       </div>
    )
 }

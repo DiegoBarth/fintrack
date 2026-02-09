@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { incomesCache } from '@/cache/IncomesCache'
 import { ChevronLeft, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { SkeletonList } from '@/components/ui/SkeletonList'
 
 /**
  * Main page for Income management.
@@ -41,6 +42,14 @@ export function Incomes() {
    useEffect(() => {
       fetchIncomes()
    }, [fetchIncomes])
+
+   if (isLoading) {
+      return (
+         <div className="mx-auto max-w-5xl p-4">
+            <SkeletonList />
+         </div>
+      )
+   }
 
    /**
     * Updates local state with cached data after a mutation (add/edit/delete).

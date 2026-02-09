@@ -74,7 +74,7 @@ export function IncomeList({ incomes, onSelect }: IncomeListProps) {
                      className={`
                         flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer
                         hover:shadow-md
-                        ${isReceived ? 'bg-green-50/20 border-green-100' : 'bg-white border-gray-100'}
+                        ${isReceived ? 'border-green-500/40 bg-green-50' : ''}
                      `}
                   >
                      <div className={`h-2 w-2 rounded-full shrink-0 ${isReceived ? 'bg-green-500' : 'bg-blue-400'}`} />

@@ -8,6 +8,7 @@ import { usePeriod } from '@/contexts/PeriodContext'
 import { useNavigate } from 'react-router-dom'
 import { commitmentsCache } from '@/cache/CommitmentsCache'
 import { ChevronLeft, Plus } from 'lucide-react'
+import { SkeletonList } from '@/components/ui/SkeletonList'
 
 /**
  * Main Page for managing commitments (bills, fixed costs, card installments).
@@ -48,6 +49,14 @@ export function Commitments() {
    useEffect(() => {
       fetchData()
    }, [month, year])
+
+   if (isLoading) {
+      return (
+         <div className="mx-auto max-w-5xl p-4">
+            <SkeletonList />
+         </div>
+      )
+   }
 
    return (
       <div className="p-4 sm:p-6 max-w-4xl mx-auto pb-24">

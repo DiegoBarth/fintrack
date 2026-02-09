@@ -1,61 +1,148 @@
-import type { CreditCardSummary } from '../../types/Dashboard';
-import { numberToCurrency } from '../../utils/formatters';
+import { useState } from 'react'
+import type { CreditCardSummary } from '../../types/Dashboard'
+import { numberToCurrency } from '../../utils/formatters'
 
-interface CreditCardsProps {
-   cards: CreditCardSummary[];
-   loading: boolean;
+interface Props {
+   cards: CreditCardSummary[]
+   loading: boolean
 }
 
-export function CreditCards({ cards, loading }: CreditCardsProps) {
-   if (loading) return <p>Carregando cartões...</p>;
+export function CreditCards({ cards, loading }: Props) {
+   const [active, setActive] = useState(0)
+   const [startX, setStartX] = useState<number | null>(null)
+   const [isDragging, setIsDragging] = useState(false)
+
+   const minSwipeDistance = 50
+
+   if (loading || !cards.length) return null
+
+   function getStyle(index: number) {
+      const pos = index - active
+      const centerBase = 'translateX(-50%)'
+
+      if (pos === 0) {
+         return {
+            transform: `${centerBase} scale(1)`,
+            opacity: 1,
+            zIndex: 30,
+         }
+      }
+
+      if (pos === -1 || pos === 1) {
+         return {
+            transform: `translateX(${pos * 240}px) ${centerBase} translateY(-25px) scale(0.75)`,
+            opacity: 0.5,
+            zIndex: 20,
+            filter: 'brightness(0.6)'
+         }
+      }
+
+      return {
+         transform: `${centerBase} scale(0.5)`,
+         opacity: 0,
+         pointerEvents: 'none' as const,
+         zIndex: 10
+      }
+   }
+
+   const handleStart = (clientX: number) => {
+      setStartX(clientX)
+      setIsDragging(true)
+   }
+
+   const handleMove = (clientX: number) => {
+      if (!isDragging || startX === null) return
+
+      const diff = startX - clientX
+
+      if (Math.abs(diff) > minSwipeDistance) {
+         if (diff > 0 && active < cards.length - 1) {
+            setActive(prev => prev + 1)
+            handleEnd()
+         } else if (diff < 0 && active > 0) {
+            setActive(prev => prev - 1)
+            handleEnd()
+         }
+      }
+   }
+
+   const handleEnd = () => {
+      setIsDragging(false)
+      setStartX(null)
+   }
 
    return (
-      <div>
-         <h2>Cartões</h2>
-         <div style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 8 }}>
-            {cards.map(card => (
-               <div key={card.cardName} style={{
-                  minWidth: 215,
-                  borderRadius: 12,
-                  padding: 16,
-                  color: '#fff',
-                  background: '#222',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-               }}>
-                  <img src={`${import.meta.env.BASE_URL}cartoes/${card.image}.jpg`} alt={card.cardName} style={{ width: '100%', borderRadius: 8 }} />
-                  <h3 style={{ margin: '0 0 8px 0' }}>{card.cardName}</h3>
+      <section className="relative mt-2 h-[380px] sm:h-[420px] overflow-hidden select-none">
+         <h2 className="mb-2 text-lg font-semibold px-4 text-zinc-800">Cartões</h2>
 
-                  <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>
-                     <p style={{ margin: '4px 0' }}>
-                        Fatura: <strong>{numberToCurrency(card.statementTotal)}</strong>
-                     </p>
-                     <p style={{ margin: '4px 0' }}>
-                        Limite disponível: {numberToCurrency(card.availableLimit)}
-                     </p>
-                     <p style={{ margin: '4px 0', fontSize: '0.8rem', opacity: 0.7 }}>
-                        Limite total: {numberToCurrency(card.totalLimit)}
-                     </p>
-                  </div>
+         <div
+            className="relative mx-auto h-full w-full max-w-4xl touch-pan-y"
+            onTouchStart={(e) => handleStart(e.targetTouches[0].clientX)}
+            onTouchMove={(e) => handleMove(e.targetTouches[0].clientX)}
+            onTouchEnd={handleEnd}
 
-                  <div style={{
-                     marginTop: 12,
-                     height: 6,
-                     background: '#444',
-                     borderRadius: 3,
-                     overflow: 'hidden'
-                  }}>
-                     <div style={{
-                        width: `${card.usedPercentage}%`,
-                        height: '100%',
-                        background: card.usedPercentage > 90 ? '#e74c3c' : '#2ecc71'
-                     }} />
+            onMouseDown={(e) => handleStart(e.clientX)}
+            onMouseMove={(e) => handleMove(e.clientX)}
+            onMouseUp={handleEnd}
+            onMouseLeave={handleEnd}
+         >
+            {cards.map((c, index) => (
+               <div
+                  key={c.cardName}
+                  className={`
+                     absolute left-1/2 
+                     top-6 sm:top-10
+                     w-[75%] sm:w-80
+                     rounded-xl bg-zinc-900 p-4 text-white
+                     shadow-2xl
+                     transition-all duration-500 ease-out
+                     ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
+                  `}
+                  style={getStyle(index)}
+                  onClick={() => !isDragging && setActive(index)}
+               >
+                  <img
+                     src={`${import.meta.env.BASE_URL}cards/${c.image}.jpg`}
+                     alt={c.cardName}
+                     className="mb-3 h-44 w-full rounded-lg object-cover pointer-events-none"
+                  />
+
+                  <h3 className="font-semibold text-lg">{c.cardName}</h3>
+
+                  <div className="mt-2 space-y-1 text-xs text-zinc-300 sm:text-sm">
+                     <div className="flex justify-between border-b border-zinc-800/50 pb-1">
+                        <span>Fatura:</span>
+                        <span className="text-white font-medium">
+                           {numberToCurrency(c.statementTotal)}
+                        </span>
+                     </div>
+                     <div className="flex justify-between pt-1">
+                        <span>Disponível:</span>
+                        <span className="text-emerald-400 font-medium">
+                           {numberToCurrency(c.availableLimit)}
+                        </span>
+                     </div>
                   </div>
                </div>
             ))}
          </div>
-      </div>
-   );
+
+         <div className="hidden lg:block">
+            <button
+               onClick={() => setActive(a => Math.max(0, a - 1))}
+               disabled={active === 0}
+               className="absolute top-1/2 left-10 -translate-y-1/2 z-50 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white disabled:opacity-0 transition-all"
+            >
+               ←
+            </button>
+            <button
+               onClick={() => setActive(a => Math.min(cards.length - 1, a + 1))}
+               disabled={active === cards.length - 1}
+               className="absolute top-1/2 right-10 -translate-y-1/2 z-50 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white disabled:opacity-0 transition-all"
+            >
+               →
+            </button>
+         </div>
+      </section>
+   )
 }

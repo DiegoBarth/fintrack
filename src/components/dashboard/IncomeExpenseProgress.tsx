@@ -1,62 +1,78 @@
-import type { FullSummary } from '../../types/FullSummary';
-import { numberToCurrency } from '../../utils/formatters';
+import type { FullSummary } from '../../types/FullSummary'
+import { numberToCurrency } from '../../utils/formatters'
 
-interface ProgressProps {
-   summary: FullSummary | null;
-   loading: boolean;
+interface Props {
+   summary: FullSummary | null
+   loading: boolean
 }
 
-export function IncomeExpenseProgress({ summary, loading }: ProgressProps) {
-   if(!summary) return;
-   
-   if (loading) return <p>Carregando progresso...</p>;
+export function IncomeExpenseProgress({ summary, loading }: Props) {
+   if (loading || !summary) return null
 
+   // Percentage of received incomes
    const incomePercentage = summary.totalIncomes
-      ? (summary.totalReceivedAmount / summary.totalIncomes) * 100
-      : 0;
+      ? (summary.totalReceivedInMonth / summary.totalIncomes) * 100
+      : 0
 
-   const totalPlannedExpenses = summary.totalExpenses + summary.totalCommitments;
-   const totalPaidAmount = summary.totalPaidExpenses + summary.totalPaidCommitments;
+   // Total planned expenses (Fixed costs + Commitments)
+   const totalPlannedExpenses = summary.totalExpenses + summary.totalCommitments
 
+   // Total effectively paid (Fixed costs paid + Commitments paid)
+   const totalPaidAmount = summary.totalPaidExpensesInMonth + summary.totalPaidCommitmentsInMonth
+
+   // Percentage of paid expenses
    const expensePercentage = totalPlannedExpenses
       ? (totalPaidAmount / totalPlannedExpenses) * 100
-      : 0;
+      : 0
 
    return (
-      <div style={{ padding: '16px 0' }}>
-         <h2>Progresso Financeiro</h2>
+      <section className="rounded-xl border bg-card p-4">
+         <h2 className="mb-4 text-sm font-semibold text-muted-foreground">
+            Progresso do mês
+         </h2>
 
-         <div style={{ marginBottom: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-               <strong>Receitas Recebidas</strong>
-               <span>{numberToCurrency(summary.totalReceivedAmount)} / {numberToCurrency(summary.totalIncomes)}</span>
+         <div className="space-y-4">
+            {/* INCOMES */}
+            <div>
+               <div className="mb-1 flex justify-between text-sm">
+                  <span>Receitas</span>
+                  <span className="text-muted-foreground">
+                     {numberToCurrency(summary.totalReceivedInMonth)} /{' '}
+                     {numberToCurrency(summary.totalIncomes)}
+                  </span>
+               </div>
+               <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                     className="h-2 rounded-full bg-emerald-500 transition-all duration-500 ease-in-out"
+                     style={{ width: `${Math.min(incomePercentage, 100)}%` }}
+                  />
+               </div>
+               <p className="mt-1 text-[10px] text-muted-foreground text-right">
+                  {incomePercentage.toFixed(1)}% do esperado
+               </p>
             </div>
-            <div style={{ background: '#eee', height: 16, borderRadius: 8, overflow: 'hidden' }}>
-               <div style={{
-                  width: `${Math.min(incomePercentage, 100)}%`,
-                  height: '100%',
-                  background: '#2ecc71',
-                  transition: 'width 0.5s ease-in-out'
-               }} />
-            </div>
-            <small style={{ color: '#666' }}>{incomePercentage.toFixed(1)}% do esperado</small>
-         </div>
 
-         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-               <strong>Despesas Pagas (Gastos + Compromissos)</strong>
-               <span>{numberToCurrency(totalPaidAmount)} / {numberToCurrency(totalPlannedExpenses)}</span>
+            {/* EXPENSES */}
+            <div>
+               <div className="mb-1 flex justify-between text-sm">
+                  <span>Despesas</span>
+                  <span className="text-muted-foreground">
+                     {numberToCurrency(totalPaidAmount)} /{' '}
+                     {numberToCurrency(totalPlannedExpenses)}
+                  </span>
+               </div>
+               <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                     className={`h-2 rounded-full transition-all duration-500 ease-in-out ${expensePercentage > 90 ? 'bg-red-500' : 'bg-amber-500'
+                        }`}
+                     style={{ width: `${Math.min(expensePercentage, 100)}%` }}
+                  />
+               </div>
+               <p className="mt-1 text-[10px] text-muted-foreground text-right">
+                  {expensePercentage.toFixed(1)}% do limite planejado
+               </p>
             </div>
-            <div style={{ background: '#eee', height: 16, borderRadius: 8, overflow: 'hidden' }}>
-               <div style={{
-                  width: `${Math.min(expensePercentage, 100)}%`,
-                  height: '100%',
-                  background: expensePercentage > 90 ? '#e74c3c' : '#f1c40f',
-                  transition: 'width 0.5s ease-in-out'
-               }} />
-            </div>
-            <small style={{ color: '#666' }}>{expensePercentage.toFixed(1)}% do limite planejado</small>
          </div>
-      </div>
-   );
+      </section>
+   )
 }

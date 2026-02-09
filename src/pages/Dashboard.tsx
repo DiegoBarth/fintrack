@@ -1,31 +1,67 @@
-import { useDashboard } from '../contexts/DashboardContext';
-import { YearlyBalanceChart } from '../components/dashboard/YearlyBalanceChart';
-import { TopCategories } from '../components/dashboard/TopCategories';
-import { CreditCards } from '../components/dashboard/CreditCards';
-import { IncomeExpenseProgress } from '../components/dashboard/IncomeExpenseProgress';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
+import { useDashboard } from '../contexts/DashboardContext'
+
+import { YearlyBalanceChart } from '@/components/dashboard/YearlyBalanceChart'
+import { TopCategories } from '@/components/dashboard/TopCategories'
+import { CreditCards } from '../components/dashboard/CreditCards'
+import { IncomeExpenseProgress } from '@/components/dashboard/IncomeExpenseProgress'
+import { DashboardSkeleton } from '../components/dashboard/DashboardSkeleton'
 
 export function Dashboard() {
-   const { yearlyBalance, topCategories, cards, summary, loading } =
-      useDashboard();
+   const {
+      yearlyBalance,
+      topCategories,
+      cards,
+      summary,
+      loading,
+   } = useDashboard()
 
-   const navigate = useNavigate();
+   const navigate = useNavigate()
+
+   if (loading) {
+      return (
+         <div className="mx-auto max-w-5xl p-4">
+            <DashboardSkeleton />
+         </div>
+      )
+   }
 
    return (
-      <div style={{ padding: 16 }}>
+      <div className="mx-auto max-w-5xl space-y-6 p-4">
          <button
-            style={{ marginBottom: 16 }}
+            className="mb-4 px-3 py-1 rounded-md border hover:bg-gray-100 transition"
             onClick={() => navigate('/')}
          >
-            ← Voltar para Home
+            ← Voltar
          </button>
 
-         <h1>Dashboard</h1>
+         <h1 className="text-xl font-semibold">Dashboard</h1>
 
-         <YearlyBalanceChart data={yearlyBalance} loading={loading} />
-         <TopCategories categories={topCategories} loading={loading} />
-         <CreditCards cards={cards} loading={loading} />
-         <IncomeExpenseProgress summary={summary} loading={loading} />
+         {/* Progress is priority */}
+         <IncomeExpenseProgress
+            summary={summary}
+            loading={loading}
+         />
+
+         {/* Credit cards at the bottom */}
+         <CreditCards
+            cards={cards}
+            loading={loading}
+         />
+
+         {/* Main Grid */}
+         <div className="grid gap-6 md:grid-cols-2">
+            <YearlyBalanceChart
+               data={yearlyBalance}
+               loading={loading}
+            />
+
+            <TopCategories
+               categories={topCategories}
+               loading={loading}
+            />
+         </div>
+
       </div>
-   );
+   )
 }

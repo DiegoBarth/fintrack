@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom'
 import { expensesCache } from '@/cache/ExpensesCache'
 import { ChevronLeft, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { SkeletonList } from '@/components/ui/SkeletonList'
 
 /**
  * Main page for Expense management.
@@ -37,6 +38,14 @@ export function Expenses() {
          setIsLoading(false)
       }
    }, [month, year])
+
+   if (isLoading) {
+      return (
+         <div className="mx-auto max-w-5xl p-4">
+            <SkeletonList />
+         </div>
+      )
+   }
 
    useEffect(() => {
       fetchExpenses()

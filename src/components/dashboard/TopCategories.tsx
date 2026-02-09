@@ -1,59 +1,43 @@
-import type { CategorySummary } from '../../types/Dashboard';
-import { numberToCurrency } from '../../utils/formatters';
+import type { CategorySummary } from '../../types/Dashboard'
+import { numberToCurrency } from '../../utils/formatters'
 
 interface TopCategoriesProps {
-   categories: CategorySummary[];
-   loading: boolean;
+   categories: CategorySummary[]
+   loading: boolean
 }
 
 export function TopCategories({ categories, loading }: TopCategoriesProps) {
-   if (loading) return <p>Carregando categorias...</p>;
+   if (loading) return <p className="text-sm text-muted-foreground">Carregando categorias...</p>
 
-   const maxTotal = categories.length > 0 ? categories[0].total : 0;
+   if (!categories.length) return null
+
+   const maxTotal = categories[0].total
 
    return (
-      <div style={{ marginBottom: 32 }}>
-         <h2>Top 10 categorias</h2>
-         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {categories.map((item, index) => {
-               const percentage = maxTotal ? (item.total / maxTotal) * 100 : 0;
+      <section className="rounded-xl border bg-card p-4">
+         <h2 className="mb-4 text-sm font-semibold text-muted-foreground">
+            Top categorias
+         </h2>
 
-               return (
-                  <div key={item.category} style={{ display: 'flex', alignItems: 'center' }}>
-                     <span style={{
-                        width: 140,
-                        fontSize: '0.9rem',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                     }}>
-                        {item.category}
-                     </span>
-
-                     <div style={{
-                        flex: 1,
-                        height: 12,
-                        background: '#f0f0f0',
-                        borderRadius: 6,
-                        margin: '0 12px',
-                        overflow: 'hidden'
-                     }}>
-                        <div style={{
-                           width: `${percentage}%`,
-                           height: '100%',
-                           background: `rgba(231, 76, 60, ${Math.max(0.4, 1 - index * 0.08)})`,
-                           borderRadius: 6,
-                           transition: 'width 0.8s ease-out'
-                        }} />
-                     </div>
-
-                     <span style={{ width: 100, textAlign: 'right', fontWeight: 'bold', fontSize: '0.9rem' }}>
-                        {numberToCurrency(item.total)}
+         <ul className="space-y-3">
+            {categories.map(c => (
+               <li key={c.category}>
+                  <div className="mb-1 flex justify-between text-sm">
+                     <span>{c.category}</span>
+                     <span className="text-muted-foreground">
+                        {numberToCurrency(c.total)}
                      </span>
                   </div>
-               );
-            })}
-         </div>
-      </div>
-   );
+
+                  <div className="h-2 w-full rounded-full bg-muted">
+                     <div
+                        className="h-2 rounded-full bg-red-500"
+                        style={{ width: `${(c.total / maxTotal) * 100}%` }}
+                     />
+                  </div>
+               </li>
+            ))}
+         </ul>
+      </section>
+   )
 }

@@ -13,6 +13,13 @@ export interface AppData {
    expenses: Expense[];
 }
 
+export function verifyEmailAuthorization(email: string) {
+   return apiGet({
+      acao: 'verifyEmailAuthorization',
+      email
+   });
+}
+
 export function fetchFullSummary(month: string, year: string) {
    return apiGet<FullSummary>({
       action: 'getFullSummary',

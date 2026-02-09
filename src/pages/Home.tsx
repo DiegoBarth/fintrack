@@ -6,11 +6,15 @@ import { QuickActions } from '../components/home/QuickActions';
 import { usePeriod } from '../contexts/PeriodContext';
 import { fetchFullSummary } from '../api/home';
 
+interface Props {
+   onLogout: () => void
+}
+
 /**
- * Main Dashboard Home Page.
+ * Main Home Page.
  * Orchestrates global filters, alerts, financial summaries, and quick action shortcuts.
  */
-export function Home() {
+export function Home({ onLogout }: Props) {
    const { month, setMonth, year, setYear } = usePeriod();
 
    /**
@@ -40,6 +44,12 @@ export function Home() {
                   onMonthChange={setMonth}
                   onYearChange={setYear}
                />
+
+               <button
+                  onClick={onLogout}
+                  className=" fixed top-7 right-4 text-sm text-gray-600 hover:text-red-800 border px-2 py-1 rounded-md transition-colors">
+                  Logout
+               </button>
             </header>
 
             {/* Critical Alerts (Today/Week) */}

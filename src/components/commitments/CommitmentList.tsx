@@ -47,7 +47,10 @@ export function CommitmentList({ commitments, onSelect }: CommitmentListProps) {
                         <div className="mb-2 text-[10px] font-medium text-muted-foreground flex items-center gap-1.5">
                            <span className="bg-muted px-1.5 py-0.5 rounded uppercase">{item.card}</span>
                            <span>•</span>
-                           <span>Parcela {item.installment}/{item.totalInstallments}</span>
+                           {item.card}
+                           {(item.totalInstallments ?? 1) > 1 && (
+                              <> • Parcela {item.installment}/{item.totalInstallments}</>
+                           )}
                         </div>
                      )}
 

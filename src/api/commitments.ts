@@ -21,7 +21,7 @@ export async function listCommitments(month: string, year: string) {
 export async function createCommitment(payload: {
    description: string;
    category: string;
-   type: 'fixed' | 'variable';
+   type: 'Fixed' | 'Variable';
    amount: number;
    dueDate: string;
    months?: number;

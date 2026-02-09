@@ -28,7 +28,7 @@ export function useAlerts() {
 
       const pendingCommitments = commitmentsCache
          .getAll()
-         .filter(c => !c.paymentDate && !c.paid);
+         .filter(c => !c.paymentDate);
 
       const dueToday = pendingCommitments.filter(c => {
          const [d, m, y] = c.dueDate.split('/').map(Number);

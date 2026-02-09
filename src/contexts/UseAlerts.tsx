@@ -1,8 +1,11 @@
-import { commitmentsCache } from '../cache/CommitmentsCache';
+import { commitmentsCache } from "@/cache/CommitmentsCache";
 import { useMemo, useState, useEffect } from 'react';
 
-function resetTime(date: Date) {
-   const copy = new Date(date);
+/**
+ * Resets the time to midnight for accurate date comparison.
+ */
+function resetTime(d: Date) {
+   const copy = new Date(d);
    copy.setHours(0, 0, 0, 0);
    return copy;
 }
@@ -11,40 +14,76 @@ export function useAlerts() {
    const [tick, setTick] = useState(0);
 
    useEffect(() => {
-      const originalAdd = commitmentsCache.add;
+      // Monkey-patching the cache to trigger re-renders on changes
+      const oldAdd = commitmentsCache.add;
+      const oldUpdate = commitmentsCache.update;
+      const oldRemove = commitmentsCache.remove;
+
+      const bump = () => setTick(t => t + 1);
 
       commitmentsCache.add = (...args) => {
-         originalAdd(...args);
-         setTick(t => t + 1);
+         oldAdd(...args);
+         bump();
+      };
+
+      commitmentsCache.update = (...args) => {
+         oldUpdate(...args);
+         bump();
+      };
+
+      commitmentsCache.remove = (...args) => {
+         oldRemove(...args);
+         bump();
       };
 
       return () => {
-         commitmentsCache.add = originalAdd;
+         commitmentsCache.add = oldAdd;
+         commitmentsCache.update = oldUpdate;
+         commitmentsCache.remove = oldRemove;
       };
    }, []);
 
    return useMemo(() => {
       const today = resetTime(new Date());
 
-      const pendingCommitments = commitmentsCache
+      // Filter only unpaid commitments
+      const commitments = commitmentsCache
          .getAll()
          .filter(c => !c.paymentDate);
 
-      const dueToday = pendingCommitments.filter(c => {
+      // 1. Overdue Commitments (Vencidos)
+      const overdue = commitments.filter(c => {
          const [d, m, y] = c.dueDate.split('/').map(Number);
-         const dueDate = resetTime(new Date(y, m - 1, d));
-         return dueDate.getTime() === today.getTime();
+         const date = resetTime(new Date(y, m - 1, d));
+
+         const diffDays = Math.ceil(
+            (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+         );
+
+         return diffDays < 0;
       });
 
-      const dueThisWeek = pendingCommitments.filter(c => {
+      // 2. Due Today (Vencendo Hoje)
+      const dueToday = commitments.filter(c => {
          const [d, m, y] = c.dueDate.split('/').map(Number);
-         const dueDate = resetTime(new Date(y, m - 1, d));
-         const diffDays = (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+         const date = resetTime(new Date(y, m - 1, d));
+         return date.getTime() === today.getTime();
+      });
+
+      // 3. Due this week (Vencendo na semana - next 7 days)
+      const dueThisWeek = commitments.filter(c => {
+         const [d, m, y] = c.dueDate.split('/').map(Number);
+         const date = resetTime(new Date(y, m - 1, d));
+
+         const diffDays = Math.ceil(
+            (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+         );
 
          return diffDays > 0 && diffDays <= 7;
       });
 
       return {
+         overdue,
          today: dueToday,
          week: dueThisWeek
       };

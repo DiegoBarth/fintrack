@@ -1,52 +1,65 @@
-import type { Commitment } from '@/types/Commitment'
-import { numberToCurrency } from '@/utils/formatters'
+import type { Commitment } from "@/types/Commitment";
+import { formatCurrency, numberToCurrency } from "@/utils/formatters"; // Exemplo de nome traduzido
 
-interface CommitmentListProps {
-   commitments: Commitment[]
-   onSelect: (commitment: Commitment) => void
+interface Props {
+   commitments: Commitment[];
+   onSelect: (commitment: Commitment) => void;
 }
 
 /**
- * Renders a list of recurring or installment commitments.
- * Highlights payment status and installment progress for credit cards.
+ * Checks if a date is in the past compared to today.
  */
-export function CommitmentList({ commitments, onSelect }: CommitmentListProps) {
+function checkIfOverdue(dueDate: string) {
+   const [d, m, y] = dueDate.split('/').map(Number);
+
+   const expiration = new Date(y, m - 1, d);
+   expiration.setHours(0, 0, 0, 0);
+
+   const today = new Date();
+   today.setHours(0, 0, 0, 0);
+
+   return expiration < today;
+}
+
+export function CommitmentList({ commitments, onSelect }: Props) {
    if (commitments.length === 0) {
       return (
-         <p className="text-sm text-muted-foreground py-10 text-center border-2 border-dashed rounded-xl">
-            Nenhum compromisso para este período.
+         <p className="text-sm text-muted-foreground">
+            Nenhum compromisso cadastrado
          </p>
-      )
+      );
    }
 
    return (
       <>
          {/* MOBILE VIEW */}
-         <div className="space-y-3 sm:hidden">
-            {commitments.map((item) => {
-               const isPaid = !!item.paymentDate
-               const isCreditCard = item.type === 'Credit_card'
+         <div className="space-y-2 sm:hidden">
+            {commitments.map(item => {
+               const isPaid = !!item.paymentDate;
+               const isCreditCard = item.type === 'Credit_card';
+               const isOverdue = !isPaid && checkIfOverdue(item.dueDate);
 
                return (
                   <div
                      key={item.rowIndex}
                      onClick={() => onSelect(item)}
                      className={`
-                        rounded-xl border p-4 cursor-pointer transition-all active:scale-[0.98]
-                        ${isPaid ? 'border-green-500/30 bg-green-50/40' : 'bg-white shadow-sm'}
+                        rounded-lg border p-3 cursor-pointer transition
+                        hover:bg-muted
+                        ${isPaid && 'border-green-500/40 bg-green-50'}
+                        ${isOverdue && 'border-red-500/40 bg-red-50'}
                      `}
                   >
-                     <div className="flex justify-between items-start mb-1">
-                        <div className="font-semibold text-foreground">{item.description}</div>
-                        <div className="font-bold text-foreground">
+                     <div className="flex justify-between items-start">
+                        <div className="font-medium">{item.description}</div>
+
+                        <div className="font-semibold">
                            {numberToCurrency(item.amount)}
                         </div>
                      </div>
 
                      {isCreditCard && (
-                        <div className="mb-2 text-[10px] font-medium text-muted-foreground flex items-center gap-1.5">
-                           <span className="bg-muted px-1.5 py-0.5 rounded uppercase">{item.card}</span>
-                           <span>•</span>
+                        <div className="mt-1 text-xs text-muted-foreground">
                            {item.card}
                            {(item.totalInstallments ?? 1) > 1 && (
                               <> • Parcela {item.installment}/{item.totalInstallments}</>
@@ -54,72 +67,87 @@ export function CommitmentList({ commitments, onSelect }: CommitmentListProps) {
                         </div>
                      )}
 
-                     <div className="flex items-center justify-between text-[11px] mt-2 pt-2 border-t border-dashed">
-                        <span className="text-muted-foreground italic">
-                           {isPaid ? `Pago em ${item.paymentDate}` : `Vence em ${item.dueDate}`}
+                     <div className="mt-1 flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">
+                           {isPaid
+                              ? `Pago em ${item.paymentDate}`
+                              : `Vence em ${item.dueDate}`}
                         </span>
 
-                        <span className={`font-bold uppercase tracking-wider ${isPaid ? 'text-green-600' : 'text-orange-500'}`}>
-                           {isPaid ? 'Pago' : 'Em aberto'}
+                        <span
+                           className={`
+                              font-medium
+                              ${isPaid && 'text-green-600'}
+                              ${isOverdue && 'text-red-600'}
+                              ${!isPaid && !isOverdue && 'text-amber-500'}
+                           `}
+                        >
+                           {isPaid
+                              ? 'Pago'
+                              : isOverdue
+                                 ? 'Vencido'
+                                 : 'Em aberto'}
                         </span>
                      </div>
                   </div>
-               )
+               );
             })}
          </div>
 
          {/* DESKTOP VIEW */}
-         <div className="hidden sm:flex flex-col gap-2">
-            {commitments.map((item) => {
-               const isPaid = !!item.paymentDate
+         <div className="hidden sm:grid grid-cols-12 gap-3">
+            {commitments.map(item => {
+               const isPaid = !!item.paymentDate;
+               const isOverdue = !isPaid && checkIfOverdue(item.dueDate);
 
                return (
                   <div
                      key={item.rowIndex}
                      onClick={() => onSelect(item)}
                      className={`
-                        flex items-center gap-4 p-4 rounded-xl border transition-all cursor-pointer
+                        col-span-12 grid grid-cols-12 items-center p-4
+                        rounded-lg border cursor-pointer transition
                         hover:shadow-md
-                        ${isPaid ? 'bg-green-50/20 border-green-100' : 'bg-white border-gray-100'}
+                        ${isPaid && 'bg-green-50 border-green-200'}
+                        ${isOverdue && 'bg-red-50 border-red-200'}
                      `}
                   >
-                     <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-foreground truncate">{item.description}</div>
-                        <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-                           {item.type} {item.card && `• ${item.card}`}
-                        </div>
+                     <div className="col-span-4 font-medium">
+                        {item.description}
                      </div>
 
-                     <div className="flex shrink-0 gap-10 items-center text-sm">
-                        <div className="w-40">
-                           <span className="block text-[10px] uppercase font-bold text-muted-foreground opacity-60">
-                              Status do Pagamento
-                           </span>
-                           <span className={isPaid ? 'text-green-600 font-medium' : 'text-orange-500 font-medium'}>
-                              {isPaid ? `Pago em ${item.paymentDate}` : `Vence em ${item.dueDate}`}
-                           </span>
-                        </div>
+                     <div className="col-span-2 text-sm text-muted-foreground capitalize">
+                        {item.type}
+                     </div>
 
-                        {item.totalInstallments && (
-                           <div className="w-20">
-                              <span className="block text-[10px] uppercase font-bold text-muted-foreground opacity-60">
-                                 Parcela
-                              </span>
-                              <span className="text-foreground">{item.installment}/{item.totalInstallments}</span>
-                           </div>
-                        )}
+                     <div className="col-span-3 text-sm text-muted-foreground">
+                        {isPaid
+                           ? `Pago em ${item.paymentDate}`
+                           : `Vence em ${item.dueDate}`}
+                     </div>
 
-                        <div className="w-28 text-right">
-                           <span className="block text-[10px] uppercase font-bold text-muted-foreground opacity-60">
-                              Valor
-                           </span>
-                           <span className="font-bold text-base">{numberToCurrency(item.amount)}</span>
-                        </div>
+                     <div className="col-span-2 text-right font-semibold">
+                        {numberToCurrency(item.amount)}
+                     </div>
+
+                     <div
+                        className={`
+                           col-span-1 text-sm font-medium text-right
+                           ${isPaid && 'text-green-600'}
+                           ${isOverdue && 'text-red-600'}
+                           ${!isPaid && !isOverdue && 'text-orange-500'}
+                        `}
+                     >
+                        {isPaid
+                           ? 'Pago'
+                           : isOverdue
+                              ? 'Vencido'
+                              : 'Aberto'}
                      </div>
                   </div>
-               )
+               );
             })}
          </div>
       </>
-   )
+   );
 }

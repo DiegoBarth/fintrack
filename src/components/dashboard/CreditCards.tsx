@@ -4,17 +4,16 @@ import { numberToCurrency } from '../../utils/formatters'
 
 interface Props {
    cards: CreditCardSummary[]
-   loading: boolean
 }
 
-export function CreditCards({ cards, loading }: Props) {
+export function CreditCards({ cards }: Props) {
    const [active, setActive] = useState(0)
    const [startX, setStartX] = useState<number | null>(null)
    const [isDragging, setIsDragging] = useState(false)
 
    const minSwipeDistance = 50
 
-   if (loading || !cards.length) return null
+   if (!cards.length) return null
 
    function getStyle(index: number) {
       const pos = index - active

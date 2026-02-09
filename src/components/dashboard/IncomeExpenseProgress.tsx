@@ -3,11 +3,10 @@ import { numberToCurrency } from '../../utils/formatters'
 
 interface Props {
    summary: FullSummary | null
-   loading: boolean
 }
 
-export function IncomeExpenseProgress({ summary, loading }: Props) {
-   if (loading || !summary) return null
+export function IncomeExpenseProgress({ summary }: Props) {
+   if (!summary) return null
 
    // Percentage of received incomes
    const incomePercentage = summary.totalIncomes

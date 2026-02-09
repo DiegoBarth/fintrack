@@ -27,7 +27,7 @@ export function Dashboard() {
    }
 
    return (
-      <div className="mx-auto max-w-5xl space-y-6 p-4">
+      <div className="mx-auto max-w-7xl space-y-6 p-4">
          <button
             className="mb-4 px-3 py-1 rounded-md border hover:bg-gray-100 transition"
             onClick={() => navigate('/')}
@@ -40,25 +40,21 @@ export function Dashboard() {
          {/* Progress is priority */}
          <IncomeExpenseProgress
             summary={summary}
-            loading={loading}
          />
 
          {/* Credit cards at the bottom */}
          <CreditCards
             cards={cards}
-            loading={loading}
          />
 
          {/* Main Grid */}
          <div className="grid gap-6 md:grid-cols-2">
             <YearlyBalanceChart
                data={yearlyBalance}
-               loading={loading}
             />
 
             <TopCategories
                categories={topCategories}
-               loading={loading}
             />
          </div>
 

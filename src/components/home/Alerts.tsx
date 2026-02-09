@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useAlerts } from "@/contexts/UseAlerts"
 import type { AlertItem } from "@/types/AlertItem"
 import { CommitmentsModal } from "./CommitmentsModal"
-import { EditCommitmentModal } from "./EditCommitmentModal"
+import { EditCommitmentModal } from "../commitments/EditCommitmentModal"
 
 interface AlertCardProps {
    title: string

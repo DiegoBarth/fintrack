@@ -1,153 +1,113 @@
-import { useEffect, useState } from 'react';
-import { listIncomes, deleteIncome, updateIncome } from '../api/incomes';
-import type { Income } from '../types/Income';
-import { IncomeForm } from '../components/incomes/IncomeForm';
-import { IncomeGrid } from '../components/incomes/IncomeGrid';
-import {
-   numberToCurrency,
-   dateBRToISO,
-   currencyToNumber
-} from '../utils/formatters';
-import { usePeriod } from '../contexts/PeriodContext';
-import { useNavigate } from 'react-router-dom';
-import { incomesCache } from '../cache/IncomesCache';
+import { useEffect, useState, useCallback } from 'react'
+import { listIncomes } from '@/api/incomes'
+import type { Income } from '@/types/Income'
+import { IncomeList } from '@/components/incomes/IncomeList'
+import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
+import { AddIncomeModal } from '@/components/incomes/AddIncomeModal'
+import { usePeriod } from '@/contexts/PeriodContext'
+import { useNavigate } from 'react-router-dom'
+import { incomesCache } from '@/cache/IncomesCache'
+import { ChevronLeft, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 
 /**
- * Page component for managing income records.
- * Handles fetching, editing, and deleting incomes with local cache synchronization.
+ * Main page for Income management.
+ * Orchestrates data fetching, listing, and modal states for adding/editing incomes.
  */
 export function Incomes() {
-   const { month, year } = usePeriod(); // hooks into global period context
-   const [incomes, setIncomes] = useState<Income[]>([]);
-   const [editingRow, setEditingRow] = useState<number | null>(null);
-   const [editedValue, setEditedValue] = useState('');
-   const [editedDate, setEditedDate] = useState('');
-   const [loading, setLoading] = useState(false);
-   const [isPersisting, setIsPersisting] = useState(false);
+   const { month, year } = usePeriod()
+   const navigate = useNavigate()
 
-   const navigate = useNavigate();
+   const [incomes, setIncomes] = useState<Income[]>([])
+   const [isLoading, setIsLoading] = useState(false)
+   const [selectedIncome, setSelectedIncome] = useState<Income | null>(null)
+   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
    /**
-    * Handles the update of an existing income record.
-    * Prevents multiple submissions using the isPersisting flag.
+    * Fetches incomes from the API for the current selected period.
     */
-   async function handleSaveEdit() {
-      if (editingRow === null || isPersisting) return;
-
-      setIsPersisting(true);
-
+   const fetchIncomes = useCallback(async () => {
+      setIsLoading(true)
       try {
-         await updateIncome({
-            rowIndex: editingRow,
-            amount: currencyToNumber(editedValue),
-            receivedDate: editedDate
-         }, month, String(year));
-
-         setEditingRow(null);
-
-         // Sync local state with updated cache
-         const updated = incomesCache.get(month, year) || [];
-         setIncomes(updated);
+         const data = await listIncomes(month, String(year))
+         setIncomes(data)
       } catch (error) {
-         console.error("Failed to update income:", error);
+         console.error("Failed to fetch incomes:", error)
       } finally {
-         setIsPersisting(false);
+         setIsLoading(false)
       }
-   }
-
-   /**
-    * Fetches the list of incomes for the current period from the API.
-    */
-   async function loadData() {
-      setLoading(true);
-      try {
-         const res = await listIncomes(month, String(year));
-         setIncomes(res);
-      } catch (error) {
-         console.error("Failed to load incomes:", error);
-      } finally {
-         setLoading(false);
-      }
-   }
-
-   /**
-    * Handles income deletion after user confirmation.
-    * @param rowIndex - The unique row index of the record to delete.
-    */
-   async function handleDelete(rowIndex: number) {
-      if (!confirm('Deseja realmente excluir esta receita?')) return;
-
-      setIsPersisting(true);
-
-      try {
-         await deleteIncome(rowIndex, month, String(year));
-
-         const updated = incomesCache.get(month, year) || [];
-         setIncomes(updated);
-      } catch (error) {
-         console.error("Failed to delete income:", error);
-      } finally {
-         setIsPersisting(false);
-      }
-   }
-
-   /**
-    * Prepares the UI for editing a specific income record.
-    */
-   function handleEdit(income: Income) {
-      setEditingRow(income.rowIndex);
-      setEditedValue(numberToCurrency(income.amount));
-      setEditedDate(income.receivedDate ? dateBRToISO(income.receivedDate) : '');
-   }
-
-   /**
-    * Resets the editing state and clears temporary fields.
-    */
-   function cancelEdit() {
-      setEditingRow(null);
-   }
+   }, [month, year])
 
    useEffect(() => {
-      loadData();
-   }, [month, year]);
+      fetchIncomes()
+   }, [fetchIncomes])
+
+   /**
+    * Updates local state with cached data after a mutation (add/edit/delete).
+    */
+   const refreshData = () => {
+      const cached = incomesCache.get(month, year) || []
+      setIncomes([...cached])
+   }
 
    return (
-      <div style={{ padding: 16 }}>
-         <button
-            style={{ marginBottom: 16 }}
-            onClick={() => navigate('/')}
-         >
-            ← Voltar para Home
-         </button>
+      <div className="p-4 max-w-4xl mx-auto space-y-6">
+         {/* Navigation & Header */}
+         <div className="flex items-center justify-between">
+            <button
+               onClick={() => navigate('/')}
+               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition"
+            >
+               <ChevronLeft className="h-4 w-4" />
+               Voltar
+            </button>
 
-         <h2>Nova receita</h2>
-         <IncomeForm
-            onSave={() => {
-               const updated = incomesCache.get(month, year) || [];
-               setIncomes([...updated]);
-            }}
+            <Button
+               onClick={() => setIsAddModalOpen(true)}
+               className="rounded-full shadow-lg gap-2"
+            >
+               <Plus className="h-4 w-4" />
+               Nova receita
+            </Button>
+         </div>
+
+         <header>
+            <h1 className="text-2xl font-bold tracking-tight">Receitas</h1>
+            <p className="text-sm text-muted-foreground">
+               Gerencie suas entradas para o período de {month}/{year}
+            </p>
+         </header>
+
+         {/* Content Area */}
+         <main className="min-h-[400px]">
+            {isLoading ? (
+               <div className="flex items-center justify-center h-40">
+                  <p className="text-sm animate-pulse">Carregando receitas...</p>
+               </div>
+            ) : (
+               <IncomeList
+                  incomes={incomes}
+                  onSelect={setSelectedIncome}
+               />
+            )}
+         </main>
+
+         {/* Modals */}
+         <AddIncomeModal
+            isOpen={isAddModalOpen}
+            onClose={() => setIsAddModalOpen(false)}
+            onSave={refreshData}
          />
 
-         <hr style={{ margin: '24px 0' }} />
-         <h2>Consultar receitas</h2>
-
-         {loading ? (
-            <p>Carregando receitas...</p>
-         ) : (
-            <IncomeGrid
-               incomes={incomes}
-               onDelete={handleDelete}
-               editingRow={editingRow}
-               editedValue={editedValue}
-               editedDate={editedDate}
-               onEdit={handleEdit}
-               onCancelEdit={cancelEdit}
-               onSave={handleSaveEdit}
-               onChangeValue={setEditedValue}
-               onChangeDate={setEditedDate}
-               isPersisting={isPersisting}
-            />
-         )}
+         <EditIncomeModal
+            isOpen={!!selectedIncome}
+            income={selectedIncome}
+            onClose={() => setSelectedIncome(null)}
+            onConfirm={() => {
+               refreshData()
+               setSelectedIncome(null)
+            }}
+         />
       </div>
-   );
+   )
 }

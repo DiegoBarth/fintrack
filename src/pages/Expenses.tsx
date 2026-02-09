@@ -1,145 +1,118 @@
-import { useEffect, useState } from 'react';
-import { listExpenses, deleteExpense, updateExpense } from '../api/expenses';
-import { ExpenseForm } from '../components/expenses/ExpenseForm';
-import { ExpenseGrid } from '../components/expenses/ExpenseGrid';
-import type { Expense } from '../types/Expense';
-import { numberToCurrency, currencyToNumber } from '../utils/formatters';
-import { usePeriod } from '../contexts/PeriodContext';
-import { expensesCache } from '../cache/ExpensesCache';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react'
+import { listExpenses } from '@/api/expenses'
+import type { Expense } from '@/types/Expense'
+import { ExpenseList } from '@/components/expenses/ExpenseList'
+import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'
+import { AddExpenseModal } from '@/components/expenses/AddExpenseModal'
+import { usePeriod } from '@/contexts/PeriodContext'
+import { useNavigate } from 'react-router-dom'
+import { expensesCache } from '@/cache/ExpensesCache'
+import { ChevronLeft, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
 
 /**
- * Page component to manage variable expenses.
- * Handles loading, editing, and deleting expenses with persistence and cache sync.
+ * Main page for Expense management.
+ * Handles the listing, creation, and updating of financial outgoings.
  */
 export function Expenses() {
-   const { month, year } = usePeriod();
-   const [expenses, setExpenses] = useState<Expense[]>([]);
-   const [editingRow, setEditingRow] = useState<number | null>(null);
-   const [editedAmount, setEditedAmount] = useState('');
-   const [loading, setLoading] = useState(false);
-   const [isPersisting, setIsPersisting] = useState(false);
-   
-   const navigate = useNavigate();
+   const { month, year } = usePeriod()
+   const navigate = useNavigate()
+
+   const [expenses, setExpenses] = useState<Expense[]>([])
+   const [isLoading, setIsLoading] = useState(false)
+   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
+   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
    /**
-    * Fetches the expenses for the currently selected period.
+    * Fetches expenses for the current period from the API.
     */
-   async function loadData() {
-      setLoading(true);
+   const fetchExpenses = useCallback(async () => {
+      setIsLoading(true)
       try {
-         const res = await listExpenses(month, String(year));
-         setExpenses(res);
+         const data = await listExpenses(month, String(year))
+         setExpenses(data)
       } catch (error) {
-         console.error("Failed to load expenses:", error);
+         console.error("Failed to fetch expenses:", error)
       } finally {
-         setLoading(false);
+         setIsLoading(false)
       }
-   }
-
-   /**
-    * Handles the deletion of an expense record.
-    * @param rowIndex - The unique identifier for the row in the spreadsheet.
-    */
-   async function handleDelete(rowIndex: number) {
-      if (!confirm('Deseja realmente excluir este gasto?')) return;
-
-      setIsPersisting(true);
-      try {
-         await deleteExpense(rowIndex, month, String(year));
-
-         const updated = expensesCache.get(month, year) || [];
-         setExpenses(updated);
-      } catch (error) {
-         console.error("Failed to delete expense:", error);
-      } finally {
-         setIsPersisting(false);
-      }
-   }
-
-   /**
-    * Prepares a row for inline editing by populating temporary state.
-    */
-   function handleEdit(expense: Expense) {
-      setEditingRow(expense.rowIndex);
-      setEditedAmount(numberToCurrency(expense.amount));
-   }
-
-   /**
-    * Clears the editing state without saving changes.
-    */
-   function cancelEdit() {
-      setEditingRow(null);
-   }
-
-   /**
-    * Persists the edited amount to the server and updates local state/cache.
-    */
-   async function handleSaveEdit() {
-      if (editingRow === null || isPersisting) return;
-
-      setIsPersisting(true);
-      try {
-         await updateExpense(
-            {
-               rowIndex: editingRow,
-               amount: currencyToNumber(editedAmount)
-            },
-            month,
-            String(year)
-         );
-
-         setEditingRow(null);
-
-         const updated = expensesCache.get(month, year) || [];
-         setExpenses(updated);
-      } catch (error) {
-         console.error("Failed to update expense amount:", error);
-      } finally {
-         setIsPersisting(false);
-      }
-   }
+   }, [month, year])
 
    useEffect(() => {
-      loadData();
-   }, [month, year]);
+      fetchExpenses()
+   }, [fetchExpenses])
+
+   /**
+    * Synchronizes the UI with cached data after any modification.
+    */
+   const refreshData = () => {
+      const cached = expensesCache.get(month, year) || []
+      setExpenses([...cached])
+   }
 
    return (
-      <div style={{ padding: 16 }}>
-         <button
-            style={{ marginBottom: 16 }}
-            onClick={() => navigate('/')}
-         >
-            ← Voltar para Home
-         </button>
+      <div className="p-4 max-w-4xl mx-auto space-y-6">
+         {/* Navigation & Actions */}
+         <div className="flex items-center justify-between">
+            <button
+               onClick={() => navigate('/')}
+               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition font-medium"
+            >
+               <ChevronLeft className="h-4 w-4" />
+               Voltar
+            </button>
 
-         <h2>Novo gasto</h2>
-         <ExpenseForm
-            onSave={() => {
-               const updated = expensesCache.get(month, year) || [];
-               setExpenses([...updated]);
-            }}
+            <Button
+               onClick={() => setIsAddModalOpen(true)}
+               className="rounded-full shadow-lg gap-2 bg-red-600 hover:bg-red-700 text-white"
+            >
+               <Plus className="h-4 w-4" />
+               Novo Gasto
+            </Button>
+         </div>
+
+         {/* Page Header */}
+         <header>
+            <h1 className="text-2xl font-bold tracking-tight">Gastos</h1>
+            <p className="text-sm text-muted-foreground">
+               Acompanhe suas saídas de {month}/{year}
+            </p>
+         </header>
+
+         {/* List Section */}
+         <main className="min-h-[400px]">
+            {isLoading ? (
+               <div className="flex items-center justify-center h-40">
+                  <p className="text-sm animate-pulse text-muted-foreground">Buscando gastos...</p>
+               </div>
+            ) : expenses.length === 0 ? (
+               <div className="text-center py-20 border-2 border-dashed rounded-2xl">
+                  <p className="text-gray-500">Nenhum gasto encontrado para este período.</p>
+               </div>
+            ) : (
+               <ExpenseList
+                  expenses={expenses}
+                  onSelect={setSelectedExpense}
+               />
+            )}
+         </main>
+
+         {/* Modals */}
+         <AddExpenseModal
+            isOpen={isAddModalOpen}
+            onClose={() => setIsAddModalOpen(false)}
+            onSave={refreshData}
          />
 
-         <hr style={{ margin: '24px 0' }} />
-
-         <h2>Consultar gastos</h2>
-
-         {loading ? (
-            <p>Carregando gastos...</p>
-         ) : (
-            <ExpenseGrid
-               expenses={expenses}
-               onDelete={handleDelete}
-               editingRow={editingRow}
-               editedAmount={editedAmount}
-               onEdit={handleEdit}
-               onCancelEdit={cancelEdit}
-               onSave={handleSaveEdit}
-               onChangeAmount={setEditedAmount}
-               isPersisting={isPersisting}
-            />
-         )}
+         <EditExpenseModal
+            isOpen={!!selectedExpense}
+            expense={selectedExpense}
+            onClose={() => setSelectedExpense(null)}
+            onConfirm={() => {
+               refreshData()
+               setSelectedExpense(null)
+            }}
+         />
       </div>
-   );
+   )
 }

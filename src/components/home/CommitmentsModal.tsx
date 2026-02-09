@@ -1,5 +1,5 @@
-import type { AlertItem } from "@/types/AlertItem"
 import { useState, useEffect } from "react"
+import type { AlertItem } from "@/types/AlertItem"
 
 interface CommitmentsModalProps {
    isOpen: boolean
@@ -10,8 +10,8 @@ interface CommitmentsModalProps {
 }
 
 /**
- * Bottom-sheet style modal that lists commitments for a specific period.
- * Primarily used to show details when an alert card is clicked.
+ * A selection modal that displays a list of pending commitments.
+ * Users can click an item to trigger a secondary action (like payment/editing).
  */
 export function CommitmentsModal({
    isOpen,
@@ -22,9 +22,7 @@ export function CommitmentsModal({
 }: CommitmentsModalProps) {
    const [list, setList] = useState<AlertItem[]>([])
 
-   /**
-    * Syncs local state with props whenever the modal opens.
-    */
+   // Synchronize internal list state when modal opens
    useEffect(() => {
       if (isOpen) {
          setList(items)
@@ -34,43 +32,68 @@ export function CommitmentsModal({
    if (!isOpen) return null
 
    return (
-      <div className="fixed inset-0 z-50">
-         {/* Backdrop */}
+      <div className="fixed inset-0 z-50 flex justify-center items-end md:items-center">
+         {/* Overlay / Backdrop */}
          <div
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={onClose}
          />
 
-         {/* Content Container (Bottom Sheet) */}
+         {/* Modal Container */}
          <div className="
-            absolute bottom-0 left-0 right-0
-            rounded-t-2xl bg-white
-            p-4 max-h-[80vh] overflow-y-auto
+            relative w-full md:w-[420px] max-h-[85vh]
+            bg-white rounded-t-2xl md:rounded-2xl
+            flex flex-col shadow-2xl animate-in slide-in-from-bottom-4 duration-200
          ">
-            <div className="mb-3 flex items-center justify-between">
-               <h2 className="text-lg font-semibold">{title}</h2>
-               <button onClick={onClose} className="text-sm text-muted-foreground">
+            {/* Sticky Header */}
+            <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
+               <div>
+                  <h2 className="text-lg font-bold text-foreground">{title}</h2>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                     {list.length} {list.length === 1 ? 'pendência' : 'pendências'}
+                  </p>
+               </div>
+               <button
+                  onClick={onClose}
+                  className="rounded-full p-2 hover:bg-muted text-muted-foreground transition-colors"
+               >
                   Fechar
                </button>
             </div>
 
-            <ul className="space-y-2">
-               {list.map(item => (
-                  <li
-                     key={item.rowIndex}
-                     className="rounded-lg border p-3 text-sm cursor-pointer hover:bg-muted"
-                     onClick={() => onSelect(item)}
-                  >
-                     <div className="font-medium">{item.description}</div>
-                     <div className="text-xs text-muted-foreground">
-                        Vence em {item.dueDate}
-                     </div>
-                  </li>
-               ))}
-
-               {list.length === 0 && (
-                  <div className="text-center text-sm text-muted-foreground py-6">
-                     Nenhum compromisso pendente 🎉
+            {/* Scrollable List Content */}
+            <ul className="overflow-y-auto p-4 space-y-3 flex-1 custom-scrollbar">
+               {list.length > 0 ? (
+                  list.map(item => (
+                     <li
+                        key={item.rowIndex}
+                        className="
+                           group relative flex flex-col gap-1
+                           rounded-xl border border-gray-100 bg-gray-50/50 p-4 
+                           cursor-pointer hover:bg-white hover:border-primary/30 
+                           hover:shadow-md transition-all active:scale-[0.98]
+                        "
+                        onClick={() => onSelect(item)}
+                     >
+                        <div className="flex justify-between items-start">
+                           <span className="font-semibold text-gray-900 group-hover:text-primary transition-colors">
+                              {item.description}
+                           </span>
+                           <span className="text-xs font-bold text-foreground bg-white px-2 py-1 rounded-md border shadow-sm">
+                              Vence {item.dueDate}
+                           </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                           Clique para confirmar o pagamento deste compromisso.
+                        </p>
+                     </li>
+                  ))
+               ) : (
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                     <span className="text-4xl mb-2">🎉</span>
+                     <p className="text-sm font-medium text-muted-foreground">
+                        Nenhum compromisso pendente.
+                     </p>
                   </div>
                )}
             </ul>

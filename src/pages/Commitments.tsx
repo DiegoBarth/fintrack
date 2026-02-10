@@ -1,54 +1,37 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { ChevronLeft, Plus } from 'lucide-react'
+
 import { listCommitments } from '@/api/endpoints/commitments'
-import type { Commitment } from '@/types/Commitment'
+import { usePeriod } from '@/contexts/PeriodContext'
 import { CommitmentList } from '@/components/commitments/CommitmentList'
 import { AddCommitmentModal } from '@/components/commitments/AddCommitmentModal'
 import { EditCommitmentModal } from '@/components/commitments/EditCommitmentModal'
-import { usePeriod } from '@/contexts/PeriodContext'
-import { useNavigate } from 'react-router-dom'
-import { commitmentsCache } from '@/cache/CommitmentsCache'
-import { ChevronLeft, Plus } from 'lucide-react'
 import { SkeletonList } from '@/components/ui/SkeletonList'
+import type { Commitment } from '@/types/Commitment'
 
 /**
  * Main Page for managing commitments (bills, fixed costs, card installments).
- * Orchestrates the list fetching and modal states.
+ * Uses React Query for data fetching and state synchronization.
  */
 export function Commitments() {
    const { month, year } = usePeriod()
    const navigate = useNavigate()
 
-   const [commitments, setCommitments] = useState<Commitment[]>([])
-   const [isLoading, setIsLoading] = useState(false)
    const [selectedCommitment, setSelectedCommitment] = useState<Commitment | null>(null)
    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
-   /**
-    * Fetches data from API and updates local state.
-    */
-   async function fetchData() {
-      setIsLoading(true)
-      try {
-         const data = await listCommitments(month, String(year))
-         setCommitments(data)
-      } catch (error) {
-         console.error("Failed to fetch commitments:", error)
-      } finally {
-         setIsLoading(false)
-      }
-   }
-
-   /**
-    * Syncs local state with cache after mutations (Create/Update/Delete).
-    */
-   function syncWithCache() {
-      const updatedData = commitmentsCache.get(month, year) || []
-      setCommitments([...updatedData])
-   }
-
-   useEffect(() => {
-      fetchData()
-   }, [month, year])
+   /* =========================
+      DATA FETCHING (React Query)
+      ========================= */
+   const { data: commitments = [], isLoading } = useQuery({
+      queryKey: ['commitments', month, year],
+      queryFn: () => listCommitments(month, String(year)),
+      // StaleTime: Infinity prevents unnecessary background re-fetches 
+      // since we update the cache manually on mutations.
+      staleTime: Infinity
+   })
 
    if (isLoading) {
       return (
@@ -92,11 +75,9 @@ export function Commitments() {
          </div>
 
          {/* Content Area */}
-         {isLoading ? (
-            <div className="flex flex-col gap-3">
-               {[1, 2, 3].map(i => (
-                  <div key={i} className="h-20 w-full animate-pulse bg-muted rounded-xl" />
-               ))}
+         {commitments.length === 0 ? (
+            <div className="text-center py-12 border-2 border-dashed rounded-xl">
+               <p className="text-muted-foreground">Nenhum compromisso encontrado para este período.</p>
             </div>
          ) : (
             <CommitmentList
@@ -109,14 +90,13 @@ export function Commitments() {
          <AddCommitmentModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onSave={syncWithCache}
          />
 
          <EditCommitmentModal
             isOpen={!!selectedCommitment}
             commitment={selectedCommitment}
             onClose={() => setSelectedCommitment(null)}
-            onConfirm={syncWithCache}
+            onConfirm={() => { }}
          />
       </div>
    )

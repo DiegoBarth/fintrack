@@ -1,47 +1,38 @@
-import { useEffect, useState, useCallback } from 'react'
-import { listIncomes } from '@/api/endpoints/incomes'
-import type { Income } from '@/types/Income'
-import { IncomeList } from '@/components/incomes/IncomeList'
-import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
-import { AddIncomeModal } from '@/components/incomes/AddIncomeModal'
-import { usePeriod } from '@/contexts/PeriodContext'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { incomesCache } from '@/cache/IncomesCache'
+import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, Plus } from 'lucide-react'
+
+import { listIncomes } from '@/api/endpoints/incomes'
+import { usePeriod } from '@/contexts/PeriodContext'
+import { IncomeList } from '@/components/incomes/IncomeList'
+import { AddIncomeModal } from '@/components/incomes/AddIncomeModal'
+import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
 import { Button } from '@/components/ui/Button'
 import { SkeletonList } from '@/components/ui/SkeletonList'
+import type { Income } from '@/types/Income'
 
 /**
  * Main page for Income management.
- * Orchestrates data fetching, listing, and modal states for adding/editing incomes.
+ * Leverages TanStack Query for efficient data fetching and global cache synchronization.
  */
 export function Incomes() {
    const { month, year } = usePeriod()
    const navigate = useNavigate()
 
-   const [incomes, setIncomes] = useState<Income[]>([])
-   const [isLoading, setIsLoading] = useState(false)
    const [selectedIncome, setSelectedIncome] = useState<Income | null>(null)
    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
-   /**
-    * Fetches incomes from the API for the current selected period.
-    */
-   const fetchIncomes = useCallback(async () => {
-      setIsLoading(true)
-      try {
-         const data = await listIncomes(month, String(year))
-         setIncomes(data)
-      } catch (error) {
-         console.error("Failed to fetch incomes:", error)
-      } finally {
-         setIsLoading(false)
-      }
-   }, [month, year])
-
-   useEffect(() => {
-      fetchIncomes()
-   }, [fetchIncomes])
+   /* =========================
+      DATA FETCHING (React Query)
+      ========================= */
+   const { data: incomes = [], isLoading, isFetching } = useQuery({
+      queryKey: ['incomes', month, year],
+      queryFn: () => listIncomes(month, String(year)),
+      // StaleTime Infinity as we manually manage cache updates on mutations
+      staleTime: Infinity,
+      placeholderData: (previous) => previous ?? []
+   })
 
    if (isLoading) {
       return (
@@ -51,21 +42,13 @@ export function Incomes() {
       )
    }
 
-   /**
-    * Updates local state with cached data after a mutation (add/edit/delete).
-    */
-   const refreshData = () => {
-      const cached = incomesCache.get(month, year) || []
-      setIncomes([...cached])
-   }
-
    return (
-      <div className="p-4 max-w-4xl mx-auto space-y-6">
-         {/* Navigation & Header */}
+      <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
+         {/* Navigation & Actions */}
          <div className="flex items-center justify-between">
             <button
                onClick={() => navigate('/')}
-               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition"
+               className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition font-medium"
             >
                <ChevronLeft className="h-4 w-4" />
                Voltar
@@ -73,13 +56,14 @@ export function Incomes() {
 
             <Button
                onClick={() => setIsAddModalOpen(true)}
-               className="rounded-full shadow-lg gap-2"
+               className="rounded-full shadow-lg gap-2 bg-blue-600 hover:bg-blue-700 text-white border-none"
             >
                <Plus className="h-4 w-4" />
                Nova receita
             </Button>
          </div>
 
+         {/* Page Header */}
          <header>
             <h1 className="text-2xl font-bold tracking-tight">Receitas</h1>
             <p className="text-sm text-muted-foreground">
@@ -89,15 +73,17 @@ export function Incomes() {
 
          {/* Content Area */}
          <main className="min-h-[400px]">
-            {isLoading ? (
-               <div className="flex items-center justify-center h-40">
-                  <p className="text-sm animate-pulse">Carregando receitas...</p>
+            {incomes.length === 0 && !isFetching ? (
+               <div className="text-center py-20 border-2 border-dashed rounded-2xl">
+                  <p className="text-muted-foreground">Nenhuma receita encontrada para este período.</p>
                </div>
             ) : (
-               <IncomeList
-                  incomes={incomes}
-                  onSelect={setSelectedIncome}
-               />
+               <div className={isFetching ? 'opacity-70 transition-opacity' : ''}>
+                  <IncomeList
+                     incomes={incomes}
+                     onSelect={setSelectedIncome}
+                  />
+               </div>
             )}
          </main>
 
@@ -105,17 +91,12 @@ export function Incomes() {
          <AddIncomeModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onSave={refreshData}
          />
 
          <EditIncomeModal
             isOpen={!!selectedIncome}
             income={selectedIncome}
             onClose={() => setSelectedIncome(null)}
-            onConfirm={() => {
-               refreshData()
-               setSelectedIncome(null)
-            }}
          />
       </div>
    )

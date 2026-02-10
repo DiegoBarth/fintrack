@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from '@/App';
-import { PeriodProvider } from '@/contexts/PeriodContext';
-import { DashboardProvider } from '@/contexts/DashboardContext';
 import '@/index.css';
 import { ToastProvider } from '@/contexts/toast';
 
@@ -14,13 +12,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
    <React.StrictMode>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
          <BrowserRouter basename="/fintrack/">
-            <PeriodProvider>
-               <DashboardProvider>
-                  <ToastProvider>
-                     <App />
-                  </ToastProvider>
-               </DashboardProvider>
-            </PeriodProvider>
+            <ToastProvider>
+               <App />
+            </ToastProvider>
          </BrowserRouter>
       </GoogleOAuthProvider>
    </React.StrictMode>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCommitment, deleteCommitment } from '@/api/endpoints/commitments'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Commitment } from '@/types/Commitment'
@@ -12,80 +13,70 @@ interface EditCommitmentModalProps {
    onConfirm: (rowIndex: number) => void
 }
 
-/**
- * Modal for editing or settling a commitment.
- * Allows updating the amount and setting the payment date (marking as paid).
- */
-export function EditCommitmentModal({ isOpen, commitment, onClose, onConfirm }: EditCommitmentModalProps) {
+export function EditCommitmentModal({
+   isOpen,
+   commitment,
+   onClose,
+   onConfirm
+}: EditCommitmentModalProps) {
    const { month, year } = usePeriod()
+   const queryClient = useQueryClient()
 
    const [amount, setAmount] = useState('')
    const [paymentDate, setPaymentDate] = useState('')
-   const [isLoading, setIsLoading] = useState(false)
-   const [activeAction, setActiveAction] = useState<'saving' | 'deleting' | null>(null)
 
-   /**
-    * Pre-fills the form when a commitment is selected.
-    * Defaults paymentDate to today for convenience.
-    */
    useEffect(() => {
       if (commitment) {
          setAmount(numberToCurrency(commitment.amount))
-         // Sugere a data de hoje para o pagamento
          setPaymentDate(new Date().toISOString().slice(0, 10))
       }
    }, [commitment])
 
-   if (!commitment) return null
-
-   /**
-    * Updates the commitment (usually to mark as paid).
-    */
-   async function handleSave() {
-      if (!commitment) return;
-
-      setIsLoading(true)
-      setActiveAction('saving')
-      try {
-         await updateCommitment(
+   const updateMutation = useMutation({
+      mutationFn: () =>
+         updateCommitment(
             {
-               rowIndex: commitment.rowIndex,
+               rowIndex: commitment!.rowIndex,
                amount: currencyToNumber(amount),
                paymentDate
-            },
-            month,
-            String(year)
+            }
+         ),
+      onSuccess: () => {
+         queryClient.setQueryData<Commitment[]>(
+            ['commitments', month, year],
+            old =>
+               old?.map(c =>
+                  c.rowIndex === commitment!.rowIndex
+                     ? { ...c, amount: currencyToNumber(amount) }
+                     : c
+               ) ?? []
          )
-
-         onConfirm(commitment.rowIndex)
+         if (commitment) {
+            onConfirm(commitment.rowIndex)
+         }
          onClose()
-      } catch (error) {
-         console.error("Failed to update commitment:", error)
-      } finally {
-         setIsLoading(false)
-         setActiveAction(null)
       }
-   }
+   })
 
-   /**
-    * Removes the commitment record.
-    */
-   async function handleDelete() {
-      if (!commitment) return
-
-      setIsLoading(true)
-      setActiveAction('deleting')
-      try {
-         await deleteCommitment(commitment.rowIndex, month, String(year))
-         onConfirm(commitment.rowIndex)
+   const deleteMutation = useMutation({
+      mutationFn: () =>
+         deleteCommitment(commitment!.rowIndex, month, String(year)),
+      onSuccess: () => {
+         queryClient.setQueryData<Commitment[]>(
+            ['commitments', month, year],
+            old => old?.filter(c => c.rowIndex !== commitment!.rowIndex) ?? []
+         )
+         if (commitment) {
+            onConfirm(commitment.rowIndex)
+         }
          onClose()
-      } catch (error) {
-         console.error("Failed to delete commitment:", error)
-      } finally {
-         setIsLoading(false)
-         setActiveAction(null)
       }
-   }
+   })
+
+   if (!commitment) return null
+
+   const isPending = updateMutation.isPending || deleteMutation.isPending
+   const activeAction = deleteMutation.isPending ? 'deleting' : 'saving'
 
    return (
       <BaseModal
@@ -93,13 +84,13 @@ export function EditCommitmentModal({ isOpen, commitment, onClose, onConfirm }: 
          onClose={onClose}
          title={commitment.description}
          type="edit"
-         isLoading={isLoading}
+         isLoading={isPending}
          loadingText={activeAction === 'deleting' ? 'Excluindo...' : 'Salvando...'}
-         onSave={handleSave}
-         onDelete={handleDelete}
+         onSave={() => updateMutation.mutate()}
+         onDelete={() => deleteMutation.mutate()}
       >
          <div className="space-y-4">
-            {/* Info Summary */}
+            {/* Info Summary - Mantido da versão atual */}
             <div className="bg-muted/40 p-3 rounded-lg border border-dashed text-[11px] text-muted-foreground grid grid-cols-2 gap-2">
                <div>
                   Tipo: <span className="font-medium text-foreground">{commitment.type}</span>
@@ -115,7 +106,6 @@ export function EditCommitmentModal({ isOpen, commitment, onClose, onConfirm }: 
                )}
             </div>
 
-            {/* Editable Fields */}
             <div className="grid grid-cols-1 gap-4">
                <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-1">

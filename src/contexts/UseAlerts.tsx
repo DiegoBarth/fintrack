@@ -1,5 +1,7 @@
-import { useMemo, useState, useEffect } from 'react';
-import { commitmentsCache } from "@/cache/CommitmentsCache";
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { listCommitments } from '@/api/endpoints/commitments';
+import { usePeriod } from './PeriodContext';
 
 /**
  * Resets the time to midnight for accurate date comparison.
@@ -10,49 +12,29 @@ function resetTime(d: Date) {
    return copy;
 }
 
+/**
+ * Hook to manage financial alerts (overdue, due today, due this week).
+ * It fetches all commitments for the year to ensure alerts are visible 
+ * regardless of the currently selected month.
+ */
 export function useAlerts() {
-   const [tick, setTick] = useState(0);
+   const { year } = usePeriod();
 
-   useEffect(() => {
-      // Monkey-patching the cache to trigger re-renders on changes
-      const oldAdd = commitmentsCache.add;
-      const oldUpdate = commitmentsCache.update;
-      const oldRemove = commitmentsCache.remove;
-
-      const bump = () => setTick(t => t + 1);
-
-      commitmentsCache.add = (...args) => {
-         oldAdd(...args);
-         bump();
-      };
-
-      commitmentsCache.update = (...args) => {
-         oldUpdate(...args);
-         bump();
-      };
-
-      commitmentsCache.remove = (...args) => {
-         oldRemove(...args);
-         bump();
-      };
-
-      return () => {
-         commitmentsCache.add = oldAdd;
-         commitmentsCache.update = oldUpdate;
-         commitmentsCache.remove = oldRemove;
-      };
-   }, []);
+   // Fetching with 'all' month to get a global view of alerts for the year
+   const { data: commitments = [] } = useQuery({
+      queryKey: ['commitments', 'alerts', year],
+      queryFn: () => listCommitments('all', String(year)),
+      placeholderData: (previous) => previous ?? []
+   });
 
    return useMemo(() => {
       const today = resetTime(new Date());
 
       // Filter only unpaid commitments
-      const commitments = commitmentsCache
-         .getAll()
-         .filter(c => !c.paymentDate);
+      const pendingCommitments = commitments.filter(c => !c.paymentDate);
 
-      // 1. Overdue Commitments (Vencidos)
-      const overdue = commitments.filter(c => {
+      // 1. Overdue (Vencidos)
+      const overdue = pendingCommitments.filter(c => {
          const [d, m, y] = c.dueDate.split('/').map(Number);
          const date = resetTime(new Date(y, m - 1, d));
 
@@ -64,14 +46,14 @@ export function useAlerts() {
       });
 
       // 2. Due Today (Vencendo Hoje)
-      const dueToday = commitments.filter(c => {
+      const dueToday = pendingCommitments.filter(c => {
          const [d, m, y] = c.dueDate.split('/').map(Number);
          const date = resetTime(new Date(y, m - 1, d));
          return date.getTime() === today.getTime();
       });
 
       // 3. Due this week (Vencendo na semana - next 7 days)
-      const dueThisWeek = commitments.filter(c => {
+      const dueThisWeek = pendingCommitments.filter(c => {
          const [d, m, y] = c.dueDate.split('/').map(Number);
          const date = resetTime(new Date(y, m - 1, d));
 
@@ -87,5 +69,5 @@ export function useAlerts() {
          today: dueToday,
          week: dueThisWeek
       };
-   }, [tick]);
+   }, [commitments]);
 }

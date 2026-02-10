@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchFullSummary } from '@/api/home';
 import type { FullSummary } from '@/types/FullSummary';
 
@@ -8,13 +9,12 @@ interface PeriodContextType {
    setMonth: (month: string) => void;
    year: number;
    setYear: (year: number) => void;
-   summary: FullSummary | null;
+   summary: FullSummary;
    loadingSummary: boolean;
 }
 
 /**
  * Retrieves the initial period from sessionStorage or defaults to the current date.
- * @returns An object containing the initial month and year.
  */
 function getInitialPeriod() {
    const saved = sessionStorage.getItem('app_period');
@@ -28,7 +28,7 @@ function getInitialPeriod() {
 }
 
 /**
- * Initial state for the financial summary to prevent undefined errors during first render.
+ * Initial state for the financial summary.
  */
 const initialSummary: FullSummary = {
    totalIncomes: 0,
@@ -53,8 +53,8 @@ export const PeriodContext = createContext<PeriodContextType>({
 });
 
 /**
- * Provides period-related state and financial summary data to the application.
- * Synchronizes the selected period with sessionStorage for persistence.
+ * PeriodProvider manages the selected time frame and fetches the global financial summary.
+ * Uses TanStack Query to cache summary data across the application.
  */
 export function PeriodProvider({ children }: { children: ReactNode }) {
    const initialPeriod = getInitialPeriod();
@@ -62,30 +62,20 @@ export function PeriodProvider({ children }: { children: ReactNode }) {
    const [month, setMonth] = useState<string>(initialPeriod.month);
    const [year, setYear] = useState<number>(initialPeriod.year);
 
-   const [summary, setSummary] = useState<FullSummary>(initialSummary);
-   const [loadingSummary, setLoadingSummary] = useState(false);
+   /* =========================
+      REACT QUERY INTEGRATION
+      ========================= */
+   const { data: summary = initialSummary, isLoading: loadingSummary } = useQuery({
+      queryKey: ['summary', month, year],
+      queryFn: () => fetchFullSummary(month, String(year)),
+      // Keeps the old data on screen while fetching the new period's data
+      placeholderData: (previous) => previous ?? initialSummary
+   });
 
    /**
-    * Fetches the full financial summary from the API based on the selected period.
-    * @param selectedMonth - The month to fetch.
-    * @param selectedYear - The year to fetch.
+    * Persist period changes to sessionStorage.
     */
-   async function loadSummary(selectedMonth: string, selectedYear: number) {
-      setLoadingSummary(true);
-      try {
-         const res = await fetchFullSummary(selectedMonth, String(selectedYear));
-         setSummary(res);
-      } catch (err) {
-         console.error('Failed to load summary data:', err);
-      } finally {
-         setLoadingSummary(false);
-      }
-   }
-
    useEffect(() => {
-      loadSummary(month, year);
-
-      // Persist the selected period to sessionStorage
       sessionStorage.setItem(
          'app_period',
          JSON.stringify({ month, year })
@@ -109,7 +99,6 @@ export function PeriodProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Custom hook to access the PeriodContext.
- * @returns The period state and the financial summary.
+ * Hook to access the current selected period and the financial summary.
  */
 export const usePeriod = () => useContext(PeriodContext);

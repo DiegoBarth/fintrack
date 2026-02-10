@@ -2,15 +2,17 @@ import { useEffect, useState } from 'react'
 import { createCommitment, createCard } from '@/api/endpoints/commitments'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
-import { CustomSelect } from '@/components//ui/SelectCustomizado'
+import { CustomSelect } from '@/components/ui/SelectCustomizado'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+
+import { usePeriod } from '@/contexts/PeriodContext'
+import type { Commitment } from '@/types/Commitment'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
    onClose: () => void
-   onSave: () => void
 }
 
-// Definição estrita dos tipos para evitar erros de compilação
 type CommitmentType = 'Fixed' | 'Variable' | 'Credit_card' | ''
 
 const COMMITMENT_TYPES = [
@@ -28,10 +30,13 @@ const CATEGORIES = [
 
 const CARDS = ['Bradesco', 'Itaú', 'Mercado Pago']
 
-export function AddCommitmentModal({ isOpen, onClose, onSave }: AddCommitmentModalProps) {
+export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
+   const { month, year } = usePeriod()
+   const queryClient = useQueryClient()
+
    const [description, setDescription] = useState('')
    const [category, setCategory] = useState('')
-   const [type, setType] = useState<CommitmentType>('') // Estado agora usa o tipo estrito
+   const [type, setType] = useState<CommitmentType>('')
 
    // Fixed/Variable Fields
    const [amount, setAmount] = useState('')
@@ -44,11 +49,34 @@ export function AddCommitmentModal({ isOpen, onClose, onSave }: AddCommitmentMod
    const [installments, setInstallments] = useState<number | ''>('')
    const [cardDueDate, setCardDueDate] = useState('')
 
-   const [isLoading, setIsLoading] = useState(false)
+   /* =========================
+      MUTATIONS
+      ========================= */
+   const commitmentMutation = useMutation({
+      mutationFn: createCommitment,
+      onSuccess: (newRecord: Commitment) => {
+         queryClient.setQueryData<Commitment[]>(
+            ['commitments', month, year],
+            old => old ? [...old, newRecord] : [newRecord]
+         )
+         onClose()
+      }
+   })
 
-   /**
-    * Auto-calculate remaining months in the year for 'Fixed' expenses.
-    */
+   const cardMutation = useMutation({
+      mutationFn: createCard,
+      onSuccess: (newRecord: Commitment) => {
+         queryClient.setQueryData<Commitment[]>(
+            ['cards', month, year],
+            old => old ? [...old, newRecord] : [newRecord]
+         )
+         onClose()
+      }
+   })
+
+   /* =========================
+      REGRAS FIXO
+      ========================= */
    useEffect(() => {
       if (type === 'Fixed' && dueDate) {
          const selectedDate = new Date(dueDate)
@@ -56,80 +84,70 @@ export function AddCommitmentModal({ isOpen, onClose, onSave }: AddCommitmentMod
       }
    }, [type, dueDate])
 
-   /**
-    * Reset form state when modal closes.
-    */
+   /* =========================
+      RESET ON CLOSE
+      ========================= */
    useEffect(() => {
       if (!isOpen) {
          setDescription(''); setCategory(''); setType('')
          setAmount(''); setDueDate(''); setMonthsToRepeat(1)
          setCardName(''); setTotalAmount(''); setInstallments('')
-         setCardDueDate(''); setIsLoading(false)
+         setCardDueDate('')
       }
    }, [isOpen])
 
    async function handleSave() {
       if (!description || !category || !type) {
-         alert('Preencha os campos obrigatórios (Descrição, Categoria e Tipo)')
+         alert('Preencha os campos obrigatórios')
          return
       }
 
-      setIsLoading(true)
-      try {
-         if (type === 'Credit_card') {
-            if (!cardName || !totalAmount || !installments || !cardDueDate) {
-               alert('Preencha todos os campos do cartão')
-               setIsLoading(false)
-               return
-            }
-
-            await createCard({
-               type: 'Cartão',
-               description,
-               category,
-               card: cardName,
-               totalAmount: currencyToNumber(totalAmount),
-               installments: Number(installments),
-               dueDate: cardDueDate
-            })
-         } else {
-            if (!amount || !dueDate) {
-               alert('Preencha o valor e a data de vencimento')
-               setIsLoading(false)
-               return
-            }
-
-            await createCommitment({
-               // Aqui fazemos o cast seguro pois já validamos no if acima
-               type: type as 'Fixed' | 'Variable',
-               description,
-               category,
-               amount: currencyToNumber(amount),
-               dueDate,
-               months: type === 'Fixed' ? monthsToRepeat : 1
-            })
+      if (type === 'Credit_card') {
+         if (!cardName || !totalAmount || !installments || !cardDueDate) {
+            alert('Preencha os campos do cartão')
+            return
          }
 
-         onSave()
-         onClose()
-      } catch (error) {
-         console.error("Failed to create commitment:", error)
-      } finally {
-         setIsLoading(false)
+         cardMutation.mutate({
+            type: 'Cartão',
+            description,
+            category,
+            card: cardName,
+            totalAmount: currencyToNumber(totalAmount),
+            installments: Number(installments),
+            dueDate: cardDueDate
+         })
+      } else {
+         if (!amount || !dueDate) {
+            alert('Preencha valor e data de vencimento')
+            return
+         }
+
+         commitmentMutation.mutate({
+            type: type as 'Fixed' | 'Variable',
+            description,
+            category,
+            amount: currencyToNumber(amount),
+            dueDate,
+            months: type === 'Fixed' ? monthsToRepeat : 1
+         })
       }
    }
+
+   const isLoading = commitmentMutation.isPending || cardMutation.isPending
 
    return (
       <BaseModal
          isOpen={isOpen}
          onClose={onClose}
-         title="Novo Compromisso"
+         title="Novo compromisso"
          type="create"
          onSave={handleSave}
          isLoading={isLoading}
       >
          <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
+               {/* Description */}
                <div>
                   <label className="block text-xs font-medium text-muted-foreground mb-1">Descrição *</label>
                   <input
@@ -140,6 +158,7 @@ export function AddCommitmentModal({ isOpen, onClose, onSave }: AddCommitmentMod
                   />
                </div>
 
+               {/* Category & Type */}
                <div className="grid grid-cols-2 gap-3">
                   <div>
                      <label className="block text-xs font-medium text-muted-foreground mb-1">Categoria *</label>
@@ -152,10 +171,8 @@ export function AddCommitmentModal({ isOpen, onClose, onSave }: AddCommitmentMod
                   <div>
                      <label className="block text-xs font-medium text-muted-foreground mb-1">Tipo *</label>
                      <CustomSelect
-                        // Converte o valor em inglês para a label em português para exibição
                         value={COMMITMENT_TYPES.find(t => t.value === type)?.label || ''}
                         onChange={(label) => {
-                           // Ao selecionar o label, busca e salva o valor correspondente em inglês
                            const found = COMMITMENT_TYPES.find(t => t.label === label)
                            setType((found?.value as CommitmentType) || '')
                         }}
@@ -167,7 +184,7 @@ export function AddCommitmentModal({ isOpen, onClose, onSave }: AddCommitmentMod
 
             <hr className="border-dashed" />
 
-            {/* Conditional Fields: Fixed / Variable */}
+            {/* Fixed / Variable Fields */}
             {(type === 'Fixed' || type === 'Variable') && (
                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                   <div className="grid grid-cols-2 gap-3">
@@ -208,7 +225,7 @@ export function AddCommitmentModal({ isOpen, onClose, onSave }: AddCommitmentMod
                </div>
             )}
 
-            {/* Conditional Fields: Card */}
+            {/* Card Fields */}
             {type === 'Credit_card' && (
                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                   <div>

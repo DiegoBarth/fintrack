@@ -1,10 +1,8 @@
-import { useEffect } from 'react';
 import { PeriodFilters } from "@/components/home/PeriodFilters";
 import { Alerts } from "@/components/home/Alerts";
 import { MonthlySummary } from "@/components/home/MonthlySummary";
 import { QuickActions } from '@/components/home/QuickActions';
 import { usePeriod } from '@/contexts/PeriodContext';
-import { fetchFullSummary } from '@/api/home';
 
 interface Props {
    onLogout: () => void
@@ -16,20 +14,6 @@ interface Props {
  */
 export function Home({ onLogout }: Props) {
    const { month, setMonth, year, setYear } = usePeriod();
-
-   /**
-    * Preloads or refreshes data whenever the selected period changes.
-    */
-   useEffect(() => {
-      async function preloadData() {
-         try {
-            await fetchFullSummary(month, String(year));
-         } catch (error) {
-            console.error("Failed to sync home data:", error);
-         }
-      }
-      preloadData();
-   }, [month, year]);
 
    return (
       <div className="min-h-screen bg-background">

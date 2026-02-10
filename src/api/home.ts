@@ -1,6 +1,3 @@
-import { commitmentsCache } from '@/cache/CommitmentsCache';
-import { expensesCache } from '@/cache/ExpensesCache';
-import { incomesCache } from '@/cache/IncomesCache';
 import type { Commitment } from '@/types/Commitment';
 import type { Expense } from '@/types/Expense';
 import type { Income } from '@/types/Income';
@@ -28,40 +25,10 @@ export function fetchFullSummary(month: string, year: string) {
    });
 }
 
-export async function fetchAllData(month: string, year: string) {
-   const cachedIncomes =
-      month === 'all'
-         ? incomesCache.getAll()
-         : incomesCache.get(month, year);
-
-   const cachedExpenses =
-      month === 'all'
-         ? expensesCache.getAll()
-         : expensesCache.get(month, year);
-
-
-   const cachedCommitments =
-      month === 'all'
-         ? commitmentsCache.getAll()
-         : commitmentsCache.get(month, year);
-
-   if (cachedIncomes || cachedExpenses || cachedCommitments) {
-      return {
-         commitments: cachedCommitments,
-         incomes: cachedIncomes,
-         expenses: cachedExpenses
-      };
-   }
-
-   const response = await apiGet<AppData>({
+export function fetchAllData(month: string, year: string) {
+   return apiGet<AppData>({
       action: 'fetchAllData',
       month,
       year
    });
-
-   response.commitments?.forEach(c => commitmentsCache.add(c, 'dueDate'));
-   response.incomes?.forEach(r => incomesCache.add(r, 'expectedDate'));
-   response.expenses?.forEach(g => expensesCache.add(g, 'paymentDate'));
-
-   return response;
 }

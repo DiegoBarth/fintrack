@@ -1,13 +1,28 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { listMonthlyBalance, listTopCategories, listCardsSummary } from '@/api/endpoints/dashboard';
+import { createContext, useContext } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import {
+   listMonthlyBalance,
+   listTopCategories,
+   listCardsSummary
+} from '@/api/endpoints/dashboard';
+import { listIncomes } from '@/api/endpoints/incomes';
+import { listExpenses } from '@/api/endpoints/expenses';
+import { listCommitments } from '@/api/endpoints/commitments';
+
 import type { MonthlyBalanceHistory, CategorySummary, CreditCardSummary } from '@/types/Dashboard';
 import type { FullSummary } from '@/types/FullSummary';
+import type { Income } from '@/types/Income';
+import type { Expense } from '@/types/Expense';
+import type { Commitment } from '@/types/Commitment';
 import { usePeriod } from '@/contexts/PeriodContext';
 
 interface DashboardContextType {
    yearlyBalance: MonthlyBalanceHistory[];
    topCategories: CategorySummary[];
    cards: CreditCardSummary[];
+   incomes: Income[];
+   expenses: Expense[];
+   commitments: Commitment[];
    summary: FullSummary | null;
    loading: boolean;
 }
@@ -17,49 +32,59 @@ const DashboardContext = createContext<DashboardContextType>(
 );
 
 /**
- * Provider that aggregates dashboard data from multiple API sources.
- * It synchronizes data based on the global period (month/year).
+ * Provider that aggregates dashboard data using TanStack Query for caching and synchronization.
+ * It provides a unified loading state for all essential dashboard metrics.
  */
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
    const { month, year, summary } = usePeriod();
-   const [yearlyBalance, setYearlyBalance] = useState<MonthlyBalanceHistory[]>([]);
-   const [topCategories, setTopCategories] = useState<CategorySummary[]>([]);
-   const [cards, setCards] = useState<CreditCardSummary[]>([]);
-   const [loading, setLoading] = useState(true);
 
-   useEffect(() => {
-      let isCancelled = false;
+   // Yearly Balance History
+   const { data: yearlyBalance = [], isLoading: loadingBalance } = useQuery({
+      queryKey: ['dashboard', 'balance', year],
+      queryFn: () => listMonthlyBalance(String(year)),
+      placeholderData: (previous) => previous ?? []
+   });
 
-      /**
-       * Fetches all dashboard metrics in parallel to optimize load time.
-       */
-      async function loadDashboardData() {
-         setLoading(true);
-         try {
-            const [balance, categories, cardsSummary] = await Promise.all([
-               listMonthlyBalance(String(year)),
-               listTopCategories(month, String(year)),
-               listCardsSummary(month, String(year)),
-            ]);
+   // Top Spending Categories
+   const { data: topCategories = [], isLoading: loadingTop } = useQuery({
+      queryKey: ['dashboard', 'topCategories', month, year],
+      queryFn: () => listTopCategories(month, String(year)),
+      placeholderData: (previous) => previous ?? []
+   });
 
-            if (isCancelled) return;
+   // Credit Cards Summary
+   const { data: cards = [], isLoading: loadingCards } = useQuery({
+      queryKey: ['dashboard', 'cards', month, year],
+      queryFn: () => listCardsSummary(month, String(year)),
+      placeholderData: (previous) => previous ?? []
+   });
 
-            setYearlyBalance(balance);
-            setTopCategories(categories);
-            setCards(cardsSummary);
-         } catch (error) {
-            console.error("Error loading dashboard data:", error);
-         } finally {
-            if (!isCancelled) setLoading(false);
-         }
-      }
+   // Detailed Lists (Incomes, Expenses, Commitments)
+   const { data: incomes = [], isLoading: loadingIncomes } = useQuery({
+      queryKey: ['incomes', month, year],
+      queryFn: () => listIncomes(month, String(year)),
+      placeholderData: (previous) => previous ?? []
+   });
 
-      loadDashboardData();
+   const { data: commitments = [], isLoading: loadingCommitments } = useQuery({
+      queryKey: ['commitments', month, year],
+      queryFn: () => listCommitments(month, String(year)),
+      placeholderData: (previous) => previous ?? []
+   });
 
-      return () => {
-         isCancelled = true;
-      };
-   }, [month, year]);
+   const { data: expenses = [], isLoading: loadingExpenses } = useQuery({
+      queryKey: ['expenses', month, year],
+      queryFn: () => listExpenses(month, String(year)),
+      placeholderData: (previous) => previous ?? []
+   });
+
+   const isLoading =
+      loadingBalance ||
+      loadingTop ||
+      loadingCards ||
+      loadingIncomes ||
+      loadingExpenses ||
+      loadingCommitments;
 
    return (
       <DashboardContext.Provider
@@ -67,8 +92,11 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             yearlyBalance,
             topCategories,
             cards,
+            incomes,
+            expenses,
+            commitments,
             summary,
-            loading
+            loading: isLoading
          }}
       >
          {children}
@@ -77,7 +105,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Hook to access dashboard metrics and loading states.
+ * Hook to access dashboard metrics, unified lists, and loading states.
  */
 export function useDashboard() {
    return useContext(DashboardContext);

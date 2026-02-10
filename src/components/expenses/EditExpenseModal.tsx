@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateExpense, deleteExpense } from '@/api/endpoints/expenses'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
@@ -9,77 +10,57 @@ interface EditExpenseModalProps {
    isOpen: boolean
    expense: Expense | null
    onClose: () => void
-   onConfirm: () => void
 }
 
-/**
- * Modal for editing or deleting an existing expense.
- * Displays the description as the title and focuses on amount adjustment.
- */
-export function EditExpenseModal({ isOpen, expense, onClose, onConfirm }: EditExpenseModalProps) {
+export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalProps) {
    const { month, year } = usePeriod()
+   const queryClient = useQueryClient()
 
    const [amount, setAmount] = useState('')
-   const [isLoading, setIsLoading] = useState(false)
-   const [activeAction, setActiveAction] = useState<'saving' | 'deleting' | null>(null)
 
-   /**
-    * Updates internal state when the selected expense changes.
-    */
    useEffect(() => {
       if (expense) {
          setAmount(numberToCurrency(expense.amount))
       }
    }, [expense])
 
+   /* =========================
+      MUTATIONS
+      ========================= */
+   const updateMutation = useMutation({
+      mutationFn: () =>
+         updateExpense(
+            { rowIndex: expense!.rowIndex, amount: currencyToNumber(amount) }
+         ),
+      onSuccess: () => {
+         queryClient.setQueryData<Expense[]>(
+            ['expenses', month, year],
+            old =>
+               old?.map(e =>
+                  e.rowIndex === expense!.rowIndex
+                     ? { ...e, amount: currencyToNumber(amount) }
+                     : e
+               ) ?? []
+         )
+         onClose()
+      }
+   })
+
+   const deleteMutation = useMutation({
+      mutationFn: () =>
+         deleteExpense(expense!.rowIndex, month, String(year)),
+      onSuccess: () => {
+         queryClient.setQueryData<Expense[]>(
+            ['expenses', month, year],
+            old => old?.filter(e => e.rowIndex !== expense!.rowIndex) ?? []
+         )
+         onClose()
+      }
+   })
+
    if (!expense) return null
 
-   /**
-    * Handles the update logic.
-    */
-   async function handleSave() {
-      if (!expense) return;
-
-      setIsLoading(true)
-      setActiveAction('saving')
-      try {
-         await updateExpense(
-            {
-               rowIndex: expense.rowIndex,
-               amount: currencyToNumber(amount)
-            },
-            month,
-            String(year)
-         )
-         onConfirm()
-         onClose()
-      } catch (error) {
-         console.error("Failed to update expense:", error)
-      } finally {
-         setIsLoading(false)
-         setActiveAction(null)
-      }
-   }
-
-   /**
-    * Handles the deletion logic.
-    */
-   async function handleDelete() {
-      if (!expense) return
-
-      setIsLoading(true)
-      setActiveAction('deleting')
-      try {
-         await deleteExpense(expense.rowIndex, month, String(year))
-         onConfirm()
-         onClose()
-      } catch (error) {
-         console.error("Failed to delete expense:", error)
-      } finally {
-         setIsLoading(false)
-         setActiveAction(null)
-      }
-   }
+   const isLoading = updateMutation.isPending || deleteMutation.isPending
 
    return (
       <BaseModal
@@ -88,17 +69,18 @@ export function EditExpenseModal({ isOpen, expense, onClose, onConfirm }: EditEx
          title={expense.description}
          type="edit"
          isLoading={isLoading}
-         loadingText={activeAction === 'deleting' ? 'Excluindo...' : 'Salvando...'}
-         onSave={handleSave}
-         onDelete={handleDelete}
+         onSave={() => updateMutation.mutate()}
+         onDelete={() => deleteMutation.mutate()}
       >
          <div className="space-y-4">
+            {/* Info Summary (Versão Anterior) */}
             <div className="bg-muted/30 p-3 rounded-lg border border-dashed text-xs text-muted-foreground">
                Categoria: <span className="font-medium text-foreground">{expense.category}</span>
                <br />
                Data original: <span className="font-medium text-foreground">{expense.paymentDate}</span>
             </div>
 
+            {/* Amount Input */}
             <div>
                <label className="block text-xs font-medium text-muted-foreground mb-1">
                   Valor

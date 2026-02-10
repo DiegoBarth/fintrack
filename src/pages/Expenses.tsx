@@ -1,43 +1,37 @@
-import { useEffect, useState, useCallback } from 'react'
-import { listExpenses } from '@/api/endpoints/expenses'
-import type { Expense } from '@/types/Expense'
-import { ExpenseList } from '@/components/expenses/ExpenseList'
-import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'
-import { AddExpenseModal } from '@/components/expenses/AddExpenseModal'
-import { usePeriod } from '@/contexts/PeriodContext'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { expensesCache } from '@/cache/ExpensesCache'
+import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, Plus } from 'lucide-react'
+
+import { listExpenses } from '@/api/endpoints/expenses'
+import { usePeriod } from '@/contexts/PeriodContext'
+import { ExpenseList } from '@/components/expenses/ExpenseList'
+import { AddExpenseModal } from '@/components/expenses/AddExpenseModal'
+import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'
 import { Button } from '@/components/ui/Button'
 import { SkeletonList } from '@/components/ui/SkeletonList'
+import type { Expense } from '@/types/Expense'
 
 /**
  * Main page for Expense management.
- * Handles the listing, creation, and updating of financial outgoings.
+ * Uses TanStack Query for data fetching and automatic cache synchronization.
  */
 export function Expenses() {
    const { month, year } = usePeriod()
    const navigate = useNavigate()
 
-   const [expenses, setExpenses] = useState<Expense[]>([])
-   const [isLoading, setIsLoading] = useState(false)
    const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
-   /**
-    * Fetches expenses for the current period from the API.
-    */
-   const fetchExpenses = useCallback(async () => {
-      setIsLoading(true)
-      try {
-         const data = await listExpenses(month, String(year))
-         setExpenses(data)
-      } catch (error) {
-         console.error("Failed to fetch expenses:", error)
-      } finally {
-         setIsLoading(false)
-      }
-   }, [month, year])
+   /* =========================
+      DATA FETCHING (React Query)
+      ========================= */
+   const { data: expenses = [], isLoading, isFetching } = useQuery({
+      queryKey: ['expenses', month, year],
+      queryFn: () => listExpenses(month, String(year)),
+      // Keeps previous data visible while fetching new period data
+      placeholderData: (previous) => previous ?? []
+   })
 
    if (isLoading) {
       return (
@@ -47,20 +41,8 @@ export function Expenses() {
       )
    }
 
-   useEffect(() => {
-      fetchExpenses()
-   }, [fetchExpenses])
-
-   /**
-    * Synchronizes the UI with cached data after any modification.
-    */
-   const refreshData = () => {
-      const cached = expensesCache.get(month, year) || []
-      setExpenses([...cached])
-   }
-
    return (
-      <div className="p-4 max-w-4xl mx-auto space-y-6">
+      <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-6">
          {/* Navigation & Actions */}
          <div className="flex items-center justify-between">
             <button
@@ -73,7 +55,7 @@ export function Expenses() {
 
             <Button
                onClick={() => setIsAddModalOpen(true)}
-               className="rounded-full shadow-lg gap-2 bg-red-600 hover:bg-red-700 text-white"
+               className="rounded-full shadow-lg gap-2 bg-red-600 hover:bg-red-700 text-white border-none"
             >
                <Plus className="h-4 w-4" />
                Novo Gasto
@@ -90,19 +72,17 @@ export function Expenses() {
 
          {/* List Section */}
          <main className="min-h-[400px]">
-            {isLoading ? (
-               <div className="flex items-center justify-center h-40">
-                  <p className="text-sm animate-pulse text-muted-foreground">Buscando gastos...</p>
-               </div>
-            ) : expenses.length === 0 ? (
+            {expenses.length === 0 && !isFetching ? (
                <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-                  <p className="text-gray-500">Nenhum gasto encontrado para este período.</p>
+                  <p className="text-muted-foreground">Nenhum gasto encontrado para este período.</p>
                </div>
             ) : (
-               <ExpenseList
-                  expenses={expenses}
-                  onSelect={setSelectedExpense}
-               />
+               <div className={isFetching ? 'opacity-70 transition-opacity' : ''}>
+                  <ExpenseList
+                     expenses={expenses}
+                     onSelect={setSelectedExpense}
+                  />
+               </div>
             )}
          </main>
 
@@ -110,17 +90,12 @@ export function Expenses() {
          <AddExpenseModal
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
-            onSave={refreshData}
          />
 
          <EditExpenseModal
             isOpen={!!selectedExpense}
             expense={selectedExpense}
             onClose={() => setSelectedExpense(null)}
-            onConfirm={() => {
-               refreshData()
-               setSelectedExpense(null)
-            }}
          />
       </div>
    )

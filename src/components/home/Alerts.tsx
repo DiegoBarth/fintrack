@@ -130,7 +130,7 @@ export function Alerts() {
          {/* MODALS */}
          <CommitmentModal
             isOpen={openType === "overdue"}
-            title="Contas Vencidas"
+            title="Vencidos"
             items={overdueList}
             onClose={() => setOpenType(null)}
             onSelect={item => {

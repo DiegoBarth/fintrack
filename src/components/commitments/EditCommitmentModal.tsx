@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCommitment, deleteCommitment } from '@/api/endpoints/commitments'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Commitment } from '@/types/Commitment'
-import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
+import { numberToCurrency, currencyToNumber, formatCurrency, formatDateBR } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 
 interface EditCommitmentModalProps {
@@ -47,10 +47,25 @@ export function EditCommitmentModal({
             old =>
                old?.map(c =>
                   c.rowIndex === commitment!.rowIndex
-                     ? { ...c, amount: currencyToNumber(amount) }
+                     ? {
+                        ...c,
+                        valor: currencyToNumber(amount),
+                        paymentDate
+                     }
                      : c
                ) ?? []
          )
+
+         queryClient.setQueryData<Commitment[]>(
+            ['commitments', 'alerts', year],
+            old =>
+               old?.map(c =>
+                  c.rowIndex === commitment!.rowIndex
+                     ? { ...c, dataPagamento: formatDateBR(paymentDate) }
+                     : c
+               ) ?? []
+         );
+
          if (commitment) {
             onConfirm(commitment.rowIndex)
          }
@@ -66,6 +81,13 @@ export function EditCommitmentModal({
             ['commitments', month, year],
             old => old?.filter(c => c.rowIndex !== commitment!.rowIndex) ?? []
          )
+
+         queryClient.setQueryData<Commitment[]>(
+            ['commitments', 'alerts', year],
+            old =>
+               old?.filter(c => c.rowIndex !== commitment!.rowIndex) ?? []
+         )
+
          if (commitment) {
             onConfirm(commitment.rowIndex)
          }

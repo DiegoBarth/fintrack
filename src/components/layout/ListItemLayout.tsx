@@ -1,0 +1,38 @@
+import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
+
+type Variant = 'default' | 'success' | 'danger' | 'warning'
+
+interface Props {
+   children: ReactNode
+   onClick?: () => void
+   variant?: Variant
+   className?: string
+}
+
+export function ListItemLayout({
+   children,
+   onClick,
+   variant = 'default',
+   className,
+}: Props) {
+   const variants: Record<Variant, string> = {
+      default: 'border bg-background hover:bg-muted',
+      success: 'border-green-200 bg-green-50',
+      danger: 'border-red-200 bg-red-50',
+      warning: 'border-amber-200 bg-amber-50',
+   }
+
+   return (
+      <div
+         onClick={onClick}
+         className={cn(
+            'rounded-lg border cursor-pointer transition',
+            variants[variant],
+            className
+         )}
+      >
+         {children}
+      </div>
+   )
+}

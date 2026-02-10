@@ -1,4 +1,5 @@
 import { numberToCurrency } from "@/utils/formatters"
+import { Skeleton } from "../ui/Skeleton"
 
 interface SummaryCardProps {
    title: string
@@ -28,17 +29,15 @@ export function SummaryCard({
             {icon && (
                <div
                   className="flex h-8 w-8 items-center justify-center rounded-md"
-                  style={{ backgroundColor: `${color}20` }} // 20 adds transparency to the hex color
+                  style={{ backgroundColor: `${color}20` }}
                >
                   <span style={{ color: color }}>{icon}</span>
                </div>
             )}
-
-            <div className="flex flex-col">
+            <div>
                <p className="text-sm text-muted-foreground">{title}</p>
-
                {isLoading ? (
-                  <div className="mt-1 h-6 w-24 animate-pulse rounded bg-muted" />
+                  <Skeleton className="h-6 w-24 rounded-md" />
                ) : (
                   <p className="text-lg font-semibold" style={{ color: color }}>
                      {numberToCurrency(amount)}

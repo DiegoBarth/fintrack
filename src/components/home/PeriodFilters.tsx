@@ -2,12 +2,14 @@ import { ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { usePeriod } from "@/contexts/PeriodContext"
+import { Skeleton } from "../ui/Skeleton"
 
 interface PeriodFiltersProps {
    month: string
    year: number
    onMonthChange: (month: string) => void
    onYearChange: (year: number) => void
+   isLoading: boolean
 }
 
 /**
@@ -39,6 +41,7 @@ export function PeriodFilters({
    year,
    onMonthChange,
    onYearChange,
+   isLoading
 }: PeriodFiltersProps) {
    const { summary } = usePeriod();
 
@@ -82,11 +85,19 @@ export function PeriodFilters({
                </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-               {years.map((y) => (
-                  <DropdownMenuItem key={y} onClick={() => onYearChange(y)}>
-                     {y}
-                  </DropdownMenuItem>
-               ))}
+               {isLoading ? (
+                  <div className="flex flex-col gap-2 p-2 w-25 shadow-sm">
+                     <Skeleton className="h-5 w-12 rounded-sm" />
+                     <Skeleton className="h-5 w-12 rounded-sm" />
+                     <Skeleton className="h-5 w-12 rounded-sm" />
+                  </div>
+               ) : (
+                  years.map((a) => (
+                     <DropdownMenuItem key={a} onClick={() => onYearChange(a)}>
+                        {a}
+                     </DropdownMenuItem>
+                  ))
+               )}
             </DropdownMenuContent>
          </DropdownMenu>
       </div>

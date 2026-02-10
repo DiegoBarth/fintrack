@@ -9,25 +9,28 @@ import { SummaryCard } from "@/components/home/SummaryCard"
 export function MonthlySummary() {
    const { summary, isLoading } = usePeriod();
 
-   if (!summary) return null;
+   const totalIncomes = summary?.totalIncomes ?? 0;
+   const totalExpenses = summary?.totalExpenses ?? 0;
+   const totalCommitments = summary?.totalCommitments ?? 0;
+   const totalReceivedAmount = summary?.totalReceivedAmount ?? 0;
+   const totalPaidExpenses = summary?.totalPaidExpenses ?? 0;
+   const totalPaidCommitments = summary?.totalPaidCommitments ?? 0;
 
    /**
     * Projection of the balance at the end of the month considering all commitments.
     */
-   const monthFinalBalance =
-      summary.totalIncomes - summary.totalExpenses - summary.totalCommitments;
+   const monthFinalBalance = totalIncomes - totalExpenses - totalCommitments;
 
    /**
     * Real-time balance based on what has already been paid and received.
     */
-   const currentBalance =
-      summary.totalReceivedAmount - summary.totalPaidExpenses - summary.totalPaidCommitments;
+   const currentBalance = totalReceivedAmount - totalPaidExpenses - totalPaidCommitments;
 
    return (
       <div className="flex flex-col gap-3">
          <SummaryCard
             title="Entradas"
-            amount={summary.totalIncomes}
+            amount={totalIncomes}
             color="#3b82f6"
             isLoading={isLoading}
             icon={<Plus className="h-4 w-4" />}
@@ -35,7 +38,7 @@ export function MonthlySummary() {
 
          <SummaryCard
             title="Gastos"
-            amount={summary.totalExpenses}
+            amount={totalExpenses}
             color="#ef4444"
             isLoading={isLoading}
             icon={<Minus className="h-4 w-4" />}
@@ -43,7 +46,7 @@ export function MonthlySummary() {
 
          <SummaryCard
             title="Compromissos"
-            amount={summary.totalCommitments}
+            amount={totalCommitments}
             color="#f59e0b"
             isLoading={isLoading}
             icon={<Calendar className="h-4 w-4" />}

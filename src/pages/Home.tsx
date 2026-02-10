@@ -13,7 +13,7 @@ interface Props {
  * Orchestrates global filters, alerts, financial summaries, and quick action shortcuts.
  */
 export function Home({ onLogout }: Props) {
-   const { month, setMonth, year, setYear } = usePeriod();
+   const { month, setMonth, year, setYear, isLoading } = usePeriod();
 
    return (
       <div className="min-h-screen bg-background">
@@ -27,6 +27,7 @@ export function Home({ onLogout }: Props) {
                   year={year}
                   onMonthChange={setMonth}
                   onYearChange={setYear}
+                  isLoading={isLoading}
                />
 
                <button

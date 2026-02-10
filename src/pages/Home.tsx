@@ -1,5 +1,5 @@
-import { PeriodFilters } from "@/components/home/PeriodFilters";
 import { Alerts } from "@/components/home/Alerts";
+import { PeriodFilters } from "@/components/home/PeriodFilters";
 import { MonthlySummary } from "@/components/home/MonthlySummary";
 import { QuickActions } from '@/components/home/QuickActions';
 import { usePeriod } from '@/contexts/PeriodContext';

@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
    listCommitments,
@@ -5,12 +6,11 @@ import {
    createCard,
    updateCommitment,
    deleteCommitment
-} from '@/api/endpoints/commitments'
+} from '@/api/endpoints/commitment'
 import type { Commitment } from '@/types/Commitment'
 import { dateBRToISO } from '@/utils/formatters'
-import { useLocation } from 'react-router-dom'
 
-export function useCommitments(month: string, year: string, key?: string | null) {
+export function useCommitment(month: string, year: string, key?: string | null) {
    const queryClient = useQueryClient()
    const queryKey = ['commitments', key ?? month, year]
    const location = useLocation();

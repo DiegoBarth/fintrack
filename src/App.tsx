@@ -1,33 +1,14 @@
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { useEffect, useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { GoogleLogin, googleLogout, type CredentialResponse } from "@react-oauth/google";
 import { useToast } from '@/contexts/toast';
-import { verifyEmailAuthorization } from "./api/endpoints/home";
-import { Commitments } from "./pages/Commitments";
-import { Dashboard } from "./pages/Dashboard";
-import { Expenses } from "./pages/Expenses";
-import { Home } from "./pages/Home";
-import { Incomes } from "./pages/Incomes";
-import { PeriodProvider } from "./contexts/PeriodContext";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-
-const AUTH_TIMEOUT = 1000 * 60 * 60 * 24 * 7; // 7 days
+import { verifyEmailAuthorization } from "@/api/endpoints/home";
+import { AppProvider, createQueryClient } from "@/contexts/AppProvider";
+import { AppRouter } from "@/AppRouter";
+import { AUTH_TIMEOUT_MS, AUTH_REFRESH_INTERVAL_MS } from "@/config/constants";
 
 function App() {
    const toast = useToast();
-   const [queryClient] = useState(
-      () =>
-         new QueryClient({
-            defaultOptions: {
-               queries: {
-                  staleTime: 1000 * 60 * 5,
-                  refetchOnWindowFocus: false,
-                  refetchOnReconnect: false
-               }
-            }
-         })
-   );
+   const [queryClient] = useState(createQueryClient);
 
    const [userEmail, setUserEmail] = useState<string | null>(() => {
       const saved = localStorage.getItem("user_email");
@@ -35,7 +16,7 @@ function App() {
 
       if (!saved || !savedTime) return null;
 
-      if (Date.now() - savedTime > AUTH_TIMEOUT) {
+      if (Date.now() - savedTime > AUTH_TIMEOUT_MS) {
          localStorage.removeItem("user_email");
          localStorage.removeItem("login_time");
          return null;
@@ -44,15 +25,16 @@ function App() {
       return saved;
    });
 
-   async function handleLoginSuccess(credentialResponse: any) {
+   async function handleLoginSuccess(credentialResponse: CredentialResponse) {
       try {
+         if (!credentialResponse.credential) return;
          const decoded = JSON.parse(
             atob(credentialResponse.credential.split(".")[1])
          );
          const email = decoded.email;
 
-         const isAuthorized = await verifyEmailAuthorization(email);
-         if (!isAuthorized) {
+         const autorizado = await verifyEmailAuthorization(email);
+         if (!autorizado) {
             toast.error('E-mail não autorizado!');
             return;
          }
@@ -61,7 +43,7 @@ function App() {
          localStorage.setItem("login_time", Date.now().toString());
          setUserEmail(email);
       } catch (err) {
-         console.error("Error decoding login:", err);
+         console.error("Erro ao decodificar login:", err);
          toast.error('Erro ao fazer login');
       }
    }
@@ -80,7 +62,7 @@ function App() {
          if (userEmail) {
             localStorage.setItem("login_time", Date.now().toString());
          }
-      }, 5 * 60 * 1000); // 5 minutes
+      }, AUTH_REFRESH_INTERVAL_MS);
 
       return () => clearInterval(interval);
    }, [userEmail]);
@@ -111,21 +93,9 @@ function App() {
    }
 
    return (
-      <>
-         <QueryClientProvider client={queryClient}>
-            <PeriodProvider>
-               <Routes>
-                  <Route path="/" element={<Home onLogout={() => handleLogout()} />} />
-                  <Route path="/expenses" element={<Expenses />} />
-                  <Route path="/commitments" element={<Commitments />} />
-                  <Route path="/incomes" element={<Incomes />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="*" element={<Navigate to="/" />} />
-               </Routes>
-            </PeriodProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-         </QueryClientProvider>
-      </>
+      <AppProvider client={queryClient}>
+         <AppRouter onLogout={handleLogout} />
+      </AppProvider>
    );
 }
 

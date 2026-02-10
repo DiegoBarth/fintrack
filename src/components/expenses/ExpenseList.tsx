@@ -1,6 +1,6 @@
+import { Receipt, Calendar, Tag } from 'lucide-react'
 import type { Expense } from '@/types/Expense'
 import { numberToCurrency } from '@/utils/formatters'
-import { Receipt, Calendar, Tag } from 'lucide-react'
 
 interface ExpenseListProps {
    expenses: Expense[]

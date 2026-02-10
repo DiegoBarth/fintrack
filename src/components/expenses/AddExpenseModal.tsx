@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
-import { CustomSelect } from '@/components/ui/SelectCustomizado'
+import { CustomSelect } from '@/components/ui/CustomSelect'
 import { usePeriod } from '@/contexts/PeriodContext'
-import { useExpenses } from '@/hooks/useExpense'
+import { useExpense } from '@/hooks/useExpense'
 
 interface AddExpenseModalProps {
    isOpen: boolean
@@ -19,7 +19,7 @@ const CATEGORIES = [
 
 export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
    const { month, year } = usePeriod()
-   const { create, isSaving } = useExpenses(month, String(year))
+   const { create, isSaving } = useExpense(month, String(year))
 
    const [description, setDescription] = useState('')
    const [paymentDate, setPaymentDate] = useState('')

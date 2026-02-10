@@ -8,15 +8,15 @@ import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
 import { Button } from '@/components/ui/Button'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Income } from '@/types/Income'
-import { useIncomes } from '@/hooks/useIncome'
+import { useIncome } from '@/hooks/useIncome'
 
 /**
  * Main page for Income management.
  * Leverages TanStack Query for efficient data fetching and global cache synchronization.
  */
-export function Incomes() {
+export function Income() {
    const { month, year } = usePeriod()
-   const { incomes, isLoading } = useIncomes(month, String(year))
+   const { incomes, isLoading } = useIncome(month, String(year))
    const navigate = useNavigate()
 
    const [selectedIncome, setSelectedIncome] = useState<Income | null>(null)

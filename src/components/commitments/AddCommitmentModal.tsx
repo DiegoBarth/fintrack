@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
-import { CustomSelect } from '@/components/ui/SelectCustomizado'
+import { CustomSelect } from '@/components/ui/CustomSelect'
 import { usePeriod } from '@/contexts/PeriodContext'
-import { useCommitments } from '@/hooks/useCommitment'
+import { useCommitment } from '@/hooks/useCommitment'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -29,7 +29,7 @@ const CARDS = ['Bradesco', 'Itaú', 'Mercado Pago']
 
 export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
    const { month, year } = usePeriod()
-   const { create, createCard, isSaving } = useCommitments(month, String(year))
+   const { create, createCard, isSaving } = useCommitment(month, String(year))
 
    const [description, setDescription] = useState('')
    const [category, setCategory] = useState('')

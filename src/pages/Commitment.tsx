@@ -7,15 +7,15 @@ import { AddCommitmentModal } from '@/components/commitments/AddCommitmentModal'
 import { EditCommitmentModal } from '@/components/commitments/EditCommitmentModal'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Commitment } from '@/types/Commitment'
-import { useCommitments } from '@/hooks/useCommitment'
+import { useCommitment } from '@/hooks/useCommitment'
 
 /**
  * Main Page for managing commitments (bills, fixed costs, card installments).
  * Uses React Query for data fetching and state synchronization.
  */
-export function Commitments() {
+export function Commitment() {
    const { month, year } = usePeriod()
-   const { commitments, isLoading } = useCommitments(month, String(year))
+   const { commitments, isLoading } = useCommitment(month, String(year))
    const navigate = useNavigate()
 
    const [selectedCommitment, setSelectedCommitment] = useState<Commitment | null>(null)

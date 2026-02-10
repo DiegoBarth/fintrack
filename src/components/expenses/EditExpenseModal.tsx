@@ -3,7 +3,7 @@ import { usePeriod } from '@/contexts/PeriodContext'
 import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 import type { Expense } from '@/types/Expense'
-import { useExpenses } from '@/hooks/useExpense'
+import { useExpense } from '@/hooks/useExpense'
 
 interface EditExpenseModalProps {
    isOpen: boolean
@@ -13,7 +13,7 @@ interface EditExpenseModalProps {
 
 export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalProps) {
    const { month, year } = usePeriod()
-   const { update, remove, isSaving, isDeleting } = useExpenses(month, String(year))
+   const { update, remove, isSaving, isDeleting } = useExpense(month, String(year))
 
    const [amount, setAmount] = useState('')
 

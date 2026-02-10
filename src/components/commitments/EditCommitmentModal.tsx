@@ -6,8 +6,8 @@ import {
    currencyToNumber,
    numberToCurrency
 } from '@/utils/formatters'
-import { BaseModal } from '../ui/ModalBase'
-import { useCommitments } from '@/hooks/useCommitment'
+import { BaseModal } from '@/components/ui/ModalBase'
+import { useCommitment } from '@/hooks/useCommitment'
 
 interface EditCommitmentModalProps {
    isOpen: boolean
@@ -23,7 +23,7 @@ export function EditCommitmentModal({
    onConfirm
 }: EditCommitmentModalProps) {
    const { month, year } = usePeriod()
-   const { update, remove, isSaving, isDeleting } = useCommitments(month, String(year))
+   const { update, remove, isSaving, isDeleting } = useCommitment(month, String(year))
 
    const [amount, setAmount] = useState('')
    const [paymentDate, setPaymentDate] = useState('')

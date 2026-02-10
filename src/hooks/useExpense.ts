@@ -1,14 +1,14 @@
+import { useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
    listExpenses,
    createExpense,
    updateExpense,
    deleteExpense
-} from '@/api/endpoints/expenses'
+} from '@/api/endpoints/expense'
 import type { Expense } from '@/types/Expense'
-import { useLocation } from 'react-router-dom'
 
-export function useExpenses(month: string, year: string) {
+export function useExpense(month: string, year: string) {
    const queryClient = useQueryClient()
    const queryKey = ['expenses', month, year]
 

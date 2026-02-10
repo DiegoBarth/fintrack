@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query'
 import { listDashboardData } from '@/api/endpoints/dashboard';
 import type { MonthlyBalanceHistory, CategorySummary, CreditCardSummary } from '@/types/Dashboard';
 

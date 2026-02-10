@@ -1,5 +1,5 @@
 import { numberToCurrency } from "@/utils/formatters"
-import { Skeleton } from "../ui/Skeleton"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 interface SummaryCardProps {
    title: string

@@ -1,6 +1,6 @@
+import { CheckCircle2, Clock } from 'lucide-react'
 import type { Income } from '@/types/Income'
 import { numberToCurrency } from '@/utils/formatters'
-import { CheckCircle2, Clock } from 'lucide-react'
 
 interface IncomeListProps {
    incomes: Income[]

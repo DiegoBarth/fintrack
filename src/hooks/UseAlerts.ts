@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { listCommitments } from '@/api/endpoints/commitments';
+import { listCommitments } from '@/api/endpoints/commitment';
 import { usePeriod } from '@/contexts/PeriodContext';
 
 /**

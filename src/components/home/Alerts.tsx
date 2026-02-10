@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { useAlerts } from "@/hooks/UseAlerts";
 import type { Commitment } from "@/types/Commitment";
-import { useState } from "react";
 import { EditCommitmentModal } from "@/components/commitments/EditCommitmentModal";
 import { CommitmentModal } from "@/components/home/CommitmentsModal";
 

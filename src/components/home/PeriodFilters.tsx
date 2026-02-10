@@ -2,7 +2,7 @@ import { ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { usePeriod } from "@/contexts/PeriodContext"
-import { Skeleton } from "../ui/Skeleton"
+import { Skeleton } from "@/components/ui/Skeleton"
 
 interface PeriodFiltersProps {
    month: string

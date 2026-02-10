@@ -1,15 +1,15 @@
+import { useLocation } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
    listIncomes,
    createIncome,
    updateIncome,
    deleteIncome
-} from '@/api/endpoints/incomes'
+} from '@/api/endpoints/income'
 
-import { useLocation } from 'react-router-dom';
 import type { Income } from '@/types/Income'
 
-export function useIncomes(month: string, year: string) {
+export function useIncome(month: string, year: string) {
    const queryClient = useQueryClient()
    const queryKey = ['incomes', month, year]
    const location = useLocation();

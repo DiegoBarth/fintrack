@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { usePeriod } from '@/contexts/PeriodContext'
-import { useIncomes } from '@/hooks/useIncome'
+import { useIncome } from '@/hooks/useIncome'
 import type { Income } from '@/types/Income'
 import {
    numberToCurrency,
@@ -18,7 +18,7 @@ interface EditIncomeModalProps {
 
 export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProps) {
    const { month, year } = usePeriod()
-   const { update, remove, isSaving, isDeleting } = useIncomes(month, String(year))
+   const { update, remove, isSaving, isDeleting } = useIncome(month, String(year))
 
    const [amount, setAmount] = useState('')
    const [receivedDate, setReceivedDate] = useState('')

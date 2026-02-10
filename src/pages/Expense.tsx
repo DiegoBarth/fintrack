@@ -8,15 +8,15 @@ import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'
 import { Button } from '@/components/ui/Button'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Expense } from '@/types/Expense'
-import { useExpenses } from '@/hooks/useExpense'
+import { useExpense } from '@/hooks/useExpense'
 
 /**
  * Main page for Expense management.
  * Uses TanStack Query for data fetching and automatic cache synchronization.
  */
-export function Expenses() {
+export function Expense() {
    const { month, year } = usePeriod()
-   const { expenses, isLoading } = useExpenses(month, String(year))
+   const { expenses, isLoading } = useExpense(month, String(year))
    const navigate = useNavigate()
 
    const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)

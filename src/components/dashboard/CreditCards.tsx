@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { CreditCardSummary } from '@/types/Dashboard'
 import { numberToCurrency } from '@/utils/formatters'
+import { BASE_PATH } from '@/config/constants'
 
 interface Props {
    cards: CreditCardSummary[]
@@ -101,7 +102,7 @@ export function CreditCards({ cards }: Props) {
                   onClick={() => !isDragging && setActive(index)}
                >
                   <img
-                     src={`${import.meta.env.BASE_URL}cards/${c.image}.jpg`}
+                     src={`${BASE_PATH}cards/${c.image}.jpg`}
                      alt={c.cardName}
                      className="mb-3 h-44 w-full rounded-lg object-cover pointer-events-none"
                   />

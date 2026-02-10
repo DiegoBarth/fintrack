@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createIncome } from '@/api/endpoints/incomes'
+import { createIncome } from '@/api/endpoints/income'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Income } from '@/types/Income'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'

@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { useDashboard } from '@/hooks/useDashboard'
 import { usePeriod } from '@/contexts/PeriodContext'
-
+import { useDashboard } from '@/hooks/useDashboard'
 import { YearlyBalanceChart } from '@/components/dashboard/YearlyBalanceChart'
 import { TopCategories } from '@/components/dashboard/TopCategories'
 import { CreditCards } from '@/components/dashboard/CreditCards'

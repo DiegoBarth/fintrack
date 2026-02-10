@@ -62,7 +62,7 @@ export function CommitmentList({ commitments, onSelect }: Props) {
                         <div className="mt-1 text-xs text-muted-foreground">
                            {item.card}
                            {(item.totalInstallments ?? 1) > 1 && (
-                              <> • Parcela {item.installment}/{item.totalInstallments}</>
+                              <> • Parcela {item.installments}/{item.totalInstallments}</>
                            )}
                         </div>
                      )}

@@ -27,10 +27,10 @@ export function createCommitment(payload: {
 export function createCard(payload: {
    description: string;
    category: string;
-   card: string;
-   totalAmount: number;
+   card?: string;
+   amount: number;
    type: string;
-   installments: number;
+   installments?: number;
    dueDate: string;
 }) {
    return apiPost<Commitment>({
@@ -39,7 +39,7 @@ export function createCard(payload: {
    });
 }
 
-export function deleteCommitment(rowIndex: number, month: string, year: string, scope: 'single' | 'future' | 'all' = 'single'
+export function deleteCommitment(rowIndex: number, scope: 'single' | 'future' | 'all' = 'single'
 ) {
    return apiPost({
       action: 'deleteCommitment',

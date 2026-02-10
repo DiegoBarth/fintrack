@@ -4,7 +4,7 @@ import { formatDateBR } from '@/utils/formatters';
 
 export function createIncome(payload: {
    expectedDate: string;
-   receivedDate: string;
+   receivedDate?: string | null;
    description: string;
    amount: number;
 }) {
@@ -32,7 +32,7 @@ export function deleteIncome(rowIndex: number, month: string, year: string) {
 export async function updateIncome(payload: {
    rowIndex: number;
    amount: number;
-   receivedDate: string;
+   receivedDate?: string | null;
 }) {
    const res = await apiPost({
       action: 'updateIncome',

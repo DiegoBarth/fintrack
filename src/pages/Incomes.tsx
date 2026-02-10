@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, Plus } from 'lucide-react'
-
-import { listIncomes } from '@/api/endpoints/incomes'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { IncomeList } from '@/components/incomes/IncomeList'
 import { AddIncomeModal } from '@/components/incomes/AddIncomeModal'
@@ -11,6 +8,7 @@ import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
 import { Button } from '@/components/ui/Button'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Income } from '@/types/Income'
+import { useIncomes } from '@/hooks/useIncome'
 
 /**
  * Main page for Income management.
@@ -18,21 +16,11 @@ import type { Income } from '@/types/Income'
  */
 export function Incomes() {
    const { month, year } = usePeriod()
+   const { incomes, isLoading } = useIncomes(month, String(year))
    const navigate = useNavigate()
 
    const [selectedIncome, setSelectedIncome] = useState<Income | null>(null)
    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-
-   /* =========================
-      DATA FETCHING (React Query)
-      ========================= */
-   const { data: incomes = [], isLoading, isFetching } = useQuery({
-      queryKey: ['incomes', month, year],
-      queryFn: () => listIncomes(month, String(year)),
-      // StaleTime Infinity as we manually manage cache updates on mutations
-      staleTime: Infinity,
-      placeholderData: (previous) => previous ?? []
-   })
 
    if (isLoading) {
       return (
@@ -73,18 +61,10 @@ export function Incomes() {
 
          {/* Content Area */}
          <main className="min-h-[400px]">
-            {incomes.length === 0 && !isFetching ? (
-               <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-                  <p className="text-muted-foreground">Nenhuma receita encontrada para este período.</p>
-               </div>
-            ) : (
-               <div className={isFetching ? 'opacity-70 transition-opacity' : ''}>
-                  <IncomeList
-                     incomes={incomes}
-                     onSelect={setSelectedIncome}
-                  />
-               </div>
-            )}
+            <IncomeList
+               incomes={incomes}
+               onSelect={setSelectedIncome}
+            />
          </main>
 
          {/* Modals */}

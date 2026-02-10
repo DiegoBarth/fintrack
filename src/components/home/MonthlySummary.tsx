@@ -7,7 +7,7 @@ import { SummaryCard } from "@/components/home/SummaryCard"
  * It consumes data from PeriodContext and renders multiple SummaryCards.
  */
 export function MonthlySummary() {
-   const { summary, loadingSummary } = usePeriod();
+   const { summary, isLoading } = usePeriod();
 
    if (!summary) return null;
 
@@ -29,7 +29,7 @@ export function MonthlySummary() {
             title="Entradas"
             amount={summary.totalIncomes}
             color="#3b82f6"
-            isLoading={loadingSummary}
+            isLoading={isLoading}
             icon={<Plus className="h-4 w-4" />}
          />
 
@@ -37,7 +37,7 @@ export function MonthlySummary() {
             title="Gastos"
             amount={summary.totalExpenses}
             color="#ef4444"
-            isLoading={loadingSummary}
+            isLoading={isLoading}
             icon={<Minus className="h-4 w-4" />}
          />
 
@@ -45,7 +45,7 @@ export function MonthlySummary() {
             title="Compromissos"
             amount={summary.totalCommitments}
             color="#f59e0b"
-            isLoading={loadingSummary}
+            isLoading={isLoading}
             icon={<Calendar className="h-4 w-4" />}
          />
 
@@ -53,7 +53,7 @@ export function MonthlySummary() {
             title="Saldo Atual"
             amount={currentBalance}
             color="#6366f1"
-            isLoading={loadingSummary}
+            isLoading={isLoading}
             icon={<Wallet className="h-4 w-4" />}
          />
 
@@ -61,7 +61,7 @@ export function MonthlySummary() {
             title="Saldo Final do Mês"
             amount={monthFinalBalance}
             color="#8b5cf6"
-            isLoading={loadingSummary}
+            isLoading={isLoading}
             icon={<TrendingUp className="h-4 w-4" />}
          />
       </div>

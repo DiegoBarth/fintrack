@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateIncome, deleteIncome } from '@/api/endpoints/incomes'
 import { usePeriod } from '@/contexts/PeriodContext'
+import { useIncomes } from '@/hooks/useIncome'
 import type { Income } from '@/types/Income'
 import {
    numberToCurrency,
    currencyToNumber,
    dateBRToISO,
-   formatCurrency,
-   formatDateBR
+   formatCurrency
 } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 
@@ -20,7 +18,7 @@ interface EditIncomeModalProps {
 
 export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProps) {
    const { month, year } = usePeriod()
-   const queryClient = useQueryClient()
+   const { update, remove, isSaving, isDeleting } = useIncomes(month, String(year))
 
    const [amount, setAmount] = useState('')
    const [receivedDate, setReceivedDate] = useState('')
@@ -36,51 +34,27 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
       }
    }, [income])
 
-   /* =========================
-      MUTATIONS
-      ========================= */
-   const updateMutation = useMutation({
-      mutationFn: () =>
-         updateIncome(
-            {
-               rowIndex: income!.rowIndex,
-               amount: currencyToNumber(amount),
-               receivedDate
-            }
-         ),
-      onSuccess: () => {
-         queryClient.setQueryData<Income[]>(
-            ['incomes', month, year],
-            old =>
-               old?.map(r =>
-                  r.rowIndex === income!.rowIndex
-                     ? {
-                        ...r,
-                        amount: currencyToNumber(amount),
-                        receivedDate: formatDateBR(String(receivedDate))
-                     }
-                     : r
-               ) ?? []
-         )
-         onClose()
-      }
-   })
 
-   const deleteMutation = useMutation({
-      mutationFn: () =>
-         deleteIncome(income!.rowIndex, month, String(year)),
-      onSuccess: () => {
-         queryClient.setQueryData<Income[]>(
-            ['incomes', month, year],
-            old => old?.filter(r => r.rowIndex !== income!.rowIndex) ?? []
-         )
-         onClose()
-      }
-   })
+   const handleUpdate = async () => {
+      await update({
+         rowIndex: income!.rowIndex,
+         amount: currencyToNumber(amount),
+         receivedDate
+      })
+      setAmount('')
+      setReceivedDate('')
+      onClose()
+   }
+
+   const handleDelete = async () => {
+      await remove(income!.rowIndex)
+
+      onClose()
+   }
 
    if (!income) return null
 
-   const isLoading = updateMutation.isPending || deleteMutation.isPending
+   const isLoading = isSaving || isDeleting
 
    return (
       <BaseModal
@@ -89,8 +63,9 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
          title={income.description}
          type="edit"
          isLoading={isLoading}
-         onSave={() => updateMutation.mutate()}
-         onDelete={() => deleteMutation.mutate()}
+         loadingText={(isSaving ? 'Salvando...' : 'Excluindo...')}
+         onSave={() => handleUpdate()}
+         onDelete={() => handleDelete()}
       >
          <div className="space-y-4">
             {/* Amount Field */}

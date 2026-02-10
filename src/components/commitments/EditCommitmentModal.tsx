@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateCommitment, deleteCommitment } from '@/api/endpoints/commitments'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Commitment } from '@/types/Commitment'
-import { numberToCurrency, currencyToNumber, formatCurrency, formatDateBR } from '@/utils/formatters'
-import { BaseModal } from '@/components/ui/ModalBase'
+import {
+   formatCurrency,
+   currencyToNumber,
+   numberToCurrency
+} from '@/utils/formatters'
+import { BaseModal } from '../ui/ModalBase'
+import { useCommitments } from '@/hooks/useCommitment'
 
 interface EditCommitmentModalProps {
    isOpen: boolean
@@ -20,7 +23,7 @@ export function EditCommitmentModal({
    onConfirm
 }: EditCommitmentModalProps) {
    const { month, year } = usePeriod()
-   const queryClient = useQueryClient()
+   const { update, remove, isSaving, isDeleting } = useCommitments(month, String(year))
 
    const [amount, setAmount] = useState('')
    const [paymentDate, setPaymentDate] = useState('')
@@ -32,73 +35,33 @@ export function EditCommitmentModal({
       }
    }, [commitment])
 
-   const updateMutation = useMutation({
-      mutationFn: () =>
-         updateCommitment(
-            {
-               rowIndex: commitment!.rowIndex,
-               amount: currencyToNumber(amount),
-               paymentDate
-            }
-         ),
-      onSuccess: () => {
-         queryClient.setQueryData<Commitment[]>(
-            ['commitments', month, year],
-            old =>
-               old?.map(c =>
-                  c.rowIndex === commitment!.rowIndex
-                     ? {
-                        ...c,
-                        valor: currencyToNumber(amount),
-                        paymentDate
-                     }
-                     : c
-               ) ?? []
-         )
+   const handleUpdate = async () => {
+      if (!commitment) return
 
-         queryClient.setQueryData<Commitment[]>(
-            ['commitments', 'alerts', year],
-            old =>
-               old?.map(c =>
-                  c.rowIndex === commitment!.rowIndex
-                     ? { ...c, dataPagamento: formatDateBR(paymentDate) }
-                     : c
-               ) ?? []
-         );
+      await update({
+         rowIndex: commitment.rowIndex,
+         amount: currencyToNumber(amount),
+         paymentDate,
+         scope: 'single'
+      })
 
-         if (commitment) {
-            onConfirm(commitment.rowIndex)
-         }
-         onClose()
-      }
-   })
+      setAmount('')
+      setPaymentDate('')
 
-   const deleteMutation = useMutation({
-      mutationFn: () =>
-         deleteCommitment(commitment!.rowIndex, month, String(year)),
-      onSuccess: () => {
-         queryClient.setQueryData<Commitment[]>(
-            ['commitments', month, year],
-            old => old?.filter(c => c.rowIndex !== commitment!.rowIndex) ?? []
-         )
+      onConfirm(commitment.rowIndex)
+      onClose()
+   }
 
-         queryClient.setQueryData<Commitment[]>(
-            ['commitments', 'alerts', year],
-            old =>
-               old?.filter(c => c.rowIndex !== commitment!.rowIndex) ?? []
-         )
+   const handleDelete = async () => {
+      if (!commitment) return
 
-         if (commitment) {
-            onConfirm(commitment.rowIndex)
-         }
-         onClose()
-      }
-   })
+      await remove(commitment.rowIndex)
+
+      onConfirm(commitment.rowIndex)
+      onClose()
+   }
 
    if (!commitment) return null
-
-   const isPending = updateMutation.isPending || deleteMutation.isPending
-   const activeAction = deleteMutation.isPending ? 'deleting' : 'saving'
 
    return (
       <BaseModal
@@ -106,13 +69,13 @@ export function EditCommitmentModal({
          onClose={onClose}
          title={commitment.description}
          type="edit"
-         isLoading={isPending}
-         loadingText={activeAction === 'deleting' ? 'Excluindo...' : 'Salvando...'}
-         onSave={() => updateMutation.mutate()}
-         onDelete={() => deleteMutation.mutate()}
+         isLoading={isSaving || isDeleting}
+         loadingText={isDeleting ? 'Excluindo...' : 'Salvando...'}
+         onSave={handleUpdate}
+         onDelete={handleDelete}
       >
          <div className="space-y-4">
-            {/* Info Summary - Mantido da versão atual */}
+            {/* Info Summary - Visual mantido do 'atual' */}
             <div className="bg-muted/40 p-3 rounded-lg border border-dashed text-[11px] text-muted-foreground grid grid-cols-2 gap-2">
                <div>
                   Tipo: <span className="font-medium text-foreground">{commitment.type}</span>
@@ -123,7 +86,7 @@ export function EditCommitmentModal({
                {commitment.card && (
                   <div className="col-span-2">
                      Cartão: <span className="font-medium text-foreground">{commitment.card}</span>
-                     {commitment.installment && ` (Parc. ${commitment.installment}/${commitment.totalInstallments})`}
+                     {commitment.installments && ` (Parc. ${commitment.installments}/${commitment.totalInstallments})`}
                   </div>
                )}
             </div>

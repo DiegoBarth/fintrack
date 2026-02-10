@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listCommitments } from '@/api/endpoints/commitments';
-import { usePeriod } from './PeriodContext';
+import { usePeriod } from '@/contexts/PeriodContext';
 
 /**
  * Resets the time to midnight for accurate date comparison.

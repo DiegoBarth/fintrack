@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { useDashboard } from '@/contexts/DashboardContext'
+import { useDashboard } from '@/hooks/useDashboard'
+import { usePeriod } from '@/contexts/PeriodContext'
 
 import { YearlyBalanceChart } from '@/components/dashboard/YearlyBalanceChart'
 import { TopCategories } from '@/components/dashboard/TopCategories'
@@ -8,17 +9,11 @@ import { IncomeExpenseProgress } from '@/components/dashboard/IncomeExpenseProgr
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton'
 
 export function Dashboard() {
-   const {
-      yearlyBalance,
-      topCategories,
-      cards,
-      summary,
-      loading,
-   } = useDashboard()
-
+   const { month, year, summary } = usePeriod();
+   const { dashboard, isLoading } = useDashboard(month, String(year))
    const navigate = useNavigate()
 
-   if (loading) {
+   if (isLoading) {
       return (
          <div className="mx-auto max-w-5xl p-4">
             <DashboardSkeleton />
@@ -44,17 +39,17 @@ export function Dashboard() {
 
          {/* Credit cards at the bottom */}
          <CreditCards
-            cards={cards}
+            cards={dashboard.cardsSummary}
          />
 
          {/* Main Grid */}
          <div className="grid gap-6 md:grid-cols-2">
             <YearlyBalanceChart
-               data={yearlyBalance}
+               data={dashboard.monthlyBalance}
             />
 
             <TopCategories
-               categories={topCategories}
+               categories={dashboard.topCategories}
             />
          </div>
 

@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateExpense, deleteExpense } from '@/api/endpoints/expenses'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 import type { Expense } from '@/types/Expense'
+import { useExpenses } from '@/hooks/useExpense'
 
 interface EditExpenseModalProps {
    isOpen: boolean
@@ -14,7 +13,7 @@ interface EditExpenseModalProps {
 
 export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalProps) {
    const { month, year } = usePeriod()
-   const queryClient = useQueryClient()
+   const { update, remove, isSaving, isDeleting } = useExpenses(month, String(year))
 
    const [amount, setAmount] = useState('')
 
@@ -24,43 +23,25 @@ export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalP
       }
    }, [expense])
 
-   /* =========================
-      MUTATIONS
-      ========================= */
-   const updateMutation = useMutation({
-      mutationFn: () =>
-         updateExpense(
-            { rowIndex: expense!.rowIndex, amount: currencyToNumber(amount) }
-         ),
-      onSuccess: () => {
-         queryClient.setQueryData<Expense[]>(
-            ['expenses', month, year],
-            old =>
-               old?.map(e =>
-                  e.rowIndex === expense!.rowIndex
-                     ? { ...e, amount: currencyToNumber(amount) }
-                     : e
-               ) ?? []
-         )
-         onClose()
-      }
-   })
+   const handleUpdate = async () => {
+      await update({
+         rowIndex: expense!.rowIndex,
+         amount: currencyToNumber(amount)
+      })
+      setAmount('')
+      onClose()
+   }
 
-   const deleteMutation = useMutation({
-      mutationFn: () =>
-         deleteExpense(expense!.rowIndex, month, String(year)),
-      onSuccess: () => {
-         queryClient.setQueryData<Expense[]>(
-            ['expenses', month, year],
-            old => old?.filter(e => e.rowIndex !== expense!.rowIndex) ?? []
-         )
-         onClose()
-      }
-   })
+   const handleDelete = async () => {
+      await remove(expense!.rowIndex)
+      setAmount('')
+
+      onClose()
+   }
 
    if (!expense) return null
 
-   const isLoading = updateMutation.isPending || deleteMutation.isPending
+   const isLoading = isSaving || isDeleting
 
    return (
       <BaseModal
@@ -69,8 +50,9 @@ export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalP
          title={expense.description}
          type="edit"
          isLoading={isLoading}
-         onSave={() => updateMutation.mutate()}
-         onDelete={() => deleteMutation.mutate()}
+         loadingText={(isSaving ? 'Salvando...' : 'Excluindo...')}
+         onSave={() => handleUpdate()}
+         onDelete={() => handleDelete()}
       >
          <div className="space-y-4">
             {/* Info Summary (Versão Anterior) */}

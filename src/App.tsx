@@ -2,14 +2,13 @@ import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useToast } from '@/contexts/toast';
-import { verifyEmailAuthorization } from "./api/home";
+import { verifyEmailAuthorization } from "./api/endpoints/home";
 import { Commitments } from "./pages/Commitments";
 import { Dashboard } from "./pages/Dashboard";
 import { Expenses } from "./pages/Expenses";
 import { Home } from "./pages/Home";
 import { Incomes } from "./pages/Incomes";
 import { PeriodProvider } from "./contexts/PeriodContext";
-import { DashboardProvider } from "./contexts/DashboardContext";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -115,16 +114,14 @@ function App() {
       <>
          <QueryClientProvider client={queryClient}>
             <PeriodProvider>
-               <DashboardProvider>
-                  <Routes>
-                     <Route path="/" element={<Home onLogout={() => handleLogout()} />} />
-                     <Route path="/expenses" element={<Expenses />} />
-                     <Route path="/commitments" element={<Commitments />} />
-                     <Route path="/incomes" element={<Incomes />} />
-                     <Route path="/dashboard" element={<Dashboard />} />
-                     <Route path="*" element={<Navigate to="/" />} />
-                  </Routes>
-               </DashboardProvider>
+               <Routes>
+                  <Route path="/" element={<Home onLogout={() => handleLogout()} />} />
+                  <Route path="/expenses" element={<Expenses />} />
+                  <Route path="/commitments" element={<Commitments />} />
+                  <Route path="/incomes" element={<Incomes />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="*" element={<Navigate to="/" />} />
+               </Routes>
             </PeriodProvider>
             <ReactQueryDevtools initialIsOpen={false} />
          </QueryClientProvider>

@@ -1,15 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, Plus } from 'lucide-react'
-
-import { listCommitments } from '@/api/endpoints/commitments'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { CommitmentList } from '@/components/commitments/CommitmentList'
 import { AddCommitmentModal } from '@/components/commitments/AddCommitmentModal'
 import { EditCommitmentModal } from '@/components/commitments/EditCommitmentModal'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Commitment } from '@/types/Commitment'
+import { useCommitments } from '@/hooks/useCommitment'
 
 /**
  * Main Page for managing commitments (bills, fixed costs, card installments).
@@ -17,21 +15,11 @@ import type { Commitment } from '@/types/Commitment'
  */
 export function Commitments() {
    const { month, year } = usePeriod()
+   const { commitments, isLoading } = useCommitments(month, String(year))
    const navigate = useNavigate()
 
    const [selectedCommitment, setSelectedCommitment] = useState<Commitment | null>(null)
    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-
-   /* =========================
-      DATA FETCHING (React Query)
-      ========================= */
-   const { data: commitments = [], isLoading } = useQuery({
-      queryKey: ['commitments', month, year],
-      queryFn: () => listCommitments(month, String(year)),
-      // StaleTime: Infinity prevents unnecessary background re-fetches 
-      // since we update the cache manually on mutations.
-      staleTime: Infinity
-   })
 
    if (isLoading) {
       return (

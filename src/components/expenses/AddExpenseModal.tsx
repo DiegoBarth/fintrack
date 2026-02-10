@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createExpense } from '@/api/endpoints/expenses'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/SelectCustomizado'
 import { usePeriod } from '@/contexts/PeriodContext'
-import type { Expense } from '@/types/Expense'
+import { useExpenses } from '@/hooks/useExpense'
 
 interface AddExpenseModalProps {
    isOpen: boolean
@@ -21,56 +19,37 @@ const CATEGORIES = [
 
 export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
    const { month, year } = usePeriod()
-   const queryClient = useQueryClient()
+   const { create, isSaving } = useExpenses(month, String(year))
 
    const [description, setDescription] = useState('')
-   const [date, setDate] = useState('')
+   const [paymentDate, setPaymentDate] = useState('')
    const [amount, setAmount] = useState('')
    const [category, setCategory] = useState('')
 
-   // Reseta o formulário ao fechar/abrir
    useEffect(() => {
       if (!isOpen) {
          setDescription('')
-         setDate('')
+         setPaymentDate('')
          setCategory('')
          setAmount('')
       }
    }, [isOpen])
 
-   /* =========================
-      MUTATION
-      ========================= */
-   const createMutation = useMutation({
-      mutationFn: () => {
-         const numericAmount = currencyToNumber(amount)
 
-         if (!description || !date || !category || numericAmount <= 0) {
-            throw new Error('MISSING_FIELDS')
-         }
+   const handleSave = async () => {
+      await create({
+         description,
+         category,
+         amount: currencyToNumber(amount),
+         paymentDate
+      })
+      setDescription('')
+      setPaymentDate('')
+      setCategory('')
+      setAmount('')
 
-         return createExpense({
-            date,
-            description,
-            category,
-            amount: numericAmount
-         })
-      },
-      onSuccess: (newExpense) => {
-         queryClient.setQueryData<Expense[]>(
-            ['expenses', month, year],
-            old => old ? [...old, newExpense] : [newExpense]
-         )
-         onClose()
-      },
-      onError: (error: any) => {
-         if (error.message === 'MISSING_FIELDS') {
-            alert('Preencha os campos obrigatórios (Descrição, Data, Categoria e Valor)')
-         } else {
-            console.error("Failed to create expense:", error)
-         }
-      }
-   })
+      onClose()
+   }
 
    return (
       <BaseModal
@@ -78,8 +57,8 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
          onClose={onClose}
          title="Novo Gasto"
          type="create"
-         isLoading={createMutation.isPending}
-         onSave={() => createMutation.mutate()}
+         isLoading={isSaving}
+         onSave={() => handleSave()}
       >
          <div className="space-y-4">
             {/* Description */}
@@ -103,8 +82,8 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                <input
                   type="date"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                  value={date}
-                  onChange={e => setDate(e.target.value)}
+                  value={paymentDate}
+                  onChange={e => setPaymentDate(e.target.value)}
                />
             </div>
 

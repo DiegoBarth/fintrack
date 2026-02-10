@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, Plus } from 'lucide-react'
-
-import { listExpenses } from '@/api/endpoints/expenses'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { ExpenseList } from '@/components/expenses/ExpenseList'
 import { AddExpenseModal } from '@/components/expenses/AddExpenseModal'
@@ -11,6 +8,7 @@ import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'
 import { Button } from '@/components/ui/Button'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Expense } from '@/types/Expense'
+import { useExpenses } from '@/hooks/useExpense'
 
 /**
  * Main page for Expense management.
@@ -18,20 +16,11 @@ import type { Expense } from '@/types/Expense'
  */
 export function Expenses() {
    const { month, year } = usePeriod()
+   const { expenses, isLoading } = useExpenses(month, String(year))
    const navigate = useNavigate()
 
    const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
    const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-
-   /* =========================
-      DATA FETCHING (React Query)
-      ========================= */
-   const { data: expenses = [], isLoading, isFetching } = useQuery({
-      queryKey: ['expenses', month, year],
-      queryFn: () => listExpenses(month, String(year)),
-      // Keeps previous data visible while fetching new period data
-      placeholderData: (previous) => previous ?? []
-   })
 
    if (isLoading) {
       return (
@@ -72,18 +61,10 @@ export function Expenses() {
 
          {/* List Section */}
          <main className="min-h-[400px]">
-            {expenses.length === 0 && !isFetching ? (
-               <div className="text-center py-20 border-2 border-dashed rounded-2xl">
-                  <p className="text-muted-foreground">Nenhum gasto encontrado para este período.</p>
-               </div>
-            ) : (
-               <div className={isFetching ? 'opacity-70 transition-opacity' : ''}>
-                  <ExpenseList
-                     expenses={expenses}
-                     onSelect={setSelectedExpense}
-                  />
-               </div>
-            )}
+            <ExpenseList
+               expenses={expenses}
+               onSelect={setSelectedExpense}
+            />
          </main>
 
          {/* Modals */}

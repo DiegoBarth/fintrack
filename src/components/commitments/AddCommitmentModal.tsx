@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react'
-import { createCommitment, createCard } from '@/api/endpoints/commitments'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/SelectCustomizado'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-
 import { usePeriod } from '@/contexts/PeriodContext'
-import type { Commitment } from '@/types/Commitment'
+import { useCommitments } from '@/hooks/useCommitment'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -32,47 +29,20 @@ const CARDS = ['Bradesco', 'Itaú', 'Mercado Pago']
 
 export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
    const { month, year } = usePeriod()
-   const queryClient = useQueryClient()
+   const { create, createCard, isSaving } = useCommitments(month, String(year))
 
    const [description, setDescription] = useState('')
    const [category, setCategory] = useState('')
    const [type, setType] = useState<CommitmentType>('')
 
-   // Fixed/Variable Fields
    const [amount, setAmount] = useState('')
    const [dueDate, setDueDate] = useState('')
    const [monthsToRepeat, setMonthsToRepeat] = useState(1)
 
-   // Card Fields
    const [cardName, setCardName] = useState('')
    const [totalAmount, setTotalAmount] = useState('')
    const [installments, setInstallments] = useState<number | ''>('')
    const [cardDueDate, setCardDueDate] = useState('')
-
-   /* =========================
-      MUTATIONS
-      ========================= */
-   const commitmentMutation = useMutation({
-      mutationFn: createCommitment,
-      onSuccess: (newRecord: Commitment) => {
-         queryClient.setQueryData<Commitment[]>(
-            ['commitments', month, year],
-            old => old ? [...old, newRecord] : [newRecord]
-         )
-         onClose()
-      }
-   })
-
-   const cardMutation = useMutation({
-      mutationFn: createCard,
-      onSuccess: (newRecord: Commitment) => {
-         queryClient.setQueryData<Commitment[]>(
-            ['cards', month, year],
-            old => old ? [...old, newRecord] : [newRecord]
-         )
-         onClose()
-      }
-   })
 
    /* =========================
       REGRAS FIXO
@@ -108,12 +78,12 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             return
          }
 
-         cardMutation.mutate({
-            type: 'Cartão',
+         createCard({
+            type: 'Credit_card',
             description,
             category,
             card: cardName,
-            totalAmount: currencyToNumber(totalAmount),
+            amount: currencyToNumber(amount),
             installments: Number(installments),
             dueDate: cardDueDate
          })
@@ -123,7 +93,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             return
          }
 
-         commitmentMutation.mutate({
+         create({
             type: type as 'Fixed' | 'Variable',
             description,
             category,
@@ -134,8 +104,6 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
       }
    }
 
-   const isLoading = commitmentMutation.isPending || cardMutation.isPending
-
    return (
       <BaseModal
          isOpen={isOpen}
@@ -143,7 +111,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
          title="Novo compromisso"
          type="create"
          onSave={handleSave}
-         isLoading={isLoading}
+         isLoading={isSaving}
       >
          <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4">

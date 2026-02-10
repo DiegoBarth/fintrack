@@ -2,10 +2,10 @@ import { apiGet, apiPost } from '@/api/client';
 import type { Expense } from '@/types/Expense';
 
 export function createExpense(payload: {
-   date: string;
    description: string;
    category: string;
    amount: number;
+   paymentDate: string;
 }) {
    return apiPost<Expense>({
       action: 'createExpense',
@@ -21,7 +21,7 @@ export function listExpenses(month: string, year: string) {
    });
 }
 
-export function deleteExpense(rowIndex: number, month: string, year: string) {
+export function deleteExpense(rowIndex: number) {
    return apiPost({
       action: 'deleteExpense',
       rowIndex

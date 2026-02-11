@@ -7,6 +7,6 @@ export interface Commitment {
    dueDate: string;
    paymentDate?: string;
    card?: string;
-   installments?: number;
+   installment?: number;
    totalInstallments?: number;
 }

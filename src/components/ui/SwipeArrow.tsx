@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ChevronUp, RefreshCcw  } from 'lucide-react'
+import { ChevronLeft, ChevronRight, RefreshCcw  } from 'lucide-react'
 
 interface Props {
    direction: 'left' | 'right' | 'up' | null

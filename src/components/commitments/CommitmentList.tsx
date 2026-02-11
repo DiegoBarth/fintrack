@@ -19,8 +19,6 @@ interface Props {
  * Checks if a date is in the past compared to today.
  */
 function checkIfOverdue(dueDate: string) {
-   dueDate = formatDateBR(dueDate);
-
    const [d, m, y] = dueDate.split('/').map(Number);
 
    const expiration = new Date(y, m - 1, d);
@@ -64,7 +62,7 @@ export function CommitmentList({ commitments, onSelect }: Props) {
                      <div className="mt-1 text-xs text-muted-foreground">
                         {commitment.card}
                         {(commitment.totalInstallments ?? 1) > 1 && (
-                           <> • Parcela {commitment.installments}/{commitment.totalInstallments}</>
+                           <> • Parcela {commitment.installment}/{commitment.totalInstallments}</>
                         )}
                      </div>
                   )}

@@ -84,7 +84,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             category,
             card: cardName,
             amount: currencyToNumber(amount),
-            installments: Number(installments),
+            totalInstallments: Number(installments),
             dueDate: cardDueDate
          })
       } else {

@@ -86,7 +86,7 @@ export function EditCommitmentModal({
                {commitment.card && (
                   <div className="col-span-2">
                      Cartão: <span className="font-medium text-foreground">{commitment.card}</span>
-                     {commitment.installments && ` (Parc. ${commitment.installments}/${commitment.totalInstallments})`}
+                     {commitment.installment && ` (Parc. ${commitment.installment}/${commitment.totalInstallments})`}
                   </div>
                )}
             </div>

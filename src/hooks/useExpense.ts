@@ -7,6 +7,7 @@ import {
 } from '@/api/endpoints/expense'
 import type { Expense } from '@/types/Expense'
 import { useApiError } from '@/hooks/useApiError'
+import { getMonthAndYear } from '@/utils/formatters'
 
 export function useExpense(month: string, year: string) {
    const queryClient = useQueryClient()
@@ -24,8 +25,10 @@ export function useExpense(month: string, year: string) {
       mutationFn: (newExpense: Omit<Expense, 'rowIndex'>) =>
          createExpense(newExpense),
       onSuccess: (newExpense: Expense) => {
+         const { month: regisMonth, year: regisYear } = getMonthAndYear(newExpense.paymentDate)
+
          queryClient.setQueryData<Expense[]>(
-            queryKey,
+            ['expenses', regisMonth, regisYear],
             old => old ? [...old, newExpense] : [newExpense]
          )
       },
@@ -53,10 +56,6 @@ export function useExpense(month: string, year: string) {
                      : r
                ) ?? []
          )
-
-         queryClient.invalidateQueries({
-            queryKey: ['summary', month, year],
-         })
       },
       onError: (error) => {
          handleError(error)

@@ -1,6 +1,9 @@
 export const API_URL = import.meta.env.VITE_API_URL;
 export const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
+/** Minimum time between POST requests to prevent accidental double submissions (in ms). */
+export const POST_RATE_LIMIT_MS = 1000;
+
 export const MS_PER_SECOND = 1000;
 export const MS_PER_MINUTE = 60 * MS_PER_SECOND;
 export const MS_PER_HOUR = 60 * MS_PER_MINUTE;

@@ -1,5 +1,6 @@
 import { apiGet, apiPost } from '@/api/client';
 import type { Expense } from '@/types/Expense';
+import { sanitizeText } from '@/utils/sanitizers'
 
 export function createExpense(payload: {
    description: string;
@@ -7,9 +8,15 @@ export function createExpense(payload: {
    amount: number | string;
    paymentDate: string;
 }) {
+   const sanitizedPayload = {
+      ...payload,
+      description: sanitizeText(payload.description),
+      category: sanitizeText(payload.category)
+   };
+
    return apiPost<Expense>({
       action: 'createExpense',
-      ...payload
+      ...sanitizedPayload
    });
 }
 

@@ -7,6 +7,7 @@ import {
 } from '@/api/endpoints/income'
 import type { Income } from '@/types/Income'
 import { useApiError } from '@/hooks/useApiError'
+import { getMonthAndYear } from '@/utils/formatters'
 
 export function useIncome(month: string, year: string) {
    const queryClient = useQueryClient()
@@ -24,8 +25,10 @@ export function useIncome(month: string, year: string) {
       mutationFn: (newIncome: Omit<Income, 'rowIndex'>) =>
          createIncome(newIncome),
       onSuccess: (newIncome: Income) => {
+         const { month: regisMonth, year: regisYear } = getMonthAndYear(newIncome.expectedDate)
+
          queryClient.setQueryData<Income[]>(
-            queryKey,
+            ['incomes', regisMonth, regisYear],
             old => old ? [...old, newIncome] : [newIncome]
          )
       },

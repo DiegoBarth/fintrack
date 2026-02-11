@@ -1,4 +1,26 @@
-import { API_URL, API_TIMEOUT_MS } from '@/config/constants';
+import { API_URL, API_TIMEOUT_MS, POST_RATE_LIMIT_MS } from '@/config/constants';
+
+const lastPostByAction = new Map<string, number>();
+
+function getCsrfToken(): string | null {
+   if (typeof document === 'undefined') return null;
+   const meta =
+      document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]') ??
+      document.querySelector<HTMLMetaElement>('meta[name="csrf_token"]') ??
+      document.querySelector<HTMLMetaElement>('meta[name="csrfToken"]');
+
+   return meta?.content ?? null;
+}
+
+function enforcePostRateLimit(action: string) {
+   const now = Date.now();
+   const lastSent = lastPostByAction.get(action) ?? 0;
+
+   if (now - lastSent < POST_RATE_LIMIT_MS) {
+      throw new Error('Aguarde um instante antes de enviar novamente.');
+   }
+   lastPostByAction.set(action, now);
+}
 
 async function fetchWithTimeout(
    url: string,
@@ -8,9 +30,17 @@ async function fetchWithTimeout(
    const controller = new AbortController();
    const id = setTimeout(() => controller.abort(), timeoutMs);
 
+   const headers = new Headers(fetchOptions.headers);
+   const csrfToken = getCsrfToken();
+
+   if (csrfToken && !headers.has('X-CSRF-Token')) {
+      headers.set('X-CSRF-Token', csrfToken);
+   }
+
    try {
       const res = await fetch(url, {
          ...fetchOptions,
+         headers,
          signal: controller.signal
       });
       clearTimeout(id);
@@ -57,6 +87,9 @@ export async function apiPost<T>(
    body: Record<string, unknown>
 ): Promise<T> {
    try {
+      const action = typeof body.acao === 'string' ? body.acao : 'POST';
+      enforcePostRateLimit(action);
+
       const res = await fetchWithTimeout(API_URL, {
          method: 'POST',
          body: JSON.stringify(body)

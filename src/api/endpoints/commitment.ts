@@ -1,6 +1,7 @@
 import { apiGet, apiPost } from '@/api/client';
 import type { Commitment } from '@/types/Commitment';
 import { formatDateBR } from '@/utils/formatters';
+import { sanitizeText } from '@/utils/sanitizers'
 
 export function listCommitments(month: string, year: string) {
    return apiGet<Commitment[]>({
@@ -18,9 +19,15 @@ export function createCommitment(payload: {
    dueDate: string;
    months?: number;
 }) {
+   const sanitizedPayload = {
+      ...payload,
+      description: sanitizeText(payload.description),
+      category: sanitizeText(payload.category),
+      type: sanitizeText(payload.type)
+   };
    return apiPost<Commitment[]>({
       action: 'createCommitment',
-      ...payload
+      ...sanitizedPayload
    });
 }
 
@@ -33,9 +40,17 @@ export function createCard(payload: {
    installments?: number;
    dueDate: string;
 }) {
+   const payloadSanitizado = {
+      ...payload,
+      description: sanitizeText(payload.description),
+      category: sanitizeText(payload.category),
+      card: payload.card ? sanitizeText(payload.card) : undefined,
+      type: sanitizeText(payload.type)
+   };
+
    return apiPost<Commitment[]>({
       action: 'createCard',
-      ...payload
+      ...payloadSanitizado
    });
 }
 

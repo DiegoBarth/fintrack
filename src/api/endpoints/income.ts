@@ -1,6 +1,7 @@
 import { apiGet, apiPost } from '@/api/client';
 import type { Income } from '@/types/Income';
 import { formatDateBR } from '@/utils/formatters';
+import { sanitizeText } from '@/utils/sanitizers'
 
 export function createIncome(payload: {
    expectedDate: string;
@@ -8,9 +9,14 @@ export function createIncome(payload: {
    description: string;
    amount: number | string;
 }) {
+   const sanitizedPayload = {
+      ...payload,
+      description: sanitizeText(payload.description)
+   };
+
    return apiPost<Income>({
       action: 'createIncome',
-      ...payload
+      ...sanitizedPayload
    });
 }
 

@@ -4,7 +4,7 @@ import type { Expense } from '@/types/Expense';
 export function createExpense(payload: {
    description: string;
    category: string;
-   amount: number;
+   amount: number | string;
    paymentDate: string;
 }) {
    return apiPost<Expense>({

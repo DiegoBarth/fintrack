@@ -57,11 +57,7 @@ export const CATEGORIES = [
 ];
 
 /** Commitment types used in registration. */
-export const COMMITMENT_TYPES = [
-   { label: 'Fixo', value: 'Fixed' },
-   { label: 'Variável', value: 'Variable' },
-   { label: 'Cartão de Crédito', value: 'Credit_card' },
-]
+export const COMMITMENT_TYPES = ['Fixed', 'Variable', 'Credit_card'];
 
 /** Cards used when registering commitments of type "Card". */
 export const CARDS = ['Bradesco', 'Itaú', 'Mercado Pago'];

@@ -1,14 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 import { useIncome } from '@/hooks/useIncome'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateIncomeSchema } from '@/schemas/income.schema'
+import type { Income } from '@/types/Income'
 
 interface AddIncomeModalProps {
    isOpen: boolean
    onClose: () => void
+}
+
+const defaultValues: Partial<Income> = {
+   description: '',
+   amount: '',
+   expectedDate: '',
+   receivedDate: ''
 }
 
 /**
@@ -19,37 +28,30 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
    const { month, year } = usePeriod()
    const { create, isSaving } = useIncome(month, String(year))
    const { validate } = useValidation()
-   const [description, setDescription] = useState('')
-   const [expectedDate, setExpectedDate] = useState('')
-   const [receivedDate, setReceivedDate] = useState('')
-   const [amount, setAmount] = useState('')
+
+   const { control, register, handleSubmit, reset } = useForm<Income>({
+      defaultValues
+   })
 
    useEffect(() => {
       if (!isOpen) {
-         setDescription('')
-         setExpectedDate('')
-         setReceivedDate('')
-         setAmount('')
+         reset(defaultValues)
       }
-   }, [isOpen])
+   }, [isOpen, reset])
 
-   const handleSave = async () => {
+   const handleSave = async (values: Income) => {
       const data = validate(CreateIncomeSchema, {
-         description,
-         amount: currencyToNumber(amount),
-         expectedDate,
-         receivedDate
+         description: values.description,
+         amount: currencyToNumber(String(values.amount)),
+         expectedDate: values.expectedDate,
+         receivedDate: values.receivedDate
       })
 
       if (!data) return
 
       await create(data as any)
 
-      setDescription('')
-      setAmount('')
-      setExpectedDate('')
-      setReceivedDate('')
-
+      reset(defaultValues)
       onClose()
    }
 
@@ -61,7 +63,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
          type="create"
          isLoading={isSaving}
          loadingText="Salvando..."
-         onSave={() => handleSave()}
+         onSave={handleSubmit(handleSave)}
       >
          <div className="space-y-4">
             {/* Description Field */}
@@ -72,8 +74,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <input
                   placeholder="Ex: Salário, Venda de Produto"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
+                  {...register('description')}
                />
             </div>
 
@@ -82,10 +83,16 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <label className="block text-xs font-medium text-muted-foreground mb-1">
                   Valor *
                </label>
-               <input
-                  className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                  value={amount}
-                  onChange={e => setAmount(formatCurrency(e.target.value))}
+               <Controller
+                  name="amount"
+                  control={control}
+                  render={({ field }) => (
+                     <input
+                        className="w-full border rounded-md p-2"
+                        value={field.value}
+                        onChange={e => field.onChange(formatCurrency(e.target.value))}
+                     />
+                  )}
                />
             </div>
 
@@ -97,8 +104,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <input
                   type="date"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                  value={expectedDate}
-                  onChange={e => setExpectedDate(e.target.value)}
+                  {...register('expectedDate')}
                />
             </div>
 
@@ -110,8 +116,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <input
                   type="date"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                  value={receivedDate}
-                  onChange={e => setReceivedDate(e.target.value)}
+                   {...register('receivedDate')}
                />
             </div>
          </div>

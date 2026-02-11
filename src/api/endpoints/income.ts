@@ -6,7 +6,7 @@ export function createIncome(payload: {
    expectedDate: string;
    receivedDate?: string | null;
    description: string;
-   amount: number;
+   amount: number | string;
 }) {
    return apiPost<Income>({
       action: 'createIncome',

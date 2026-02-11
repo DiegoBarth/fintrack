@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
@@ -7,6 +8,7 @@ import { useCommitment } from '@/hooks/useCommitment'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateCommitmentSchema, CreateCardCommitmentSchema } from '@/schemas/commitment.schema'
 import { CATEGORIES, COMMITMENT_TYPES, CARDS } from '@/config/constants'
+import type { Commitment } from '@/types/Commitment'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -15,23 +17,28 @@ interface AddCommitmentModalProps {
 
 type CommitmentType = 'Fixed' | 'Variable' | 'Credit_card' | ''
 
+const defaultValues: Partial<Commitment> = {
+   description: '',
+   category: '',
+   type: '',
+   dueDate: '',
+   months: 1,
+   card: '',
+   amount: '',
+   totalInstallments: 1
+}
+
 export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
    const { month, year } = usePeriod()
    const { create, createCard, isSaving } = useCommitment(month, String(year))
    const { validate } = useValidation()
 
-   const [description, setDescription] = useState('')
-   const [category, setCategory] = useState('')
-   const [type, setType] = useState<CommitmentType>('')
+   const { control, register, handleSubmit, watch, setValue, reset } = useForm<Commitment>({
+      defaultValues
+   })
 
-   const [amount, setAmount] = useState('')
-   const [dueDate, setDueDate] = useState('')
-   const [monthsToRepeat, setMonthsToRepeat] = useState(1)
-
-   const [cardName, setCardName] = useState('')
-   const [totalAmount, setTotalAmount] = useState('')
-   const [installments, setInstallments] = useState<number | ''>('')
-   const [cardDueDate, setCardDueDate] = useState('')
+   const type = watch('type')
+   const dueDate = watch('dueDate')
 
    /* =========================
       REGRAS FIXO
@@ -39,7 +46,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
    useEffect(() => {
       if (type === 'Fixed' && dueDate) {
          const selectedDate = new Date(dueDate)
-         setMonthsToRepeat(12 - selectedDate.getMonth())
+         setValue('months', 12 - selectedDate.getMonth())
       }
    }, [type, dueDate])
 
@@ -48,41 +55,43 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
       ========================= */
    useEffect(() => {
       if (!isOpen) {
-         setDescription(''); setCategory(''); setType('')
-         setAmount(''); setDueDate(''); setMonthsToRepeat(1)
-         setCardName(''); setTotalAmount(''); setInstallments('')
-         setCardDueDate('')
+         reset(defaultValues)
       }
-   }, [isOpen])
+   }, [isOpen, reset])
 
-   async function handleSave() {
+   async function handleSave(values: Commitment) {
       if (type === 'Credit_card') {
          const data = validate(CreateCardCommitmentSchema, {
-            description,
-            category,
+            description: values.description,
+            category: values.category,
             type,
-            card: cardName,
-            amount: currencyToNumber(amount),
-            totalInstallments: Number(installments),
-            dueDate: cardDueDate
+            card: values.card,
+            amount: currencyToNumber(String(values.amount)),
+            totalInstallments: Number(values.totalInstallments),
+            dueDate: values.dueDate
          })
+
          if (!data) return
 
          await createCard(data as any)
-      } else {
+      }
+      else {
          const data = validate(CreateCommitmentSchema, {
-            description,
-            category,
+            description: values.description,
+            category: values.category,
             type,
-            amount: currencyToNumber(amount),
-            dueDate,
-            months: type === 'Fixed' ? monthsToRepeat : 1
+            amount: currencyToNumber(String(values.amount)),
+            dueDate: values.dueDate,
+            months: type === 'Fixed' ? values.months : 1
          })
 
          if (!data) return
 
          await create(data as any)
       }
+
+      reset(defaultValues)
+      onClose()
    }
 
    return (
@@ -93,7 +102,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
          type="create"
          isLoading={isSaving}
          loadingText="Salvando..."
-         onSave={() => handleSave()}
+         onSave={handleSubmit(handleSave)}
       >
          <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
@@ -103,8 +112,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                   <input
                      className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                      placeholder="Ex: Aluguel, Parcela Notebook"
-                     value={description}
-                     onChange={e => setDescription(e.target.value)}
+                     {...register('description')}
                   />
                </div>
 
@@ -112,21 +120,30 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                <div className="grid grid-cols-2 gap-3">
                   <div>
                      <label className="block text-xs font-medium text-muted-foreground mb-1">Categoria *</label>
-                     <CustomSelect
-                        value={category}
-                        onChange={setCategory}
-                        options={CATEGORIES}
+                     <Controller
+                        name="category"
+                        control={control}
+                        render={({ field }) => (
+                           <CustomSelect
+                              value={field.value}
+                              onChange={field.onChange}
+                              options={CATEGORIES}
+                           />
+                        )}
                      />
                   </div>
                   <div>
                      <label className="block text-xs font-medium text-muted-foreground mb-1">Tipo *</label>
-                     <CustomSelect
-                        value={COMMITMENT_TYPES.find(t => t.value === type)?.label || ''}
-                        onChange={(label) => {
-                           const found = COMMITMENT_TYPES.find(t => t.label === label)
-                           setType((found?.value as CommitmentType) || '')
-                        }}
-                        options={COMMITMENT_TYPES.map(t => t.label)}
+                     <Controller
+                        name="type"
+                        control={control}
+                        render={({ field }) => (
+                           <CustomSelect
+                              value={field.value}
+                              onChange={value => field.onChange(value as CommitmentType)}
+                              options={COMMITMENT_TYPES}
+                           />
+                        )}
                      />
                   </div>
                </div>
@@ -140,10 +157,16 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                   <div className="grid grid-cols-2 gap-3">
                      <div>
                         <label className="block text-xs font-medium text-muted-foreground mb-1">Valor *</label>
-                        <input
-                           className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                           value={amount}
-                           onChange={e => setAmount(formatCurrency(e.target.value))}
+                        <Controller
+                           name="amount"
+                           control={control}
+                           render={({ field }) => (
+                              <input
+                                 className="mt-1 w-full rounded-md border p-2"
+                                 value={field.value}
+                                 onChange={e => field.onChange(formatCurrency(e.target.value))}
+                              />
+                           )}
                         />
                      </div>
                      <div>
@@ -151,8 +174,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         <input
                            type="date"
                            className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                           value={dueDate}
-                           onChange={e => setDueDate(e.target.value)}
+                           {...register('dueDate')}
                         />
                      </div>
                   </div>
@@ -160,15 +182,14 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                   {type === 'Fixed' && (
                      <div>
                         <label className="block text-xs font-medium text-muted-foreground mb-1">
-                           Repetir até o fim do ano ({monthsToRepeat} meses)
+                           Repetir por (meses)
                         </label>
                         <input
                            type="number"
                            min={1}
                            max={12}
                            className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                           value={monthsToRepeat}
-                           onChange={e => setMonthsToRepeat(Number(e.target.value))}
+                           {...register('months', { valueAsNumber: true })}
                         />
                      </div>
                   )}
@@ -180,20 +201,32 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                   <div>
                      <label className="block text-xs font-medium text-muted-foreground mb-1">Selecione o Cartão *</label>
-                     <CustomSelect
-                        value={cardName}
-                        onChange={setCardName}
-                        options={CARDS}
+                     <Controller
+                        name="card"
+                        control={control}
+                        render={({ field }) => (
+                           <CustomSelect
+                              value={field.value ?? ''}
+                              onChange={field.onChange}
+                              options={CARDS}
+                           />
+                        )}
                      />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                      <div>
                         <label className="block text-xs font-medium text-muted-foreground mb-1">Valor Total *</label>
-                        <input
-                           className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                           value={totalAmount}
-                           onChange={e => setTotalAmount(formatCurrency(e.target.value))}
+                        <Controller
+                           name="amount"
+                           control={control}
+                           render={({ field }) => (
+                              <input
+                                 className="mt-1 w-full rounded-md border p-2"
+                                 value={field.value}
+                                 onChange={e => field.onChange(formatCurrency(e.target.value))}
+                              />
+                           )}
                         />
                      </div>
                      <div>
@@ -201,8 +234,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         <input
                            type="number"
                            className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                           value={installments}
-                           onChange={e => setInstallments(Number(e.target.value))}
+                           {...register('totalInstallments')}
                         />
                      </div>
                   </div>
@@ -212,8 +244,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      <input
                         type="date"
                         className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                        value={cardDueDate}
-                        onChange={e => setCardDueDate(e.target.value)}
+                        {...register('dueDate')}
                      />
                   </div>
                </div>

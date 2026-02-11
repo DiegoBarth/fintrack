@@ -48,8 +48,8 @@ export function currencyToNumber(value: string): number {
  * numberToCurrency(1234.56) // → "R$ 1.234,56"
  * numberToCurrency(0)       // → "R$ 0,00"
  */
-export function numberToCurrency(value: number): string {
-   return value.toLocaleString('pt-BR', {
+export function numberToCurrency(value: number | string): string {
+   return Number(value).toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL'
    });
@@ -148,5 +148,5 @@ export function getMonthAndYear(ISODataOrBR: string) {
    const month = String(date.getMonth() + 1)
    const year = String(date.getFullYear())
 
-   return { month, year }
+   return { month: String(Number(month)), year };
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Calendar, CheckCircle } from 'lucide-react'
 import type { Commitment } from '@/types/Commitment'
+import { formatCurrency, numberToCurrency } from '@/utils/formatters'
 
 interface CommitmentModalProps {
    isOpen: boolean
@@ -93,7 +94,7 @@ export function CommitmentModal({
 
                            <div className="flex flex-col items-end gap-1">
                               <span className="font-bold text-orange-600">
-                                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.amount)}
+                                 {numberToCurrency(item.amount)}
                               </span>
                               <span className="text-[10px] font-bold text-muted-foreground opacity-60 uppercase">
                                  Pendente

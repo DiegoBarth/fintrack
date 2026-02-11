@@ -28,7 +28,7 @@ export function createCard(payload: {
    description: string;
    category: string;
    card?: string;
-   amount: number;
+   amount: number | string;
    type: string;
    installments?: number;
    dueDate: string;

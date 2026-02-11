@@ -3,5 +3,5 @@ export interface Income {
    description: string
    expectedDate: string
    receivedDate?: string | null
-   amount: number
+   amount: number | string
 }

@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react'
 import { ListLayout } from '@/components/layout/ListLayout'
 import { ListItemLayout } from '@/components/layout/ListItemLayout'
 import type { Income } from '@/types/Income'
@@ -14,75 +15,80 @@ interface Props {
    onSelect: (income: Income) => void
 }
 
-export function IncomeList({ incomes, onSelect }: Props) {
+/**
+ * Income list with performance optimizations.
+ * * Applied Optimizations:
+ * - React.memo: Prevents re-renders when props remain unchanged.
+ * - useCallback: Memoizes mobile/desktop render functions.
+ */
+export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props) {
+   const renderMobileItem = useCallback((income: Income) => {
+      const received = !!income.receivedDate
+      const dateText = received
+         ? `Recebido em ${income.receivedDate}`
+         : `Previsto para ${income.expectedDate}`
+
+      return (
+         <ListItemLayout
+            onClick={() => onSelect(income)}
+            variant={received ? 'success' : 'default'}
+            className="p-3"
+         >
+            <ListItemHeaderMobile
+               title={income.description}
+               right={numberToCurrency(income.amount)}
+            />
+
+            <ListItemFooterMobile
+               left={dateText}
+               right={
+                  <span className={received ? 'text-green-600' : 'text-blue-500'}>
+                     {received ? 'Recebido' : 'Em aberto'}
+                  </span>
+               }
+            />
+         </ListItemLayout>
+      )
+   }, [onSelect])
+
+   const renderDesktopItem = useCallback((income: Income) => {
+      const received = !!income.receivedDate
+      const dateText = received
+         ? `Recebido em ${income.receivedDate}`
+         : `Previsto para ${income.expectedDate}`
+
+      return (
+         <ListItemRowDesktop
+            onClick={() => onSelect(income)}
+            variant={received ? 'success' : 'default'}
+         >
+            <ListColDescription>
+               {income.description}
+            </ListColDescription>
+
+            <ListColMuted span={4}>
+               {dateText}
+            </ListColMuted>
+
+            <ListColValue>
+               {numberToCurrency(income.amount)}
+            </ListColValue>
+
+            <div className="col-span-2 text-right font-medium">
+               <span className={received ? 'text-green-600' : 'text-blue-500'}>
+                  {received ? 'Recebido' : 'Em aberto'}
+               </span>
+            </div>
+         </ListItemRowDesktop>
+      )
+   }, [onSelect])
    return (
       <ListLayout
          itens={incomes}
          emptyText="Nenhuma receita cadastrada"
          keyExtractor={(income) => income.rowIndex}
-
-         renderMobileItem={(income) => {
-            const received = !!income.receivedDate
-
-            const textoData = received
-               ? `Recebido em ${income.receivedDate}`
-               : `Previsto para ${income.expectedDate}`
-
-            return (
-               <ListItemLayout
-                  onClick={() => onSelect(income)}
-                  variant={received ? 'success' : 'default'}
-                  className="p-3"
-               >
-                  <ListItemHeaderMobile
-                     title={income.description}
-                     right={numberToCurrency(income.amount)}
-                  />
-
-                  <ListItemFooterMobile
-                     left={textoData}
-                     right={
-                        <span className={received ? 'text-green-600' : 'text-blue-500'}>
-                           {received ? 'Recebido' : 'Em aberto'}
-                        </span>
-                     }
-                  />
-               </ListItemLayout>
-            )
-         }}
-
-         renderDesktopItem={(income) => {
-            const received = !!income.receivedDate
-
-            const textoData = received
-               ? `Recebido em ${income.receivedDate}`
-               : `Previsto para ${income.expectedDate}`
-
-            return (
-               <ListItemRowDesktop
-                  onClick={() => onSelect(income)}
-                  variant={received ? 'success' : 'default'}
-               >
-                  <ListColDescription>
-                     {income.description}
-                  </ListColDescription>
-
-                  <ListColMuted span={4}>
-                     {textoData}
-                  </ListColMuted>
-
-                  <ListColValue>
-                     {numberToCurrency(income.amount)}
-                  </ListColValue>
-
-                  <div className="col-span-2 text-right font-medium">
-                     <span className={received ? 'text-green-600' : 'text-blue-500'}>
-                        {received ? 'Recebido' : 'Em aberto'}
-                     </span>
-                  </div>
-               </ListItemRowDesktop>
-            )
-         }}
+         renderMobileItem={renderMobileItem}
+         renderDesktopItem={renderDesktopItem}
       />
    )
-}
+})

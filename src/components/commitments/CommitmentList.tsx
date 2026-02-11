@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react'
 import { ListLayout } from '@/components/layout/ListLayout'
 import { ListItemLayout } from '@/components/layout/ListItemLayout'
 import type { Commitment } from '@/types/Commitment'
@@ -30,106 +31,110 @@ function checkIfOverdue(dueDate: string) {
    return expiration < today;
 }
 
-export function CommitmentList({ commitments, onSelect }: Props) {
+/**
+ * Commitment list with performance optimizations.
+ * * Applied Optimizations:
+ * - React.memo: Prevents re-renders when props remain unchanged.
+ * - useCallback: Memoizes mobile/desktop render functions.
+ * - External pure function: 'isOverdue' is defined outside the component to prevent recreation.
+ */
+export const CommitmentList = memo(function CommitmentList({ commitments, onSelect }: Props) {
+   const renderMobileItem = useCallback((commitment: Commitment) => {
+      const isPaid = !!commitment.paymentDate
+      const isCard = commitment.type === 'Credit_card'
+      const isOverdue = !isPaid && checkIfOverdue(commitment.dueDate)
+      const variant = isPaid ? 'success' : isOverdue ? 'danger' : 'warning'
+
+      return (
+         <ListItemLayout
+            onClick={() => onSelect(commitment)}
+            variant={variant}
+            className="p-3"
+         >
+            <ListItemHeaderMobile
+               title={commitment.description}
+               right={numberToCurrency(commitment.amount)}
+            />
+
+            {isCard && (
+               <div className="mt-1 text-xs text-muted-foreground">
+                  {commitment.card}
+                  {(commitment.totalInstallments ?? 1) > 1 && (
+                     <> • Parcela {commitment.installment}/{commitment.totalInstallments}</>
+                  )}
+               </div>
+            )}
+
+            <ListItemFooterMobile
+               left={
+                  isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`
+               }
+               right={
+                  <span
+                     className={`
+                        ${isPaid && 'text-green-600'}
+                        ${isOverdue && 'text-red-600'}
+                        ${!isPaid && !isOverdue && 'text-amber-500'}
+                     `}
+                  >
+                     {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Em aberto'}
+                  </span>
+               }
+            />
+         </ListItemLayout>
+      )
+   }, [onSelect])
+
+   const renderDesktopItem = useCallback((commitment: Commitment) => {
+      const isPaid = !!commitment.paymentDate
+      const isOverdue = !isPaid && checkIfOverdue(commitment.dueDate)
+      const variant = isPaid ? 'success' : isOverdue ? 'danger' : 'default'
+
+      return (
+         <ListItemRowDesktop
+            onClick={() => onSelect(commitment)}
+            variant={variant}
+         >
+            <ListColDescription>
+               {commitment.description}
+            </ListColDescription>
+
+            <ListColMuted span={2}>
+               {commitment.type}
+            </ListColMuted>
+
+            <ListColMuted span={3}>
+               {isPaid
+                  ? `Pago em ${commitment.paymentDate}`
+                  : `Vence em ${commitment.dueDate}`}
+            </ListColMuted>
+
+            <ListColValue>
+               {numberToCurrency(commitment.amount)}
+            </ListColValue>
+
+            <ListColStatus>
+               <span
+                  className={`
+                     ${isPaid && 'text-green-600'}
+                     ${isOverdue && 'text-red-600'}
+                     ${!isPaid && !isOverdue && 'text-orange-500'}
+                  `}
+               >
+                  {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Aberto'}
+               </span>
+            </ListColStatus>
+         </ListItemRowDesktop>
+      )
+   }, [onSelect])
+
    return (
       <ListLayout
          itens={commitments}
          emptyText="Nenhum compromisso cadastrado"
          keyExtractor={(commitment) => commitment.rowIndex}
-
-         renderMobileItem={(commitment) => {
-            const isPaid = !!commitment.paymentDate
-            const isCard = commitment.type === 'Credit_card'
-            const isOverdue = !isPaid && checkIfOverdue(commitment.dueDate)
-
-            const variant =
-               isPaid ? 'success' :
-                  isOverdue ? 'danger' :
-                     'warning'
-
-            return (
-               <ListItemLayout
-                  onClick={() => onSelect(commitment)}
-                  variant={variant}
-                  className="p-3"
-               >
-                  <ListItemHeaderMobile
-                     title={commitment.description}
-                     right={numberToCurrency(commitment.amount)}
-                  />
-
-                  {isCard && (
-                     <div className="mt-1 text-xs text-muted-foreground">
-                        {commitment.card}
-                        {(commitment.totalInstallments ?? 1) > 1 && (
-                           <> • Parcela {commitment.installment}/{commitment.totalInstallments}</>
-                        )}
-                     </div>
-                  )}
-
-                  <ListItemFooterMobile
-                     left={
-                        isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`
-                     }
-                     right={
-                        <span
-                           className={`
-                              ${isPaid && 'text-green-600'}
-                              ${isOverdue && 'text-red-600'}
-                              ${!isPaid && !isOverdue && 'text-amber-500'}
-                           `}
-                        >
-                           {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Em aberto'}
-                        </span>
-                     }
-                  />
-               </ListItemLayout>
-            )
-         }}
-
-         renderDesktopItem={(commitment) => {
-            const isPaid = !!commitment.paymentDate
-            const isOverdue = !isPaid && checkIfOverdue(commitment.dueDate)
-
-            const variant = isPaid ? 'success' : isOverdue ? 'danger' : 'default'
-
-            return (
-               <ListItemRowDesktop
-                  onClick={() => onSelect(commitment)}
-                  variant={variant}
-               >
-                  <ListColDescription>
-                     {commitment.description}
-                  </ListColDescription>
-
-                  <ListColMuted span={2}>
-                     {commitment.type}
-                  </ListColMuted>
-
-                  <ListColMuted span={3}>
-                     {isPaid
-                        ? `Pago em ${commitment.paymentDate}`
-                        : `Vence em ${commitment.dueDate}`}
-                  </ListColMuted>
-
-                  <ListColValue>
-                     {numberToCurrency(commitment.amount)}
-                  </ListColValue>
-
-                  <ListColStatus>
-                     <span
-                        className={`
-                           ${isPaid && 'text-green-600'}
-                           ${isOverdue && 'text-red-600'}
-                           ${!isPaid && !isOverdue && 'text-orange-500'}
-                        `}
-                     >
-                        {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Aberto'}
-                     </span>
-                  </ListColStatus>
-               </ListItemRowDesktop>
-            )
-         }}
+         renderMobileItem={renderMobileItem}
+         renderDesktopItem={renderDesktopItem}
       />
    )
-}
+})

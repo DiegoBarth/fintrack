@@ -7,7 +7,7 @@ export function listDashboardData(month: string, year: string) {
       topCategories: CategorySummary[];
       cardsSummary: CreditCardSummary[];
    }>({
-      acao: 'listDashboardData',
+      action: 'listDashboardData',
       month,
       year
    });

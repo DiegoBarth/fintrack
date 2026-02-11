@@ -11,7 +11,7 @@ export function CreditCards({ cards }: Props) {
    const [active, setActive] = useState(0)
    const [startX, setStartX] = useState<number | null>(null)
    const [isDragging, setIsDragging] = useState(false)
-
+console.log(cards)
    if (!cards.length) return null
 
    function getStyle(index: number) {

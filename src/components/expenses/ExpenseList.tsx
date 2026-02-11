@@ -1,3 +1,4 @@
+import { memo, useCallback } from 'react'
 import { ListLayout } from '@/components/layout/ListLayout'
 import { ListItemLayout } from '@/components/layout/ListItemLayout'
 import type { Expense } from '@/types/Expense'
@@ -15,67 +16,77 @@ interface Props {
    onSelect: (expense: Expense) => void
 }
 
-export function ExpenseList({ expenses, onSelect }: Props) {
+/**
+ * Expense list with performance optimizations.
+ * * Applied Optimizations:
+ * - React.memo: Prevents unnecessary re-renders when props remain unchanged.
+ * - useCallback: Memoizes render functions to avoid recreation.
+ * - keyExtractor: Uses stable rowIndex to optimize reconciliation.
+ */
+export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Props) {
+   // Memoizes mobile render function to prevent recreation on every render
+   const renderMobileItem = useCallback((expense: Expense) => (
+      <ListItemLayout
+         onClick={() => onSelect(expense)}
+         className="p-3"
+      >
+         <ListItemHeaderMobile
+            title={expense.description}
+            right={
+               <span className="text-red-600">
+                  {numberToCurrency(expense.amount)}
+               </span>
+            }
+         />
+
+         <ListItemFooterMobile
+            left={`Pago em ${expense.paymentDate} • ${expense.category}`}
+            right={
+               <span className="text-green-600">
+                  Pago
+               </span>
+            }
+         />
+      </ListItemLayout>
+   ), [onSelect])
+
+   // Memoizes desktop render function to prevent recreation on every render
+   const renderDesktopItem = useCallback((expense: Expense) => (
+      <ListItemRowDesktop
+         onClick={() => onSelect(expense)}
+      >
+         <ListColDescription>
+            {expense.description}
+         </ListColDescription>
+         <ListColMuted span={2}>
+            {expense.category ?? '-'}
+         </ListColMuted>
+
+         <ListColMuted span={3}>
+            Pago em {expense.paymentDate}
+         </ListColMuted>
+
+         <ListColValue>
+            <span className="text-red-600">
+               {numberToCurrency(expense.amount)}
+            </span>
+         </ListColValue>
+
+         <ListColStatus>
+            <span className="text-green-600">
+               Pago
+            </span>
+         </ListColStatus>
+      </ListItemRowDesktop>
+   ), [onSelect])
+
    return (
       <ListLayout
          itens={expenses}
          emptyText="Nenhum gasto cadastrado"
          keyExtractor={(expense) => expense.rowIndex}
-
-         renderMobileItem={(expense) => (
-            <ListItemLayout
-               onClick={() => onSelect(expense)}
-               className="p-3"
-            >
-               <ListItemHeaderMobile
-                  title={expense.description}
-                  right={
-                     <span className="text-red-600">
-                        {numberToCurrency(expense.amount)}
-                     </span>
-                  }
-               />
-
-               <ListItemFooterMobile
-                  left={`Pago em ${expense.paymentDate} • ${expense.category}`}
-                  right={
-                     <span className="text-green-600">
-                        Pago
-                     </span>
-                  }
-               />
-            </ListItemLayout>
-         )}
-
-         renderDesktopItem={(expense) => (
-            <ListItemRowDesktop
-               onClick={() => onSelect(expense)}
-            >
-               <ListColDescription>
-                  {expense.description}
-               </ListColDescription>
-
-               <ListColMuted span={2}>
-                  {expense.category ?? '-'}
-               </ListColMuted>
-
-               <ListColMuted span={3}>
-                  Pago em {expense.paymentDate}
-               </ListColMuted>
-
-               <ListColValue>
-                  <span className="text-red-600">
-                     {numberToCurrency(expense.amount)}
-                  </span>
-               </ListColValue>
-
-               <ListColStatus>
-                  <span className="text-green-600">
-                     Pago
-                  </span>
-               </ListColStatus>
-            </ListItemRowDesktop>
-         )}
+         renderMobileItem={renderMobileItem}
+         renderDesktopItem={renderDesktopItem}
       />
    )
-}
+})

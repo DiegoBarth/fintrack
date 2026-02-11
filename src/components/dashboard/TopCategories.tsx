@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import type { CategorySummary } from '@/types/Dashboard'
 import { numberToCurrency } from '@/utils/formatters'
 
@@ -5,10 +6,21 @@ interface TopCategoriesProps {
    categories: CategorySummary[]
 }
 
+/**
+ * Top categories with optimized percentage calculation.
+ * * Optimizations:
+ * - useMemo: Memoizes the maximum value (avoids accessing categories[0] in every iteration).
+ * - Recalculates only when the categories array changes.
+ */
 export function TopCategories({ categories }: TopCategoriesProps) {
-   if (!categories.length) return null
+   // Memoizes the maximum value (used for calculating bar percentages)
+   // Recalculates only when categories change
+   const maxValue = useMemo(
+      () => categories.length > 0 ? categories[0].total : 0,
+      [categories]
+   )
 
-   const maxTotal = categories[0].total
+   if (!categories.length) return null
 
    return (
       <section className="rounded-xl border bg-card p-4 shadow-sm">
@@ -29,7 +41,7 @@ export function TopCategories({ categories }: TopCategoriesProps) {
                      <div className="flex-1 h-1.5 rounded-full bg-muted">
                         <div
                            className="h-1.5 rounded-full bg-red-500"
-                           style={{ width: `${(c.total / maxTotal) * 100}%` }}
+                           style={{ width: `${(c.total / maxValue) * 100}%` }}
                         />
                      </div>
 

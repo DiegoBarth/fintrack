@@ -75,6 +75,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                   id="income-description"
                   aria-required="true"
                   placeholder="Ex: Salário, Venda de Produto"
+                  autoComplete="off"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   {...register('description')}
                />
@@ -94,6 +95,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                         aria-required="true"
                         aria-label="Valor da receita em reais"
                         className="w-full border rounded-md p-2"
+                        autoComplete="off"
                         value={field.value}
                         onChange={e => field.onChange(formatCurrency(e.target.value))}
                      />

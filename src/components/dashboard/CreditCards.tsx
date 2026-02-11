@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { CreditCardSummary } from '@/types/Dashboard'
 import { numberToCurrency } from '@/utils/formatters'
 import { BASE_PATH, SWIPE_MIN_DISTANCE_PX } from '@/config/constants'
@@ -11,7 +13,7 @@ export function CreditCards({ cards }: Props) {
    const [active, setActive] = useState(0)
    const [startX, setStartX] = useState<number | null>(null)
    const [isDragging, setIsDragging] = useState(false)
-console.log(cards)
+
    if (!cards.length) return null
 
    function getStyle(index: number) {
@@ -70,8 +72,20 @@ console.log(cards)
    }
 
    return (
-      <section className="relative mt-2 h-[380px] sm:h-[420px] overflow-hidden select-none">
-         <h2 className="mb-2 text-lg font-semibold px-4 text-zinc-800">Cartões</h2>
+      <motion.section
+         initial={{ opacity: 0, y: 20 }}
+         animate={{ opacity: 1, y: 0 }}
+         transition={{ delay: 0.4 }}
+         className="relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none"
+      >
+         <div className="flex items-center justify-between mb-4 px-4">
+            <h2 className="text-lg font-semibold text-gray-900">Cartões</h2>
+            <div className="flex items-center gap-2">
+               <span className="text-sm text-gray-500">
+                  {active + 1} / {cards.length}
+               </span>
+            </div>
+         </div>
 
          <div
             className="relative mx-auto h-full w-full max-w-4xl touch-pan-y"
@@ -129,18 +143,38 @@ console.log(cards)
             <button
                onClick={() => setActive(a => Math.max(0, a - 1))}
                disabled={active === 0}
-               className="absolute top-1/2 left-10 -translate-y-1/2 z-50 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white disabled:opacity-0 transition-all"
+               className="
+                  absolute top-1/2 left-10 -translate-y-1/2 z-50 bg-white/90 p-3 rounded-full
+                  shadow-xl hover:bg-white hover:scale-110 disabled:opacity-0 disabled:pointer-events-none
+                  transition-all duration-200"
             >
-               ←
+               <ChevronLeft className="w-6 h-6 text-gray-700" />
             </button>
             <button
                onClick={() => setActive(a => Math.min(cards.length - 1, a + 1))}
                disabled={active === cards.length - 1}
-               className="absolute top-1/2 right-10 -translate-y-1/2 z-50 bg-white/80 p-3 rounded-full shadow-lg hover:bg-white disabled:opacity-0 transition-all"
+               className="absolute top-1/2 right-10 -translate-y-1/2 z-50 bg-white/90 p-3 rounded-full
+                  shadow-xl hover:bg-white hover:scale-110 disabled:opacity-0 disabled:pointer-events-none
+                  transition-all duration-200"
             >
-               →
+               <ChevronRight className="w-6 h-6 text-gray-700" />
             </button>
          </div>
-      </section>
+
+         {/* Indicador de posição */}
+         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-50">
+            {cards.map((_, i) => (
+               <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  className={`h-2 rounded-full transition-all duration-300 ${i === active
+                        ? 'w-8 bg-blue-600'
+                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                     }`}
+                  aria-label={`Ir para cartão ${i + 1}`}
+               />
+            ))}
+         </div>
+      </motion.section>
    )
 }

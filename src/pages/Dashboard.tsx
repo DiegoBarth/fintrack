@@ -26,23 +26,21 @@ export function Dashboard() {
 
    return (
       <Layout title="Dashboard" onBack={handleBack} containerClassName="max-w-7xl">
-         <div className="space-y-6">
-            <IncomeExpenseProgress
-               summary={summary}
-            />
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="order-1 lg:order-none lg:col-span-2 lg:row-start-1">
+               <IncomeExpenseProgress summary={summary} />
+            </div>
 
-            <CreditCards
-               cards={dashboard.cardsSummary}
-            />
+            <div className="order-4 lg:order-none lg:row-span-2 lg:row-start-1 h-full">
+               <TopCategories categories={dashboard.topCategories} />
+            </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-               <YearlyBalanceChart
-                  data={dashboard.monthlyBalance}
-               />
+            <div className="order-2 lg:order-none lg:col-span-3 lg:row-start-3">
+               <CreditCards cards={dashboard.cardsSummary} />
+            </div>
 
-               <TopCategories
-                  categories={dashboard.topCategories}
-               />
+            <div className="order-3 lg:order-none lg:col-span-2 lg:row-start-2 h-full">
+               <YearlyBalanceChart data={dashboard.monthlyBalance} />
             </div>
          </div>
       </Layout>

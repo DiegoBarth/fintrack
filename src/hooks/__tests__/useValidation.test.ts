@@ -65,7 +65,6 @@ describe('useValidation', () => {
       const { result } = renderHook(() => useValidation())
 
       const StringSchema = z.string().min(1, 'Required field')
-
       const outcome = result.current.validate(StringSchema, '')
 
       expect(outcome).toBeNull()

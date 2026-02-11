@@ -98,8 +98,8 @@ export function Alerts() {
                      'conta vencida',
                      'contas vencidas'
                   )}`}
-                  gradientFrom="#dc2626"
-                  gradientTo="#f87171"
+                  gradientFrom="#b91c1c"
+                  gradientTo="#dc2626"
                   onClick={() => setOpenType("overdue")}
                />
             )}
@@ -111,8 +111,8 @@ export function Alerts() {
                      'conta vencendo hoje',
                      'contas vencendo hoje'
                   )}`}
-                  gradientFrom="#f59e0b"
-                  gradientTo="#fbbf24"
+                  gradientFrom="#ea580c"
+                  gradientTo="#fb923c"
                   onClick={() => setOpenType("today")}
                />
             )}
@@ -124,8 +124,8 @@ export function Alerts() {
                      'conta vencendo essa semana',
                      'contas vencendo essa semana'
                   )}`}
-                  gradientFrom="#2563eb"
-                  gradientTo="#60a5fa"
+                  gradientFrom="#0891b2"
+                  gradientTo="#22d3ee"
                   onClick={() => setOpenType("week")}
                />
             )}

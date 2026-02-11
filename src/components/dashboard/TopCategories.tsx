@@ -1,6 +1,48 @@
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
+import {
+   GraduationCap,
+   Gamepad2,
+   UtensilsCrossed,
+   Home,
+   Car,
+   Heart,
+   Plane,
+   Wallet,
+   Building2,
+   Sparkles,
+   PawPrint,
+   Gift,
+   ShoppingBag,
+   Wrench,
+   Tv,
+   Phone,
+   TrendingUp,
+   Banknote
+} from 'lucide-react'
 import type { CategorySummary } from '@/types/Dashboard'
 import { numberToCurrency } from '@/utils/formatters'
+import { CATEGORIES } from '@/config/constants'
+
+const categoryIcons: Record<string, React.ElementType> = {
+   [CATEGORIES[0]]: UtensilsCrossed,    // Food & Dining
+   [CATEGORIES[1]]: Building2,          // Banking
+   [CATEGORIES[2]]: Sparkles,           // Beauty
+   [CATEGORIES[3]]: Home,               // Home
+   [CATEGORIES[4]]: GraduationCap,      // Education
+   [CATEGORIES[5]]: Banknote,           // Loans
+   [CATEGORIES[6]]: TrendingUp,         // Investment
+   [CATEGORIES[7]]: Gamepad2,           // Leisure
+   [CATEGORIES[8]]: PawPrint,           // Pets
+   [CATEGORIES[9]]: Gift,               // Gifts
+   [CATEGORIES[10]]: ShoppingBag,       // Clothing
+   [CATEGORIES[11]]: Heart,             // Health
+   [CATEGORIES[12]]: Wrench,            // Services
+   [CATEGORIES[13]]: Tv,                // Streaming
+   [CATEGORIES[14]]: Phone,             // Phone/Internet
+   [CATEGORIES[15]]: Car,               // Transport
+   [CATEGORIES[16]]: Plane,             // Travel
+}
 
 interface TopCategoriesProps {
    categories: CategorySummary[]
@@ -15,43 +57,71 @@ interface TopCategoriesProps {
 export function TopCategories({ categories }: TopCategoriesProps) {
    // Memoizes the maximum value (used for calculating bar percentages)
    // Recalculates only when categories change
-   const maxValue = useMemo(
+   const maxAmount = useMemo(
       () => categories.length > 0 ? categories[0].total : 0,
       [categories]
    )
 
+   const getStyles = (value: number, max: number) => {
+      const percentage = (value / max) * 100
+      if (percentage > 70) return { bar: 'bg-red-500', text: 'text-red-600', bg: 'bg-red-100', icon: 'text-red-500' }
+      if (percentage > 40) return { bar: 'bg-orange-500', text: 'text-orange-600', bg: 'bg-orange-100', icon: 'text-orange-500' }
+      if (percentage > 20) return { bar: 'bg-amber-500', text: 'text-amber-600', bg: 'bg-amber-100', icon: 'text-amber-500' }
+      return { bar: 'bg-slate-400', text: 'text-slate-600', bg: 'bg-slate-100', icon: 'text-slate-400' }
+   }
+
    if (!categories.length) return null
 
    return (
-      <section className="rounded-xl border bg-card p-4 shadow-sm">
-         <h2 className="mb-6 text-sm font-semibold text-muted-foreground">
-            Top categorias
+      <motion.section
+         initial={{ opacity: 0, x: 20 }}
+         animate={{ opacity: 1, x: 0 }}
+         transition={{ delay: 0.2 }}
+         className="rounded-xl border bg-card p-6 shadow-sm h-full flex flex-col"
+      >
+         <h2 className="mb-6 text-lg font-semibold text-gray-900">
+            Top Categories
          </h2>
-         <div className="h-56 sm:h-64 lg:h-60 w-full">
-            <ul className="space-y-2">
-               {categories.map(c => (
-                  <li
-                     key={c.category}
-                     className="flex items-center gap-2"
-                  >
-                     <span className="w-24 truncate text-xs">
-                        {c.category}
-                     </span>
+         <div className="space-y-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
+            {categories.map((item, index) => {
+               const IconComponent = categoryIcons[item.category] || Wallet
+               const percentage = (item.total / maxAmount) * 100
+               const styles = getStyles(item.total, maxAmount)
 
-                     <div className="flex-1 h-1.5 rounded-full bg-muted">
-                        <div
-                           className="h-1.5 rounded-full bg-red-500"
-                           style={{ width: `${(c.total / maxValue) * 100}%` }}
-                        />
+               return (
+                  <motion.div
+                     key={item.category}
+                     initial={{ opacity: 0, x: -20 }}
+                     animate={{ opacity: 1, x: 0 }}
+                     transition={{ delay: 0.1 * index }}
+                     className="flex items-center gap-3"
+                  >
+                     <div className={`p-2 rounded-lg ${styles.bg}`}>
+                        <IconComponent className={`w-4 h-4 ${styles.icon}`} />
                      </div>
 
-                     <span className="w-20 text-right text-xs text-muted-foreground">
-                        {numberToCurrency(c.total)}
-                     </span>
-                  </li>
-               ))}
-            </ul>
+                     <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-baseline mb-1">
+                           <span className="text-sm font-medium text-gray-900 truncate">
+                              {item.category}
+                           </span>
+                           <span className={`text-sm font-semibold ml-2 ${styles.text}`}>
+                              {numberToCurrency(item.total)}
+                           </span>
+                        </div>
+                        <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                           <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${percentage}%` }}
+                              transition={{ duration: 1, delay: 0.3 + (0.1 * index), ease: 'easeOut' }}
+                              className={`h-2 rounded-full ${styles.bar}`}
+                           />
+                        </div>
+                     </div>
+                  </motion.div>
+               )
+            })}
          </div>
-      </section>
+      </motion.section>
    )
 }

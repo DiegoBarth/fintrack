@@ -112,6 +112,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                   <input
                      id="commitment-description"
                      aria-required="true"
+                     autoComplete="off"
                      className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                      placeholder="Ex: Aluguel, Parcela Notebook"
                      {...register('description')}
@@ -168,8 +169,10 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            control={control}
                            render={({ field }) => (
                               <input
+                                 {...field}
                                  id="commitment-amount"
                                  aria-required="true"
+                                 autoComplete="off"
                                  className="mt-1 w-full rounded-md border p-2"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
@@ -197,6 +200,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         <input
                            id="commitment-months"
                            aria-label="Número de meses para repetir o compromisso"
+                           autoComplete="off"
                            type="number"
                            min={1}
                            max={12}
@@ -238,6 +242,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                               <input
                                  id="commitment-total-amount"
                                  aria-required="true"
+                                 autoComplete="off"
                                  className="mt-1 w-full rounded-md border p-2"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
@@ -252,6 +257,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            min={1}
                            max={60}
                            aria-required="true"
+                           autoComplete="off"
                            aria-label="Total de parcelas do compromisso"
                            type="number"
                            className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"

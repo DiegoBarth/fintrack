@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSwipeable } from 'react-swipeable'
-import { SWIPE_ROUTES, EDGE_ZONE } from '@/config/constants'
+import { EDGE_ZONE, SWIPE_DELTA_PX, SWIPE_MIN_DISTANCE_PX, SWIPE_ROUTES } from '@/config/constants'
 
 export function useSwipeNavigation() {
    const navigate = useNavigate()
@@ -18,18 +18,18 @@ export function useSwipeNavigation() {
          const startedOnRight = e.initial[0] > screenWidth - EDGE_ZONE
 
          if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-            if (e.deltaX > 50 && startedOnLeft && currentIndex > 0) {
+            if (e.deltaX > SWIPE_MIN_DISTANCE_PX  && startedOnLeft && currentIndex > 0) {
                setArrow('left')
                return
             }
 
-            if (e.deltaX < -50 && startedOnRight && currentIndex < SWIPE_ROUTES.length - 1) {
+            if (e.deltaX < -SWIPE_MIN_DISTANCE_PX  && startedOnRight && currentIndex < SWIPE_ROUTES.length - 1) {
                setArrow('right')
                return
             }
          }
 
-         if (e.deltaY > 50 && window.scrollY === 0) {
+         if (e.deltaY > SWIPE_MIN_DISTANCE_PX  && window.scrollY === 0) {
             setArrow('up')
          } else if (arrow === 'up') {
             setArrow(null)
@@ -62,7 +62,7 @@ export function useSwipeNavigation() {
       onTouchEndOrOnMouseUp: () => setArrow(null),
       preventScrollOnSwipe: true,
       trackMouse: true,
-      delta: 10,
+      delta: SWIPE_DELTA_PX,
    })
 
    return { handlers, arrow }

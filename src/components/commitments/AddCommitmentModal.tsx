@@ -6,6 +6,7 @@ import { usePeriod } from '@/contexts/PeriodContext'
 import { useCommitment } from '@/hooks/useCommitment'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateCommitmentSchema, CreateCardCommitmentSchema } from '@/schemas/commitment.schema'
+import { CATEGORIES, COMMITMENT_TYPES, CARDS } from '@/config/constants'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -13,21 +14,6 @@ interface AddCommitmentModalProps {
 }
 
 type CommitmentType = 'Fixed' | 'Variable' | 'Credit_card' | ''
-
-const COMMITMENT_TYPES = [
-   { label: 'Fixo', value: 'Fixed' },
-   { label: 'Variável', value: 'Variable' },
-   { label: 'Cartão de Crédito', value: 'Credit_card' },
-]
-
-const CATEGORIES = [
-   'Alimentação', 'Banco', 'Beleza', 'Casa', 'Educação',
-   'Empréstimos', 'Investimento', 'Lazer', 'Pets', 'Presentes',
-   'Roupas', 'Saúde', 'Serviços', 'Streaming', 'Telefonia',
-   'Transporte', 'Viagem'
-]
-
-const CARDS = ['Bradesco', 'Itaú', 'Mercado Pago']
 
 export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
    const { month, year } = usePeriod()

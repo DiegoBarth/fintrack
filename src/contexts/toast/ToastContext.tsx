@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import ToastContainer from '@/contexts/toast/ToastContainer';
+import { TOAST_DEFAULT_DURATION_MS, TOAST_ID_LENGTH } from '@/config/constants';
 
 interface Toast {
    id: string;
@@ -23,9 +24,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
    const add = useCallback((
       message: string,
       type: Toast['type'],
-      duration: number = 3000
+      duration: number = TOAST_DEFAULT_DURATION_MS
    ) => {
-      const id = Math.random().toString(36).substr(2, 9);
+      const id = Math.random().toString(36).substr(2, TOAST_ID_LENGTH);
       const newToast: Toast = { id, message, type, duration };
 
       setToasts(prev => [...prev, newToast]);

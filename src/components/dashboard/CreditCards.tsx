@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { CreditCardSummary } from '@/types/Dashboard'
 import { numberToCurrency } from '@/utils/formatters'
-import { BASE_PATH } from '@/config/constants'
+import { BASE_PATH, SWIPE_MIN_DISTANCE_PX } from '@/config/constants'
 
 interface Props {
    cards: CreditCardSummary[]
@@ -11,8 +11,6 @@ export function CreditCards({ cards }: Props) {
    const [active, setActive] = useState(0)
    const [startX, setStartX] = useState<number | null>(null)
    const [isDragging, setIsDragging] = useState(false)
-
-   const minSwipeDistance = 50
 
    if (!cards.length) return null
 
@@ -55,7 +53,7 @@ export function CreditCards({ cards }: Props) {
 
       const diff = startX - clientX
 
-      if (Math.abs(diff) > minSwipeDistance) {
+      if (Math.abs(diff) > SWIPE_MIN_DISTANCE_PX) {
          if (diff > 0 && active < cards.length - 1) {
             setActive(prev => prev + 1)
             handleEnd()

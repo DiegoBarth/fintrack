@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { listCommitments } from '@/api/endpoints/commitment';
 import { usePeriod } from '@/contexts/PeriodContext';
 import { useCommitment } from './useCommitment';
+import { WEEKLY_ALERT_DAYS, MS_PER_DAY } from '@/config/constants';
 
 /**
  * Resets the time to midnight for accurate date comparison.
@@ -34,7 +33,7 @@ export function useAlerts() {
          const date = resetTime(new Date(y, m - 1, d));
 
          const diffDays = Math.ceil(
-            (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+            (date.getTime() - today.getTime()) / MS_PER_DAY
          );
 
          return diffDays < 0;
@@ -53,10 +52,10 @@ export function useAlerts() {
          const date = resetTime(new Date(y, m - 1, d));
 
          const diffDays = Math.ceil(
-            (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+            (date.getTime() - today.getTime()) / MS_PER_DAY
          );
 
-         return diffDays > 0 && diffDays <= 7;
+         return diffDays > 0 && diffDays <= WEEKLY_ALERT_DAYS;
       });
 
       return {

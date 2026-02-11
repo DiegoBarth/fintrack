@@ -6,18 +6,12 @@ import { usePeriod } from '@/contexts/PeriodContext'
 import { useExpense } from '@/hooks/useExpense'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateExpenseSchema } from '@/schemas/expense.schema'
+import { CATEGORIES } from '@/config/constants'
 
 interface AddExpenseModalProps {
    isOpen: boolean
    onClose: () => void
 }
-
-const CATEGORIES = [
-   "Alimentação", "Banco", "Beleza", "Casa", "Educação",
-   "Empréstimos", "Investimento", "Lazer", "Pets", "Presentes",
-   "Roupas", "Saúde", "Serviços", "Streaming", "Telefonia",
-   "Transporte", "Viagem"
-];
 
 export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
    const { month, year } = usePeriod()

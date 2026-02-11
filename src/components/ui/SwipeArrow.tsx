@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronUp, RefreshCcw  } from 'lucide-react'
 
 interface Props {
    direction: 'left' | 'right' | 'up' | null
@@ -58,8 +58,8 @@ export function SwipeArrow({ direction }: Props) {
                )}
 
                {direction === 'up' && (
-                  <ChevronUp
-                     size={36}
+                  <RefreshCcw
+                     size={26}
                      className="text-muted-foreground drop-shadow-sm"
                   />
                )}

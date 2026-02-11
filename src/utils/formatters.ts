@@ -40,3 +40,19 @@ export function formatDateBR(date: string | Date): string {
 
    return `${day}/${month}/${year}`;
 }
+
+export function getMonthAndYear(ISODataOrBR: string) {
+   let date: Date
+
+   if (ISODataOrBR.includes('/')) {
+      const [day, month, year] = ISODataOrBR.split('/').map(Number)
+      date = new Date(year, month - 1, day)
+   } else {
+      date = new Date(ISODataOrBR)
+   }
+
+   const month = String(date.getMonth() + 1)
+   const year = String(date.getFullYear())
+
+   return { month, year }
+}

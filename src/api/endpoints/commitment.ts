@@ -18,7 +18,7 @@ export function createCommitment(payload: {
    dueDate: string;
    months?: number;
 }) {
-   return apiPost<Commitment>({
+   return apiPost<Commitment[]>({
       action: 'createCommitment',
       ...payload
    });
@@ -33,7 +33,7 @@ export function createCard(payload: {
    installments?: number;
    dueDate: string;
 }) {
-   return apiPost<Commitment>({
+   return apiPost<Commitment[]>({
       action: 'createCard',
       ...payload
    });

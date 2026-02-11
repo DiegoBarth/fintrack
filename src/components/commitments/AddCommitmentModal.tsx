@@ -78,7 +78,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             return
          }
 
-         createCard({
+         await createCard({
             type: 'Credit_card',
             description,
             category,
@@ -93,7 +93,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             return
          }
 
-         create({
+         await create({
             type: type as 'Fixed' | 'Variable',
             description,
             category,
@@ -110,8 +110,9 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
          onClose={onClose}
          title="Novo compromisso"
          type="create"
-         onSave={handleSave}
          isLoading={isSaving}
+         loadingText="Salvando..."
+         onSave={() => handleSave()}
       >
          <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4">

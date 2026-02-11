@@ -8,7 +8,7 @@ import {
    deleteCommitment
 } from '@/api/endpoints/commitment'
 import type { Commitment } from '@/types/Commitment'
-import { dateBRToISO } from '@/utils/formatters'
+import { dateBRToISO, getMonthAndYear } from '@/utils/formatters'
 
 export function useCommitment(month: string, year: string, key?: string | null) {
    const queryClient = useQueryClient()
@@ -36,22 +36,16 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          months?: number
       }) =>
          createCommitment(newCommitment),
-      onSuccess: (newCommitment: Commitment) => {
-         queryClient.setQueryData<Commitment[]>(
-            queryKey,
-            old => old ? [...old, newCommitment] : [newCommitment]
-         )
+      onSuccess: (newCommitments: Commitment[]) => {
+         cacheInsert(newCommitments)
       }
    })
 
    const createCardMutation = useMutation({
       mutationFn: (newCommitment: Omit<Commitment, 'rowIndex'>) =>
          createCard(newCommitment),
-      onSuccess: (newCommitment: Commitment) => {
-         queryClient.setQueryData<Commitment[]>(
-            queryKey,
-            old => old ? [...old, newCommitment] : [newCommitment]
-         )
+      onSuccess: (newCommitments: Commitment[]) => {
+         cacheInsert(newCommitments)
       }
    })
 
@@ -109,6 +103,21 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          )
       }
    })
+
+   function cacheInsert(commitments: Commitment[]) {
+      commitments.forEach(commitment => {
+         const { month, year } = getMonthAndYear(commitment.dueDate)
+         queryClient.setQueryData<Commitment[]>(
+            ['commitments', month, year],
+            old => old ? [...old, commitment] : [commitment]
+         )
+
+         queryClient.setQueryData<Commitment[]>(
+            ['commitments', 'alerts', year],
+            old => old ? [...old, commitment] : [commitment]
+         )
+      })
+   }
 
    return {
       commitments,

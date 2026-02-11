@@ -4,6 +4,8 @@ import { BaseModal } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { useExpense } from '@/hooks/useExpense'
+import { useValidation } from '@/hooks/useValidation'
+import { CreateExpenseSchema } from '@/schemas/expense.schema'
 
 interface AddExpenseModalProps {
    isOpen: boolean
@@ -20,6 +22,7 @@ const CATEGORIES = [
 export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
    const { month, year } = usePeriod()
    const { create, isSaving } = useExpense(month, String(year))
+   const { validate } = useValidation()
 
    const [description, setDescription] = useState('')
    const [paymentDate, setPaymentDate] = useState('')
@@ -37,12 +40,17 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
 
 
    const handleSave = async () => {
-      await create({
+      const data = validate(CreateExpenseSchema, {
          description,
          category,
          amount: currencyToNumber(amount),
          paymentDate
       })
+
+      if (!data) return
+
+      await create(data as any)
+
       setDescription('')
       setPaymentDate('')
       setCategory('')

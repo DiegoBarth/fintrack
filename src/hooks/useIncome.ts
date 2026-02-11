@@ -5,17 +5,19 @@ import {
    updateIncome,
    deleteIncome
 } from '@/api/endpoints/income'
-
 import type { Income } from '@/types/Income'
+import { useApiError } from '@/hooks/useApiError'
 
 export function useIncome(month: string, year: string) {
    const queryClient = useQueryClient()
+   const { handleError } = useApiError()
    const queryKey = ['incomes', month, year]
 
    const { data: incomes = [], isLoading, isError } = useQuery({
       queryKey,
       queryFn: () => listIncomes(month, String(year)),
-      staleTime: Infinity
+      staleTime: Infinity,
+      retry: 1
    })
 
    const createMutation = useMutation({
@@ -26,6 +28,9 @@ export function useIncome(month: string, year: string) {
             queryKey,
             old => old ? [...old, newIncome] : [newIncome]
          )
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 
@@ -50,6 +55,9 @@ export function useIncome(month: string, year: string) {
                      : r
                ) ?? []
          )
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 
@@ -61,6 +69,9 @@ export function useIncome(month: string, year: string) {
             queryKey,
             old => old?.filter(r => r.rowIndex !== rowIndex) ?? []
          )
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 

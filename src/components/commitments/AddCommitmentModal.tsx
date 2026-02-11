@@ -4,6 +4,8 @@ import { BaseModal } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { useCommitment } from '@/hooks/useCommitment'
+import { useValidation } from '@/hooks/useValidation'
+import { CreateCommitmentSchema, CreateCardCommitmentSchema } from '@/schemas/commitment.schema'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -30,6 +32,7 @@ const CARDS = ['Bradesco', 'Itaú', 'Mercado Pago']
 export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
    const { month, year } = usePeriod()
    const { create, createCard, isSaving } = useCommitment(month, String(year))
+   const { validate } = useValidation()
 
    const [description, setDescription] = useState('')
    const [category, setCategory] = useState('')
@@ -67,40 +70,32 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
    }, [isOpen])
 
    async function handleSave() {
-      if (!description || !category || !type) {
-         alert('Preencha os campos obrigatórios')
-         return
-      }
-
       if (type === 'Credit_card') {
-         if (!cardName || !totalAmount || !installments || !cardDueDate) {
-            alert('Preencha os campos do cartão')
-            return
-         }
-
-         await createCard({
-            type: 'Credit_card',
+         const data = validate(CreateCardCommitmentSchema, {
             description,
             category,
+            type,
             card: cardName,
             amount: currencyToNumber(amount),
             totalInstallments: Number(installments),
             dueDate: cardDueDate
          })
-      } else {
-         if (!amount || !dueDate) {
-            alert('Preencha valor e data de vencimento')
-            return
-         }
+         if (!data) return
 
-         await create({
-            type: type as 'Fixed' | 'Variable',
+         await createCard(data as any)
+      } else {
+         const data = validate(CreateCommitmentSchema, {
             description,
             category,
+            type,
             amount: currencyToNumber(amount),
             dueDate,
             months: type === 'Fixed' ? monthsToRepeat : 1
          })
+
+         if (!data) return
+
+         await create(data as any)
       }
    }
 

@@ -8,21 +8,25 @@ import {
 } from '@/api/endpoints/commitment'
 import type { Commitment } from '@/types/Commitment'
 import { dateBRToISO, getMonthAndYear } from '@/utils/formatters'
+import { useApiError } from '@/hooks/useApiError'
 
 export function useCommitment(month: string, year: string, key?: string | null) {
    const queryClient = useQueryClient()
+   const { handleError } = useApiError()
    const queryKey = ['commitments', key ?? month, year]
 
    const { data: commitments = [], isLoading, isError } = useQuery({
       queryKey,
       queryFn: () => listCommitments(month, String(year)),
-      staleTime: Infinity
+      staleTime: Infinity,
+      retry: 1
    })
 
    const { data: alertCommitments = [] } = useQuery({
       queryKey,
       queryFn: () => listCommitments(month, String(year)),
-      staleTime: Infinity
+      staleTime: Infinity,
+      retry: 1
    })
 
    const createMutation = useMutation({
@@ -37,6 +41,9 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          createCommitment(newCommitment),
       onSuccess: (newCommitments: Commitment[]) => {
          cacheInsert(newCommitments)
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 
@@ -45,6 +52,9 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          createCard(newCommitment),
       onSuccess: (newCommitments: Commitment[]) => {
          cacheInsert(newCommitments)
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 
@@ -84,6 +94,9 @@ export function useCommitment(month: string, year: string, key?: string | null) 
                      : r
                ) ?? []
          )
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 
@@ -100,6 +113,9 @@ export function useCommitment(month: string, year: string, key?: string | null) 
             ['commitments', 'alerts', year],
             old => old?.filter(r => r.rowIndex !== rowIndex) ?? []
          )
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 

@@ -5,6 +5,7 @@ import { verifyEmailAuthorization } from "@/api/endpoints/home";
 import { AppProvider, createQueryClient } from "@/contexts/AppProvider";
 import { AppRouter } from "@/AppRouter";
 import { AUTH_TIMEOUT_MS, AUTH_REFRESH_INTERVAL_MS } from "@/config/constants";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 function App() {
    const toast = useToast();
@@ -93,9 +94,11 @@ function App() {
    }
 
    return (
-      <AppProvider client={queryClient}>
-         <AppRouter onLogout={handleLogout} />
-      </AppProvider>
+      <ErrorBoundary>
+         <AppProvider client={queryClient}>
+            <AppRouter onLogout={handleLogout} />
+         </AppProvider>
+      </ErrorBoundary>
    );
 }
 

@@ -6,15 +6,18 @@ import {
    deleteExpense
 } from '@/api/endpoints/expense'
 import type { Expense } from '@/types/Expense'
+import { useApiError } from '@/hooks/useApiError'
 
 export function useExpense(month: string, year: string) {
    const queryClient = useQueryClient()
+   const { handleError } = useApiError()
    const queryKey = ['expenses', month, year]
 
    const { data: expenses = [], isLoading, isError } = useQuery({
       queryKey,
       queryFn: () => listExpenses(month, String(year)),
-      staleTime: Infinity
+      staleTime: Infinity,
+      retry: 1
    })
 
    const createMutation = useMutation({
@@ -25,6 +28,9 @@ export function useExpense(month: string, year: string) {
             queryKey,
             old => old ? [...old, newExpense] : [newExpense]
          )
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 
@@ -51,6 +57,9 @@ export function useExpense(month: string, year: string) {
          queryClient.invalidateQueries({
             queryKey: ['summary', month, year],
          })
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 
@@ -62,6 +71,9 @@ export function useExpense(month: string, year: string) {
             queryKey,
             old => old?.filter(r => r.rowIndex !== rowIndex) ?? []
          )
+      },
+      onError: (error) => {
+         handleError(error)
       }
    })
 

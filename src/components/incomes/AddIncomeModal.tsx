@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createIncome } from '@/api/endpoints/income'
 import { usePeriod } from '@/contexts/PeriodContext'
-import type { Income } from '@/types/Income'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
+import { useIncome } from '@/hooks/useIncome'
+import { useValidation } from '@/hooks/useValidation'
+import { CreateIncomeSchema } from '@/schemas/income.schema'
 
 interface AddIncomeModalProps {
    isOpen: boolean
@@ -17,14 +17,13 @@ interface AddIncomeModalProps {
  */
 export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
    const { month, year } = usePeriod()
-   const queryClient = useQueryClient()
-
+   const { create, isSaving } = useIncome(month, String(year))
+   const { validate } = useValidation()
    const [description, setDescription] = useState('')
    const [expectedDate, setExpectedDate] = useState('')
    const [receivedDate, setReceivedDate] = useState('')
    const [amount, setAmount] = useState('')
 
-   // Reseta o formulário ao fechar o modal
    useEffect(() => {
       if (!isOpen) {
          setDescription('')
@@ -34,47 +33,35 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
       }
    }, [isOpen])
 
-   const createMutation = useMutation({
-      mutationFn: () => {
-         const numericAmount = currencyToNumber(amount)
+   const handleSave = async () => {
+      const data = validate(CreateIncomeSchema, {
+         description,
+         amount: currencyToNumber(amount),
+         expectedDate,
+         receivedDate
+      })
 
-         if (!description || !expectedDate || numericAmount <= 0) {
-            throw new Error('MISSING_FIELDS')
-         }
+      if (!data) return
 
-         return createIncome({
-            description,
-            expectedDate,
-            receivedDate,
-            amount: numericAmount
-         })
-      },
-      onSuccess: (newIncome: Income) => {
-         queryClient.setQueryData<Income[]>(
-            ['incomes', month, year],
-            old => old ? [...old, newIncome] : [newIncome]
-         )
-         onClose()
-      },
-      onError: (error: any) => {
-         if (error.message === 'MISSING_FIELDS') {
-            alert('Preencha os campos obrigatórios (Descrição, Data prevista e Valor)')
-         } else {
-            console.error("Failed to create income:", error)
-            alert("Erro ao salvar a receita. Tente novamente.")
-         }
-      }
-   })
+      await create(data as any)
+
+      setDescription('')
+      setAmount('')
+      setExpectedDate('')
+      setReceivedDate('')
+
+      onClose()
+   }
 
    return (
       <BaseModal
          isOpen={isOpen}
          onClose={onClose}
-         title="Nova Receita"
+         title="Nova receita"
          type="create"
-         isLoading={createMutation.isPending}
+         isLoading={isSaving}
          loadingText="Salvando..."
-         onSave={() => createMutation.mutate()}
+         onSave={() => handleSave()}
       >
          <div className="space-y-4">
             {/* Description Field */}
@@ -115,7 +102,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                />
             </div>
 
-            {/* Receipt Date Field */}
+            {/* Received Date Field */}
             <div>
                <label className="block text-xs font-medium text-muted-foreground mb-1">
                   Data de Recebimento (opcional)

@@ -70,10 +70,12 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
          <div className="space-y-4">
             {/* Amount Field */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="edit-income-amount" className="block text-xs font-medium text-muted-foreground mb-1">
                   Valor
                </label>
                <input
+                  id="edit-income-amount"
+                  aria-label="Valor da receita em reais"
                   className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   value={amount}
                   onChange={e => setAmount(formatCurrency(e.target.value))}
@@ -82,10 +84,11 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
 
             {/* Received Date Field */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="edit-income-received-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data de recebimento
                </label>
                <input
+                  id="edit-income-received-date"
                   type="date"
                   className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   value={receivedDate}

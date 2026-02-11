@@ -6,19 +6,28 @@ interface CustomSelectProps {
    value: string;
    onChange: (value: string) => void;
    options: string[];
+   label?: string;
+   id?: string;
    placeholder?: string;
 }
 
 /**
- * A custom dropdown component that uses React Portals to render the menu.
- * This prevents the menu from being cut off by containers with 'overflow: hidden'.
+ * Custom Select with keyboard navigation and accessibility.
+ * * a11y Features:
+ * - Navigation with arrow keys (↑↓) and Enter
+ * - Escape key to close
+ * - ARIA attributes (role, aria-expanded, aria-activedescendant)
+ * - Screen reader friendly
+ * * WCAG 2.1: 2.1.1 (Keyboard), 4.1.2 (Name, Role, Value)
  */
-export function CustomSelect({ value, onChange, options, placeholder = "Selecione" }: CustomSelectProps) {
+export function CustomSelect({ value, onChange, options, label, id, placeholder = "Selecione" }: CustomSelectProps) {
    const [isOpen, setIsOpen] = useState(false);
    const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
+   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
    const containerRef = useRef<HTMLDivElement>(null);
    const selectedItemRef = useRef<HTMLDivElement>(null);
+   const listboxId = id ? `${id}-listbox` : 'select-listbox';
 
    // Update floating menu position based on the trigger button's coordinates
    useEffect(() => {
@@ -29,8 +38,13 @@ export function CustomSelect({ value, onChange, options, placeholder = "Selecion
             left: rect.left,
             width: rect.width
          });
+         // Sets the highlighted index as the selected item
+         const selectedIndex = options.indexOf(value);
+         setHighlightedIndex(selectedIndex);
+      } else {
+         setHighlightedIndex(-1);
       }
-   }, [isOpen]);
+   }, [isOpen, value, options]);
 
    // Auto-scroll to the selected item when the menu opens
    useEffect(() => {
@@ -63,17 +77,78 @@ export function CustomSelect({ value, onChange, options, placeholder = "Selecion
       setIsOpen(false);
    };
 
+   /**
+    * Keyboard navigation for the select component.
+    * * Supported keys:
+    * - ↓ (ArrowDown): Moves to the next option
+    * - ↑ (ArrowUp): Moves to the previous option
+    * - Enter: Selects the highlighted option
+    * - Escape: Closes the dropdown without selecting
+    * - Home: Moves to the first option
+    * - End: Moves to the last option
+    */
+   const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (!isOpen) {
+         // Opens with Enter, Space, or arrow keys
+         if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+            e.preventDefault();
+            setIsOpen(true);
+         }
+         return;
+      }
+
+      switch (e.key) {
+         case 'ArrowDown':
+            e.preventDefault();
+            setHighlightedIndex(prev =>
+               prev < options.length - 1 ? prev + 1 : 0
+            );
+            break;
+         case 'ArrowUp':
+            e.preventDefault();
+            setHighlightedIndex(prev =>
+               prev > 0 ? prev - 1 : options.length - 1
+            );
+            break;
+         case 'Home':
+            e.preventDefault();
+            setHighlightedIndex(0);
+            break;
+         case 'End':
+            e.preventDefault();
+            setHighlightedIndex(options.length - 1);
+            break;
+         case 'Enter':
+            e.preventDefault();
+            if (highlightedIndex >= 0 && highlightedIndex < options.length) {
+               handleSelect(options[highlightedIndex]);
+            }
+            break;
+         case 'Escape':
+            e.preventDefault();
+            setIsOpen(false);
+            break;
+      }
+   };
+
    return (
       <div className="relative w-full" ref={containerRef}>
          <button
             type="button"
+            id={id}
             onClick={() => setIsOpen(!isOpen)}
+            onKeyDown={handleKeyDown}
+            aria-haspopup="listbox"
+            aria-expanded={isOpen}
+            aria-labelledby={label ? `${id}-label` : undefined}
+            aria-controls={isOpen ? listboxId : undefined}
+            aria-activedescendant={isOpen && highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
             className="flex h-10 w-full items-center justify-between rounded-md border bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-black"
          >
             <span className={value ? "text-black" : "text-muted-foreground"}>
                {value || placeholder}
             </span>
-            <ChevronDown className={`h-4 w-4 opacity-50 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`h-4 w-4 opacity-50 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
          </button>
 
          {isOpen && createPortal(
@@ -89,25 +164,36 @@ export function CustomSelect({ value, onChange, options, placeholder = "Selecion
                }}
                className="overflow-hidden rounded-md border bg-white shadow-2xl animate-in fade-in zoom-in-95"
             >
-               <div className="max-h-60 overflow-y-auto p-1 scroll-smooth">
-                  {options.map((option) => {
+               <div
+                  id={listboxId}
+                  role="listbox"
+                  aria-label={label || 'Opções'}
+                  className="max-h-60 overflow-y-auto p-1 scroll-smooth"
+               >
+                  {options.map((option, index) => {
                      const isSelected = value === option;
+                     const isHighlighted = highlightedIndex === index;
                      return (
                         <div
                            key={option}
+                           id={`${listboxId}-option-${index}`}
+                           role="option"
+                           aria-selected={isSelected}
                            ref={isSelected ? selectedItemRef : null}
                            onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               handleSelect(option);
                            }}
+                           onMouseEnter={() => setHighlightedIndex(index)}
                            className={`
-                              flex cursor-pointer items-center justify-between rounded-sm px-3 py-2 text-sm transition-colors hover:bg-gray-100
-                              ${isSelected ? 'bg-gray-100 font-semibold text-black' : 'text-gray-600'}
+                              flex cursor-pointer items-center justify-between rounded-sm px-3 py-2 text-sm transition-colors
+                              ${isHighlighted ? 'bg-gray-100' : 'hover:bg-gray-50'}
+                              ${isSelected ? 'font-semibold text-black' : 'text-gray-600'}
                            `}
                         >
                            <span>{option}</span>
-                           {isSelected && <Check className="h-4 w-4 text-black" />}
+                           {isSelected && <Check className="h-4 w-4 text-black" aria-hidden="true" />}
                         </div>
                      );
                   })}

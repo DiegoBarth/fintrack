@@ -68,10 +68,12 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
          <div className="space-y-4">
             {/* Description Field */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="income-description" className="block text-xs font-medium text-muted-foreground mb-1">
                   Descrição *
                </label>
                <input
+                  id="income-description"
+                  aria-required="true"
                   placeholder="Ex: Salário, Venda de Produto"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   {...register('description')}
@@ -80,7 +82,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
 
             {/* Amount Field */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="income-amount" className="block text-xs font-medium text-muted-foreground mb-1">
                   Valor *
                </label>
                <Controller
@@ -88,6 +90,9 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                   control={control}
                   render={({ field }) => (
                      <input
+                        id="income-amount"
+                        aria-required="true"
+                        aria-label="Valor da receita em reais"
                         className="w-full border rounded-md p-2"
                         value={field.value}
                         onChange={e => field.onChange(formatCurrency(e.target.value))}
@@ -98,10 +103,12 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
 
             {/* Expected Date Field */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="income-expected-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data Prevista *
                </label>
                <input
+                  id="income-expected-date"
+                  aria-required="true"
                   type="date"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   {...register('expectedDate')}
@@ -110,13 +117,14 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
 
             {/* Received Date Field */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="income-received-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data de Recebimento (opcional)
                </label>
                <input
+                  id="income-received-date"
                   type="date"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
-                   {...register('receivedDate')}
+                  {...register('receivedDate')}
                />
             </div>
          </div>

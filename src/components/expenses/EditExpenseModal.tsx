@@ -64,10 +64,12 @@ export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalP
 
             {/* Amount Input */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="edit-expense-amount" className="block text-xs font-medium text-muted-foreground mb-1">
                   Valor
                </label>
                <input
+                  id="edit-expense-amount"
+                  aria-label="Valor do gasto em reais"
                   className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   value={amount}
                   onChange={e => setAmount(formatCurrency(e.target.value))}

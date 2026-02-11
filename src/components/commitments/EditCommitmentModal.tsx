@@ -75,7 +75,6 @@ export function EditCommitmentModal({
          onDelete={handleDelete}
       >
          <div className="space-y-4">
-            {/* Info Summary - Visual mantido do 'atual' */}
             <div className="bg-muted/40 p-3 rounded-lg border border-dashed text-[11px] text-muted-foreground grid grid-cols-2 gap-2">
                <div>
                   Tipo: <span className="font-medium text-foreground">{commitment.type}</span>
@@ -93,10 +92,12 @@ export function EditCommitmentModal({
 
             <div className="grid grid-cols-1 gap-4">
                <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                  <label htmlFor="edit-commitment-value" className="block text-xs font-medium text-muted-foreground mb-1">
                      Confirmar Valor
                   </label>
                   <input
+                     id="edit-commitment-value"
+                     aria-label="Valor do compromisso em reais"
                      className="w-full border rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                      value={amount}
                      onChange={e => setAmount(formatCurrency(e.target.value))}
@@ -104,10 +105,11 @@ export function EditCommitmentModal({
                </div>
 
                <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                  <label htmlFor="edit-commitment-payment-date" className="block text-xs font-medium text-muted-foreground mb-1">
                      Data de Pagamento
                   </label>
                   <input
+                     id="edit-commitment-payment-date"
                      type="date"
                      className="w-full border rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                      value={paymentDate}

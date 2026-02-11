@@ -66,10 +66,12 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
          <div className="space-y-4">
             {/* Description */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="expense-description" className="block text-xs font-medium text-muted-foreground mb-1">
                   Descrição *
                </label>
                <input
+                  id="expense-description"
+                  aria-required="true"
                   placeholder="Ex: Aluguel, Supermercado"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   {...register('description')}
@@ -78,10 +80,12 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
 
             {/* Date */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="expense-payment-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data de pagamento *
                </label>
                <input
+                  id="expense-payment-date"
+                  aria-required="true"
                   type="date"
                   className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
                   {...register('paymentDate')}
@@ -90,7 +94,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
 
             {/* Category */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label id="expense-category-label" className="block text-xs font-medium text-muted-foreground mb-1">
                   Categoria *
                </label>
                <Controller
@@ -98,6 +102,8 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                   control={control}
                   render={({ field }) => (
                      <CustomSelect
+                        id="expense-category"
+                        label="Categoria do gasto"
                         value={field.value}
                         onChange={field.onChange}
                         options={CATEGORIES}
@@ -108,7 +114,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
 
             {/* Amount */}
             <div>
-               <label className="block text-xs font-medium text-muted-foreground mb-1">
+               <label htmlFor="expense-amount" className="block text-xs font-medium text-muted-foreground mb-1">
                   Valor *
                </label>
                <Controller
@@ -116,6 +122,9 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                   control={control}
                   render={({ field }) => (
                      <input
+                        id="expense-amount"
+                        aria-required="true"
+                        aria-label="Valor do gasto em reais"
                         className="mt-1 w-full rounded-md border p-2"
                         value={field.value}
                         onChange={e => field.onChange(formatCurrency(e.target.value))}

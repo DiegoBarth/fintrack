@@ -108,8 +108,10 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             <div className="grid grid-cols-1 gap-4">
                {/* Description */}
                <div>
-                  <label className="block text-xs font-medium text-muted-foreground mb-1">Descrição *</label>
+                  <label htmlFor="commitment-description" className="block text-xs font-medium text-muted-foreground mb-1">Descrição *</label>
                   <input
+                     id="commitment-description"
+                     aria-required="true"
                      className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                      placeholder="Ex: Aluguel, Parcela Notebook"
                      {...register('description')}
@@ -119,12 +121,14 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                {/* Category & Type */}
                <div className="grid grid-cols-2 gap-3">
                   <div>
-                     <label className="block text-xs font-medium text-muted-foreground mb-1">Categoria *</label>
+                     <label id="commitment-category-label" className="block text-xs font-medium text-muted-foreground mb-1">Categoria *</label>
                      <Controller
                         name="category"
                         control={control}
                         render={({ field }) => (
                            <CustomSelect
+                              id="commitment-category"
+                              label="Categoria"
                               value={field.value}
                               onChange={field.onChange}
                               options={CATEGORIES}
@@ -133,12 +137,14 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      />
                   </div>
                   <div>
-                     <label className="block text-xs font-medium text-muted-foreground mb-1">Tipo *</label>
+                     <label id="commitment-type-label" className="block text-xs font-medium text-muted-foreground mb-1">Tipo *</label>
                      <Controller
                         name="type"
                         control={control}
                         render={({ field }) => (
                            <CustomSelect
+                              id="commitment-type"
+                              label="Tipo de compromisso"
                               value={field.value}
                               onChange={value => field.onChange(value as CommitmentType)}
                               options={COMMITMENT_TYPES}
@@ -156,12 +162,14 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                   <div className="grid grid-cols-2 gap-3">
                      <div>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">Valor *</label>
+                        <label htmlFor="commitment-amount" className="block text-xs font-medium text-muted-foreground mb-1">Valor *</label>
                         <Controller
                            name="amount"
                            control={control}
                            render={({ field }) => (
                               <input
+                                 id="commitment-amount"
+                                 aria-required="true"
                                  className="mt-1 w-full rounded-md border p-2"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
@@ -170,8 +178,10 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         />
                      </div>
                      <div>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">Vencimento *</label>
+                        <label htmlFor="commitment-due-date" className="block text-xs font-medium text-muted-foreground mb-1">Vencimento *</label>
                         <input
+                           id="commitment-due-date"
+                           aria-required="true"
                            type="date"
                            className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                            {...register('dueDate')}
@@ -181,15 +191,17 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
 
                   {type === 'Fixed' && (
                      <div>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">
+                        <label htmlFor="commitment-months" className="block text-xs font-medium text-muted-foreground mb-1">
                            Repetir por (meses)
                         </label>
                         <input
+                           id="commitment-months"
+                           aria-label="Número de meses para repetir o compromisso"
                            type="number"
                            min={1}
                            max={12}
                            className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
-                           {...register('months', { valueAsNumber: true })}
+                           {...register('months')}
                         />
                      </div>
                   )}
@@ -200,12 +212,14 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             {type === 'Credit_card' && (
                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                   <div>
-                     <label className="block text-xs font-medium text-muted-foreground mb-1">Selecione o Cartão *</label>
+                     <label id="commitment-card-label" className="block text-xs font-medium text-muted-foreground mb-1">Selecione o Cartão *</label>
                      <Controller
                         name="card"
                         control={control}
                         render={({ field }) => (
                            <CustomSelect
+                              id="commitment-card"
+                              label="Cartão de crédito"
                               value={field.value ?? ''}
                               onChange={field.onChange}
                               options={CARDS}
@@ -216,12 +230,14 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
 
                   <div className="grid grid-cols-2 gap-3">
                      <div>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">Valor Total *</label>
+                        <label htmlFor="commitment-total-amount" className="block text-xs font-medium text-muted-foreground mb-1">Valor Total *</label>
                         <Controller
                            name="amount"
                            control={control}
                            render={({ field }) => (
                               <input
+                                 id="commitment-total-amount"
+                                 aria-required="true"
                                  className="mt-1 w-full rounded-md border p-2"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
@@ -230,8 +246,13 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         />
                      </div>
                      <div>
-                        <label className="block text-xs font-medium text-muted-foreground mb-1">Parcelas *</label>
+                        <label htmlFor="commitment-total-installments" className="block text-xs font-medium text-muted-foreground mb-1">Parcelas *</label>
                         <input
+                           id="compromisso-total-parcelas"
+                           min={1}
+                           max={60}
+                           aria-required="true"
+                           aria-label="Total de parcelas do compromisso"
                            type="number"
                            className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                            {...register('totalInstallments')}
@@ -240,8 +261,10 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                   </div>
 
                   <div>
-                     <label className="block text-xs font-medium text-muted-foreground mb-1">Primeiro Vencimento *</label>
+                     <label htmlFor="commitment-due-date-card" className="block text-xs font-medium text-muted-foreground mb-1">Primeiro Vencimento *</label>
                      <input
+                        id="compromisso-data-vencimento-cartao"
+                        aria-required="true"
                         type="date"
                         className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
                         {...register('dueDate')}

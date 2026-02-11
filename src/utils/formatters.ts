@@ -95,6 +95,8 @@ export function dateBRToISO(date: string) {
 export function formatCurrency(value: string) {
    const onlyNumbers = value.replace(/\D/g, '');
 
+   if (!onlyNumbers) return numberToCurrency(0);
+
    const number = Number(onlyNumbers) / 100;
 
    return numberToCurrency(number);

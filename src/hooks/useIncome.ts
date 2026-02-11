@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
    listIncomes,
@@ -12,14 +11,11 @@ import type { Income } from '@/types/Income'
 export function useIncome(month: string, year: string) {
    const queryClient = useQueryClient()
    const queryKey = ['incomes', month, year]
-   const location = useLocation();
-   const enabled = ['/incomes', '/'].includes(location.pathname)
 
    const { data: incomes = [], isLoading, isError } = useQuery({
       queryKey,
       queryFn: () => listIncomes(month, String(year)),
-      staleTime: Infinity,
-      enabled
+      staleTime: Infinity
    })
 
    const createMutation = useMutation({

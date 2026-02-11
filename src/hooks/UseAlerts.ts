@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { listCommitments } from '@/api/endpoints/commitment';
 import { usePeriod } from '@/contexts/PeriodContext';
+import { useCommitment } from './useCommitment';
 
 /**
  * Resets the time to midnight for accurate date comparison.
@@ -19,19 +20,13 @@ function resetTime(d: Date) {
  */
 export function useAlerts() {
    const { year } = usePeriod();
-
-   // Fetching with 'all' month to get a global view of alerts for the year
-   const { data: commitments = [] } = useQuery({
-      queryKey: ['commitments', 'alerts', year],
-      queryFn: () => listCommitments('all', String(year)),
-      placeholderData: (previous) => previous ?? []
-   });
+   const { alertCommitments } = useCommitment('all', String(year), 'alerts')
 
    return useMemo(() => {
       const today = resetTime(new Date());
 
       // Filter only unpaid commitments
-      const pendingCommitments = commitments.filter(c => !c.paymentDate);
+      const pendingCommitments = alertCommitments.filter(c => !c.paymentDate);
 
       // 1. Overdue (Vencidos)
       const overdue = pendingCommitments.filter(c => {
@@ -69,5 +64,5 @@ export function useAlerts() {
          today: dueToday,
          week: dueThisWeek
       };
-   }, [commitments]);
+   }, [alertCommitments]);
 }

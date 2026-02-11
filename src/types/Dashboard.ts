@@ -1,3 +1,9 @@
+export interface Dashboard {
+  monthlyBalance: MonthlyBalanceHistory[];
+  topCategories: CategorySummary[];
+  cardsSummary: CreditCardSummary[];
+}
+
 export interface CreditCardSummary {
    cardName: string;
    image: string;

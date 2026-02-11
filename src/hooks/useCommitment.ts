@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
    listCommitments,
@@ -13,17 +12,17 @@ import { dateBRToISO, getMonthAndYear } from '@/utils/formatters'
 export function useCommitment(month: string, year: string, key?: string | null) {
    const queryClient = useQueryClient()
    const queryKey = ['commitments', key ?? month, year]
-   const location = useLocation();
-
-   const enabled = key
-      ? ['/commitments', '/'].includes(location.pathname)
-      : location.pathname === '/commitments';
 
    const { data: commitments = [], isLoading, isError } = useQuery({
       queryKey,
       queryFn: () => listCommitments(month, String(year)),
-      staleTime: Infinity,
-      enabled
+      staleTime: Infinity
+   })
+
+   const { data: alertCommitments = [] } = useQuery({
+      queryKey,
+      queryFn: () => listCommitments(month, String(year)),
+      staleTime: Infinity
    })
 
    const createMutation = useMutation({
@@ -121,13 +120,14 @@ export function useCommitment(month: string, year: string, key?: string | null) 
 
    return {
       commitments,
+      alertCommitments,
       isLoading,
       isError,
       create: createMutation.mutateAsync,
       createCard: createCardMutation.mutateAsync,
       update: updateMutation.mutateAsync,
       remove: removeMutation.mutateAsync,
-      isSaving: updateMutation.isPending,
+      isSaving: createMutation.isPending || createCardMutation.isPending || updateMutation.isPending,
       isDeleting: removeMutation.isPending
    }
 }

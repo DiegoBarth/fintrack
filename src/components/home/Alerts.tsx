@@ -16,21 +16,25 @@ function AlertCard({ title, gradientFrom, gradientTo, onClick }: AlertCardProps)
       <button
          onClick={onClick}
          className="
-        w-full text-left
-        rounded-xl p-2 text-white
-        flex items-center justify-between
-        gap-2
-        active:scale-[0.98] transition
-      "
+            w-full text-left
+            rounded-xl p-2 text-white
+            flex items-center justify-between
+            gap-2
+            active:scale-[0.98] 
+            hover:scale-105 
+            hover:shadow-lg
+            transition-all 
+            duration-200
+            group"
          style={{
             background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
          }}
       >
-         <h3 className="text-sm font-medium text-white/90 truncate">
+         <h3 className="text-sm font-medium text-white/90 truncate group-hover:text-white">
             {title}
          </h3>
 
-         <span className="text-xs opacity-80 whitespace-nowrap">
+         <span className="text-xs opacity-80 whitespace-nowrap group-hover:opacity-100 group-hover:font-medium transition-all">
             Ver detalhes
          </span>
       </button>

@@ -1,5 +1,6 @@
 import { numberToCurrency } from "@/utils/formatters"
 import { Skeleton } from "@/components/ui/Skeleton"
+import { motion, number } from "framer-motion"
 
 interface SummaryCardProps {
    title: string
@@ -21,30 +22,35 @@ export function SummaryCard({
    icon
 }: SummaryCardProps) {
    return (
-      <div
-         className="flex items-center justify-between rounded-xl bg-card p-4 shadow-sm transition-all hover:shadow-md"
-         style={{ borderLeft: `5px solid ${color}` }}
+      <motion.div
+         initial={{ opacity: 0, y: 20 }}
+         animate={{ opacity: 1, y: 0 }}
       >
-         <div className="flex items-center gap-3">
-            {icon && (
-               <div
-                  className="flex h-8 w-8 items-center justify-center rounded-md"
-                  style={{ backgroundColor: `${color}20` }}
-               >
-                  <span style={{ color: color }}>{icon}</span>
-               </div>
-            )}
-            <div>
-               <p className="text-sm text-muted-foreground">{title}</p>
-               {isLoading ? (
-                  <Skeleton className="h-6 w-24 rounded-md" />
-               ) : (
-                  <p className="text-lg font-semibold" style={{ color: color }}>
-                     {numberToCurrency(amount)}
-                  </p>
+         <div
+            className="flex items-center justify-between rounded-xl bg-card p-4 md:p-5 shadow-sm transition-all hover:shadow-lg hover:scale-[1.02] cursor-pointer"
+            style={{ borderLeft: `5px solid ${color}` }}
+         >
+            <div className="flex items-center gap-3 md:gap-4">
+               {icon && (
+                  <div
+                     className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg"
+                     style={{ backgroundColor: `${color}20` }}
+                  >
+                     <span style={{ color: color }}>{icon}</span>
+                  </div>
                )}
+               <div>
+                  <p className="text-xs md:text-sm text-muted-foreground font-medium">{title}</p>
+                  {isLoading ? (
+                     <Skeleton className="h-7 md:h-8 w-28 md:w-32 rounded-md" />
+                  ) : (
+                     <p className="text-xl md:text-2xl font-bold" style={{ color: color }}>
+                        {numberToCurrency(amount)}
+                     </p>
+                  )}
+               </div>
             </div>
          </div>
-      </div>
+      </motion.div>
    )
 }

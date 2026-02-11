@@ -28,10 +28,10 @@ export function Expense() {
 
    return (
       <Layout title="Gastos" onBack={handleBack}>
-         <div className="flex justify-end mb-4">
+         <div className="flex justify-end mb-4 border-b pb-4">
             <button
                onClick={() => setModalOpen(true)}
-               className="rounded-full px-5 py-2 text-white font-medium shadow-md hover:brightness-90 transition"
+               className="rounded-full px-5 py-2 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
                style={{ backgroundColor: 'rgb(239, 68, 68)' }}
             >
                + Novo Gasto

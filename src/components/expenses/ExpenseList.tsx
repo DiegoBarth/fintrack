@@ -40,9 +40,9 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
          />
 
          <ListItemFooterMobile
-            left={`Pago em ${expense.paymentDate} • ${expense.category}`}
+            left={<span className="text-green-700">Pago em {expense.paymentDate} • {expense.category}</span>}
             right={
-               <span className="text-green-600">
+               <span className="text-green-600 font-medium">
                   Pago
                </span>
             }
@@ -54,6 +54,7 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
    const renderDesktopItem = useCallback((expense: Expense) => (
       <ListItemRowDesktop
          onClick={() => onSelect(expense)}
+         cols={10}
       >
          <ListColDescription>
             {expense.description}
@@ -63,17 +64,17 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
          </ListColMuted>
 
          <ListColMuted span={3}>
-            Pago em {expense.paymentDate}
+            <span className="text-green-700">Pago em {expense.paymentDate}</span>
          </ListColMuted>
 
          <ListColValue>
-            <span className="text-red-600">
+            <span className="text-red-600 font-semibold">
                {numberToCurrency(expense.amount)}
             </span>
          </ListColValue>
 
          <ListColStatus>
-            <span className="text-green-600">
+            <span className="text-green-600 font-semibold">
                Pago
             </span>
          </ListColStatus>

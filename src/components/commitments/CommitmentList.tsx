@@ -2,7 +2,7 @@ import { memo, useCallback } from 'react'
 import { ListLayout } from '@/components/layout/ListLayout'
 import { ListItemLayout } from '@/components/layout/ListItemLayout'
 import type { Commitment } from '@/types/Commitment'
-import { formatDateBR, numberToCurrency } from '@/utils/formatters'
+import { numberToCurrency } from '@/utils/formatters'
 import { ListItemHeaderMobile } from '@/components/layout/ListItemHeaderMobile'
 import { ListItemFooterMobile } from '@/components/layout/ListItemFooterMobile'
 import { ListItemRowDesktop } from '@/components/layout/ListItemRowDesktop'
@@ -67,14 +67,16 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
 
             <ListItemFooterMobile
                left={
-                  isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`
+                  <span className={isPaid ? 'text-green-700' : isOverdue ? 'text-red-700' : 'text-amber-700'}>
+                     {isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`}
+                  </span>
                }
                right={
                   <span
-                     className={`
+                     className={`font-medium
                         ${isPaid && 'text-green-600'}
                         ${isOverdue && 'text-red-600'}
-                        ${!isPaid && !isOverdue && 'text-amber-500'}
+                        ${!isPaid && !isOverdue && 'text-amber-600'}
                      `}
                   >
                      {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Em aberto'}
@@ -93,6 +95,7 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
       return (
          <ListItemRowDesktop
             onClick={() => onSelect(commitment)}
+            cols={10}
             variant={variant}
          >
             <ListColDescription>
@@ -104,9 +107,9 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
             </ListColMuted>
 
             <ListColMuted span={3}>
-               {isPaid
-                  ? `Pago em ${commitment.paymentDate}`
-                  : `Vence em ${commitment.dueDate}`}
+               <span className={isPaid ? 'text-green-700' : isOverdue ? 'text-red-700' : 'text-amber-700'}>
+                  {isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`}
+               </span>
             </ListColMuted>
 
             <ListColValue>
@@ -115,10 +118,10 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
 
             <ListColStatus>
                <span
-                  className={`
+                  className={`font-semibold
                      ${isPaid && 'text-green-600'}
                      ${isOverdue && 'text-red-600'}
-                     ${!isPaid && !isOverdue && 'text-orange-500'}
+                     ${!isPaid && !isOverdue && 'text-amber-600'}
                   `}
                >
                   {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Aberto'}

@@ -12,7 +12,7 @@ import { Layout } from '@/components/layout/Layout'
 export function Dashboard() {
    const { month, year, summary } = usePeriod();
    const { dashboard, isLoading } = useDashboard(month, String(year))
-console.log(dashboard)
+
    const navigate = useNavigate()
    const handleBack = () => navigate('/')
 

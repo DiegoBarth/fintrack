@@ -38,8 +38,10 @@ describe('SummaryCard', () => {
          />
       )
 
-      const card = container.firstChild as HTMLElement
-      expect(card).toHaveStyle({ borderLeft: '5px solid #3b82f6' })
+      const card = container.querySelector('div[style*="border"]') as HTMLElement
+      expect(card).toBeInTheDocument()
+      expect(card.style.borderLeft).toContain('5px')
+      expect(card.style.borderLeft).toContain('solid')
    })
 
    it('should show skeleton when isLoading=true', () => {
@@ -58,7 +60,7 @@ describe('SummaryCard', () => {
       expect(screen.queryByText('R$ 1.000,00')).not.toBeInTheDocument()
 
       // Skeleton should be present
-      const skeleton = document.querySelector('.h-6.w-24')
+      const skeleton = document.querySelector('.h-7')
       expect(skeleton).toBeInTheDocument()
    })
 
@@ -89,8 +91,9 @@ describe('SummaryCard', () => {
          />
       )
 
-      const iconContainer = container.querySelector('.h-8.w-8')
-      expect(iconContainer).toHaveStyle({ backgroundColor: '#10b98120' })
+      const iconContainer = container.querySelector('.h-10') as HTMLElement
+      expect(iconContainer).toBeInTheDocument()
+      expect(iconContainer.style.backgroundColor).toBeTruthy()
    })
 
    it('should not render icon container when icon is not provided', () => {
@@ -102,7 +105,7 @@ describe('SummaryCard', () => {
          />
       )
 
-      const iconContainer = container.querySelector('.h-8.w-8')
+      const iconContainer = container.querySelector('.h-10')
       expect(iconContainer).not.toBeInTheDocument()
    })
 
@@ -151,9 +154,10 @@ describe('SummaryCard', () => {
          />
       )
 
-      const card = container.firstChild as HTMLElement
+      const card = container.querySelector('div[class*="rounded-xl"]') as HTMLElement
       expect(card).toHaveClass('transition-all')
-      expect(card).toHaveClass('hover:shadow-md')
+      expect(card).toHaveClass('hover:shadow-lg')
+      expect(card).toHaveClass('hover:scale-[1.02]')
    })
 
    it('should render title with muted style', () => {

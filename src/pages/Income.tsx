@@ -28,10 +28,10 @@ export function Income() {
 
    return (
       <Layout title="Receitas" onBack={handleBack}>
-         <div className="flex justify-end mb-4">
+         <div className="flex justify-end mb-4 border-b pb-4">
             <button
                onClick={() => setModalOpen(true)}
-               className="rounded-full px-5 py-2 text-white font-medium shadow"
+               className="rounded-full px-5 py-2 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
                style={{ backgroundColor: 'rgb(59, 130, 246)' }}
             >
                + Nova receita

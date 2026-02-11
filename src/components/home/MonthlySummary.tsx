@@ -32,46 +32,46 @@ export function MonthlySummary() {
    }), [totals]);
 
    return (
-      <div className="flex flex-col gap-3">
-         <SummaryCard
-            title="Entradas"
-            amount={totals.totalIncomes}
-            color="#3b82f6"
-            isLoading={isLoading}
-            icon={<Plus className="h-4 w-4" />}
-         />
+      <div className="space-y-3">
+         <h2 className="text-base md:text-lg font-semibold text-gray-900">Resumo do Mês</h2>
 
-         <SummaryCard
-            title="Gastos"
-            amount={totals.totalExpenses}
-            color="#ef4444"
-            isLoading={isLoading}
-            icon={<Minus className="h-4 w-4" />}
-         />
-
-         <SummaryCard
-            title="Compromissos"
-            amount={totals.totalCommitments}
-            color="#f59e0b"
-            isLoading={isLoading}
-            icon={<Calendar className="h-4 w-4" />}
-         />
-
-         <SummaryCard
-            title="Saldo Atual"
-            amount={balances.currentBalance}
-            color="#6366f1"
-            isLoading={isLoading}
-            icon={<Wallet className="h-4 w-4" />}
-         />
-
-         <SummaryCard
-            title="Saldo Final do Mês"
-            amount={balances.monthFinalBalance}
-            color="#8b5cf6"
-            isLoading={isLoading}
-            icon={<TrendingUp className="h-4 w-4" />}
-         />
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <SummaryCard
+               title="Entradas"
+               amount={totals.totalIncomes}
+               color="#3b82f6"
+               isLoading={isLoading}
+               icon={<Plus className="h-4 w-4 md:h-5 md:w-5" />}
+            />
+            <SummaryCard
+               title="Gastos"
+               amount={totals.totalExpenses}
+               color="#ef4444"
+               isLoading={isLoading}
+               icon={<Minus className="h-4 w-4 md:h-5 md:w-5" />}
+            />
+            <SummaryCard
+               title="Compromissos"
+               amount={totals.totalCommitments}
+               color="#f59e0b"
+               isLoading={isLoading}
+               icon={<Calendar className="h-4 w-4 md:h-5 md:w-5" />}
+            />
+            <SummaryCard
+               title="Saldo Atual"
+               amount={balances.currentBalance}
+               color={(balances.currentBalance < 0) ? "#ef4444" : "#6366f1"}
+               isLoading={isLoading}
+               icon={<Wallet className="h-4 w-4 md:h-5 md:w-5" />}
+            />
+            <SummaryCard
+               title="Saldo Final do Mês"
+               amount={balances.monthFinalBalance}
+               color={(balances.monthFinalBalance < 0) ? "#ef4444" : "#8b5cf6"}
+               isLoading={isLoading}
+               icon={<TrendingUp className="h-4 w-4 md:h-5 md:w-5" />}
+            />
+         </div>
       </div>
    )
 }

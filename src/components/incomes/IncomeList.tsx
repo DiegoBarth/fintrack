@@ -40,9 +40,9 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
             />
 
             <ListItemFooterMobile
-               left={dateText}
+               left={<span className={received ? 'text-green-700' : 'text-blue-700'}>{dateText}</span>}
                right={
-                  <span className={received ? 'text-green-600' : 'text-blue-500'}>
+                  <span className={received ? 'text-green-600 font-medium' : 'text-blue-600 font-medium'}>
                      {received ? 'Recebido' : 'Em aberto'}
                   </span>
                }
@@ -67,15 +67,15 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
             </ListColDescription>
 
             <ListColMuted span={4}>
-               {dateText}
+               <span className={received ? 'text-green-700' : 'text-blue-700'}>{dateText}</span>
             </ListColMuted>
 
             <ListColValue>
                {numberToCurrency(income.amount)}
             </ListColValue>
 
-            <div className="col-span-2 text-right font-medium">
-               <span className={received ? 'text-green-600' : 'text-blue-500'}>
+            <div className="col-span-2 text-right">
+               <span className={received ? 'text-green-600 font-semibold' : 'text-blue-600 font-semibold'}>
                   {received ? 'Recebido' : 'Em aberto'}
                </span>
             </div>

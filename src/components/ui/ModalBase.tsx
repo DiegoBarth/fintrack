@@ -87,10 +87,10 @@ export function BaseModal({
             )}
 
             {/* Scrollable Content Area */}
-            <div className="p-4 overflow-y-auto flex-1">{children}</div>
+            <div className="p-6 overflow-y-auto flex-1">{children}</div>
 
             {/* Smart Footer Actions */}
-            <div className="flex gap-2 p-4 border-t flex-shrink-0">
+            <div className="flex gap-2 p-4 border-t border-gray-200 bg-gray-50/50 flex-shrink-0">
                <button
                   onClick={onClose}
                   disabled={isLoading}

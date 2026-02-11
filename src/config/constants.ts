@@ -15,3 +15,15 @@ export const BASE_PATH = import.meta.env.BASE_URL;
 
 /** API request timeout (Apps Script), in ms. */
 export const API_TIMEOUT_MS = 30 * 1000;
+
+/** Width (in pixels) of the sensitive area at the screen edges. */
+export const EDGE_ZONE = 80;
+
+/** Order of routes used in horizontal swipe navigation. */
+export const SWIPE_ROUTES = [
+   '/',
+   '/incomes',
+   '/expenses',
+   '/commitments',
+   '/dashboard'
+];

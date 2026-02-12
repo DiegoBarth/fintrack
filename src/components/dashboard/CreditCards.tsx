@@ -116,7 +116,7 @@ export function CreditCards({ cards }: Props) {
                   <img
                      src={`${BASE_PATH}cards/${c.image}.jpg`}
                      alt={c.cardName}
-                     className="mb-3 h-44 w-full rounded-lg object-cover pointer-events-none"
+                     className="mb-3 h-32 sm:h-44 w-full rounded-lg object-contain pointer-events-none bg-zinc-900"
                   />
 
                   <h3 className="font-semibold text-lg">{c.cardName}</h3>

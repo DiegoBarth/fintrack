@@ -64,10 +64,33 @@ export function TopCategories({ categories }: TopCategoriesProps) {
 
    const getStyles = (value: number, max: number) => {
       const percentage = (value / max) * 100
-      if (percentage > 70) return { bar: 'bg-red-500', text: 'text-red-600', bg: 'bg-red-100', icon: 'text-red-500' }
-      if (percentage > 40) return { bar: 'bg-orange-500', text: 'text-orange-600', bg: 'bg-orange-100', icon: 'text-orange-500' }
-      if (percentage > 20) return { bar: 'bg-amber-500', text: 'text-amber-600', bg: 'bg-amber-100', icon: 'text-amber-500' }
-      return { bar: 'bg-slate-400', text: 'text-slate-600', bg: 'bg-slate-100', icon: 'text-slate-400' }
+      if (percentage > 70) return {
+         bar: 'bg-red-500 dark:bg-red-600',
+         text: 'text-red-600 dark:text-red-400',
+         bg: 'bg-red-100 dark:bg-red-900/30',
+         icon: 'text-red-500'
+      }
+
+      if (percentage > 40) return {
+         bar: 'bg-orange-500 dark:bg-orange-600',
+         text: 'text-orange-600 dark:text-orange-400',
+         bg: 'bg-orange-100 dark:bg-orange-900/30',
+         icon: 'text-orange-500'
+      }
+
+      if (percentage > 20) return {
+         bar: 'bg-amber-500 dark:bg-amber-600',
+         text: 'text-amber-600 dark:text-amber-400',
+         bg: 'bg-amber-100 dark:bg-amber-900/30',
+         icon: 'text-amber-500'
+      }
+
+      return {
+         bar: 'bg-slate-400',
+         text: 'text-slate-600 dark:text-slate-400',
+         bg: 'bg-slate-100 dark:bg-slate-700/30',
+         icon: 'text-slate-400'
+      }
    }
 
    if (!categories.length) return null

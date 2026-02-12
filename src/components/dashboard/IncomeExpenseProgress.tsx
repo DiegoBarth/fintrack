@@ -27,14 +27,15 @@ export function IncomeExpenseProgress({ summary }: Props) {
 
    const IncomesColor = incomePercentage > 100 ? 'bg-emerald-500' : incomePercentage > 80 ? 'bg-emerald-500' : 'bg-amber-500'
    const ExpensesColor = expensePercentage > 100 ? 'bg-red-600' : expensePercentage > 80 ? 'bg-amber-500' : 'bg-red-500'
+console.log(summary)
 
    return (
       <motion.section
          initial={{ opacity: 0, y: 20 }}
          animate={{ opacity: 1, y: 0 }}
-         className="rounded-xl border bg-card p-6 shadow-sm"
+         className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm"
       >
-         <h2 className="mb-6 text-lg font-semibold text-gray-900">
+         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
             Progresso do período
          </h2>
 
@@ -42,21 +43,21 @@ export function IncomeExpenseProgress({ summary }: Props) {
             {/* INCOMES */}
             <div>
                <div className="mb-2 flex justify-between items-baseline">
-                  <span className="font-medium text-gray-900">Receitas</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">Receitas</span>
                   <div className="flex items-center gap-2">
-                     <span className="text-sm text-muted-foreground">
+                     <span className="text-sm text-muted-foreground dark:text-gray-400">
                         {numberToCurrency(summary.totalReceivedInMonth)} /{' '}
                         {numberToCurrency(summary.totalIncomes)}
                      </span>
-                     <span className={`text-xs font-semibold ${incomePercentage > 100 ? 'text-red-600' :
-                        incomePercentage > 80 ? 'text-emerald-600' :
-                           'text-amber-600'
+                     <span className={`text-xs font-semibold ${incomePercentage > 100 ? 'text-red-600 dark:text-red-400' :
+                        incomePercentage > 80 ? 'text-emerald-600 dark:text-emerald-400' :
+                           'text-amber-600 dark:text-amber-400'
                         }`}>
                         {incomePercentage.toFixed(1)}%
                      </span>
                   </div>
                </div>
-               <div className="h-3 rounded-full bg-gray-200">
+               <div className="h-3 rounded-full bg-gray-200 dark:bg-gray-700">
                   <motion.div
                      initial={{ width: 0 }}
                      animate={{ width: `${Math.min(incomePercentage, 100)}%` }}
@@ -72,9 +73,9 @@ export function IncomeExpenseProgress({ summary }: Props) {
             {/* EXPENSES */}
             <div>
                <div className="mb-2 flex justify-between items-baseline">
-                  <span className="font-medium text-gray-900">Despesas</span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">Despesas</span>
                   <div className="flex items-center gap-2">
-                     <span className="text-sm text-muted-foreground">
+                     <span className="text-sm text-muted-foreground dark:text-gray-400">
                         {numberToCurrency(
                            summary.totalPaidExpensesInMonth + summary.totalPaidCommitmentsInMonth
                         )}{' '}
@@ -83,15 +84,15 @@ export function IncomeExpenseProgress({ summary }: Props) {
                            summary.totalExpenses + summary.totalCommitments
                         )}
                      </span>
-                     <span className={`text-xs font-semibold ${expensePercentage > 100 ? 'text-red-600' :
-                        expensePercentage > 80 ? 'text-amber-600' :
-                           'text-red-600'
+                     <span className={`text-xs font-semibold ${expensePercentage > 100 ? 'text-red-600 dark:text-red-400' :
+                        expensePercentage > 80 ? 'text-amber-600 dark:text-amber-400' :
+                           'text-red-600 dark:text-red-400'
                         }`}>
                         {expensePercentage.toFixed(1)}%
                      </span>
                   </div>
                </div>
-               <div className="h-3 rounded-full bg-gray-200">
+               <div className="h-3 rounded-full bg-gray-200 dark:bg-gray-700">
                   <motion.div
                      initial={{ width: 0 }}
                      animate={{ width: `${Math.min(expensePercentage, 100)}%` }}

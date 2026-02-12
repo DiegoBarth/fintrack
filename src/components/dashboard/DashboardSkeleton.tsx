@@ -6,7 +6,7 @@ export function DashboardSkeleton() {
          <Skeleton className="h-4 w-16" />
          <Skeleton className="h-8 w-40" />
 
-         <div className="rounded-xl border border-zinc-100 p-6 space-y-6">
+         <div className="rounded-xl border border-zinc-100 dark:border-gray-700 p-6 space-y-6">
             <Skeleton className="h-5 w-32" />
             <div className="space-y-4">
                <div className="space-y-2">
@@ -29,12 +29,12 @@ export function DashboardSkeleton() {
          </div>
 
          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-xl border border-zinc-100 p-4 h-[350px] space-y-4">
+            <div className="rounded-xl border border-zinc-100 dark:border-gray-700 p-4 h-[350px] space-y-4">
                <Skeleton className="h-5 w-40" />
-               <Skeleton className="h-full w-full rounded-md" />
+               <Skeleton className="h-[90%] w-full rounded-md" />
             </div>
 
-            <div className="rounded-xl border border-zinc-100 p-4 h-[350px] space-y-4">
+            <div className="rounded-xl border border-zinc-100 dark:border-gray-700 p-4 h-[350px] space-y-4">
                <Skeleton className="h-5 w-32" />
                <div className="space-y-5">
                   {[...Array(5)].map((_, i) => (

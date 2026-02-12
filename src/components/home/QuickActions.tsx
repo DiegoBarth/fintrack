@@ -14,8 +14,8 @@ export function QuickActions() {
    ]
 
    return (
-      <div className="py-4 px-6">
-         <h3 className="text-sm font-semibold text-gray-700 mb-3">Ações rápidas</h3>
+      <div className="py-4 px-6 bg-white dark:bg-gray-800 rounded-lg">
+         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Ações rápidas</h3>
 
          <div className="grid grid-cols-4 gap-4">
             {actions.map((action) => {
@@ -26,7 +26,7 @@ export function QuickActions() {
                      to={action.href}
                      className={`
                         flex flex-col items-center gap-2 p-3 rounded-lg 
-                        ${action.hoverBg}
+                        ${action.hoverBg} dark:hover:bg-gray-700
                         hover:scale-105 
                         transition-all duration-200
                         group
@@ -34,14 +34,14 @@ export function QuickActions() {
                   >
                      <div className={`
                         ${action.color} 
-                        bg-gray-50 
+                        bg-gray-50 dark:bg-gray-700
                         p-3 rounded-full
                         group-hover:shadow-md
                         transition-shadow duration-200
                      `}>
                         <Icone className="w-6 h-6" />
                      </div>
-                     <span className="text-xs text-gray-600 text-center group-hover:font-medium transition-all">
+                     <span className="text-xs text-gray-600 dark:text-gray-300 text-center group-hover:font-medium transition-all">
                         {action.label}
                      </span>
                   </Link>

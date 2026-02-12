@@ -143,12 +143,13 @@ export function CustomSelect({ value, onChange, options, label, id, placeholder 
             aria-labelledby={label ? `${id}-label` : undefined}
             aria-controls={isOpen ? listboxId : undefined}
             aria-activedescendant={isOpen && highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
-            className="flex h-10 w-full items-center justify-between rounded-md border bg-white p-2 text-sm outline-none focus:ring-2 focus:ring-black"
+            className="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 dark:border-gray-600
+               bg-white dark:bg-gray-800 p-2 text-sm outline-none focus:ring-2 focus:ring-black dark:focus:ring-blue-500"
          >
-            <span className={value ? "text-black" : "text-muted-foreground"}>
+            <span className={value ? "text-black dark:text-white" : "text-muted-foreground dark:text-gray-400"}>
                {value || placeholder}
             </span>
-            <ChevronDown className={`h-4 w-4 opacity-50 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+            <ChevronDown className={`h-4 w-4 opacity-50 dark:opacity-70 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
          </button>
 
          {isOpen && createPortal(
@@ -162,7 +163,7 @@ export function CustomSelect({ value, onChange, options, label, id, placeholder 
                   transform: 'translateY(-100%) translateY(-4px)',
                   zIndex: 10000
                }}
-               className="overflow-hidden rounded-md border bg-white shadow-2xl animate-in fade-in zoom-in-95"
+               className="overflow-hidden rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-2xl animate-in fade-in zoom-in-95"
             >
                <div
                   id={listboxId}
@@ -188,12 +189,12 @@ export function CustomSelect({ value, onChange, options, label, id, placeholder 
                            onMouseEnter={() => setHighlightedIndex(index)}
                            className={`
                               flex cursor-pointer items-center justify-between rounded-sm px-3 py-2 text-sm transition-colors
-                              ${isHighlighted ? 'bg-gray-100' : 'hover:bg-gray-50'}
-                              ${isSelected ? 'font-semibold text-black' : 'text-gray-600'}
+                              ${isHighlighted ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'}
+                              ${isSelected ? 'font-semibold text-black dark:text-white' : 'text-gray-600 dark:text-gray-300'}
                            `}
                         >
                            <span>{option}</span>
-                           {isSelected && <Check className="h-4 w-4 text-black" aria-hidden="true" />}
+                           {isSelected && <Check className="h-4 w-4 text-black dark:text-white" aria-hidden="true" />}
                         </div>
                      );
                   })}

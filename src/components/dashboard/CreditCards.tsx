@@ -79,9 +79,9 @@ export function CreditCards({ cards }: Props) {
          className="relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none"
       >
          <div className="flex items-center justify-between mb-4 px-4">
-            <h2 className="text-lg font-semibold text-gray-900">Cartões</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cartões</h2>
             <div className="flex items-center gap-2">
-               <span className="text-sm text-gray-500">
+               <span className="text-sm text-gray-500 dark:text-gray-400">
                   {active + 1} / {cards.length}
                </span>
             </div>
@@ -143,21 +143,20 @@ export function CreditCards({ cards }: Props) {
             <button
                onClick={() => setActive(a => Math.max(0, a - 1))}
                disabled={active === 0}
-               className="
-                  absolute top-1/2 left-10 -translate-y-1/2 z-50 bg-white/90 p-3 rounded-full
-                  shadow-xl hover:bg-white hover:scale-110 disabled:opacity-0 disabled:pointer-events-none
-                  transition-all duration-200"
+               className="absolute top-1/2 left-10 -translate-y-1/2 z-50 bg-white/90 dark:bg-gray-800/90 p-3 rounded-full
+                  shadow-xl hover:bg-white dark:hover:bg-gray-700 hover:scale-110 disabled:opacity-0
+                  disabled:pointer-events-none transition-all duration-200"
             >
-               <ChevronLeft className="w-6 h-6 text-gray-700" />
+               <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-200" />
             </button>
             <button
                onClick={() => setActive(a => Math.min(cards.length - 1, a + 1))}
                disabled={active === cards.length - 1}
-               className="absolute top-1/2 right-10 -translate-y-1/2 z-50 bg-white/90 p-3 rounded-full
-                  shadow-xl hover:bg-white hover:scale-110 disabled:opacity-0 disabled:pointer-events-none
-                  transition-all duration-200"
+               className="absolute top-1/2 right-10 -translate-y-1/2 z-50 bg-white/90 dark:bg-gray-800/90 p-3 rounded-full
+                  shadow-xl hover:bg-white dark:hover:bg-gray-700 hover:scale-110 disabled:opacity-0
+                  disabled:pointer-events-none transition-all duration-200"
             >
-               <ChevronRight className="w-6 h-6 text-gray-700" />
+               <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-200" />
             </button>
          </div>
 
@@ -168,8 +167,8 @@ export function CreditCards({ cards }: Props) {
                   key={i}
                   onClick={() => setActive(i)}
                   className={`h-2 rounded-full transition-all duration-300 ${i === active
-                        ? 'w-8 bg-blue-600'
-                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                     ? 'w-8 bg-blue-600 dark:bg-blue-500'
+                     : 'w-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500'
                      }`}
                   aria-label={`Ir para cartão ${i + 1}`}
                />

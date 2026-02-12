@@ -40,55 +40,55 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
             />
 
             <ListItemFooterMobile
-               left={<span className={received ? 'text-green-700' : 'text-blue-700'}>{dateText}</span>}
+               left={<span className={received ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}>{dateText}</span>}
                right={
-                  <span className={received ? 'text-green-600 font-medium' : 'text-blue-600 font-medium'}>
+                  <span className={received ? 'text-green-600 dark:text-green-400 font-medium' : 'text-blue-600 dark:text-blue-400 font-medium'}>
                      {received ? 'Recebido' : 'Em aberto'}
                   </span>
                }
             />
-         </ListItemLayout>
+         </ListItemLayout >
       )
    }, [onSelect])
 
-   const renderDesktopItem = useCallback((income: Income) => {
-      const received = !!income.receivedDate
-      const dateText = received
-         ? `Recebido em ${income.receivedDate}`
-         : `Previsto para ${income.expectedDate}`
+const renderDesktopItem = useCallback((income: Income) => {
+   const received = !!income.receivedDate
+   const dateText = received
+      ? `Recebido em ${income.receivedDate}`
+      : `Previsto para ${income.expectedDate}`
 
-      return (
-         <ListItemRowDesktop
-            onClick={() => onSelect(income)}
-            variant={received ? 'success' : 'default'}
-         >
-            <ListColDescription>
-               {income.description}
-            </ListColDescription>
-
-            <ListColMuted span={4}>
-               <span className={received ? 'text-green-700' : 'text-blue-700'}>{dateText}</span>
-            </ListColMuted>
-
-            <ListColValue>
-               {numberToCurrency(income.amount)}
-            </ListColValue>
-
-            <div className="col-span-2 text-right">
-               <span className={received ? 'text-green-600 font-semibold' : 'text-blue-600 font-semibold'}>
-                  {received ? 'Recebido' : 'Em aberto'}
-               </span>
-            </div>
-         </ListItemRowDesktop>
-      )
-   }, [onSelect])
    return (
-      <ListLayout
-         itens={incomes}
-         emptyText="Nenhuma receita cadastrada"
-         keyExtractor={(income) => income.rowIndex}
-         renderMobileItem={renderMobileItem}
-         renderDesktopItem={renderDesktopItem}
-      />
+      <ListItemRowDesktop
+         onClick={() => onSelect(income)}
+         variant={received ? 'success' : 'default'}
+      >
+         <ListColDescription>
+            {income.description}
+         </ListColDescription>
+
+         <ListColMuted span={4}>
+            <span className={received ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}>{dateText}</span>
+         </ListColMuted>
+
+         <ListColValue>
+            {numberToCurrency(income.amount)}
+         </ListColValue>
+
+         <div className="col-span-2 text-right">
+            <span className={received ? 'text-green-600 dark:text-green-400 font-semibold' : 'text-blue-600 dark:text-blue-400 font-semibold'}>
+               {received ? 'Recebido' : 'Em aberto'}
+            </span>
+         </div>
+      </ListItemRowDesktop>
    )
+}, [onSelect])
+return (
+   <ListLayout
+      itens={incomes}
+      emptyText="Nenhuma receita cadastrada"
+      keyExtractor={(income) => income.rowIndex}
+      renderMobileItem={renderMobileItem}
+      renderDesktopItem={renderDesktopItem}
+   />
+)
 })

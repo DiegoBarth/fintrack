@@ -76,7 +76,8 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                   aria-required="true"
                   placeholder="Ex: Salário, Venda de Produto"
                   autoComplete="off"
-                  className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   {...register('description')}
                />
             </div>
@@ -94,7 +95,8 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                         id="income-amount"
                         aria-required="true"
                         aria-label="Valor da receita em reais"
-                        className="w-full border rounded-md p-2"
+                        className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                           dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                         autoComplete="off"
                         value={field.value}
                         onChange={e => field.onChange(formatCurrency(e.target.value))}
@@ -112,7 +114,8 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                   id="income-expected-date"
                   aria-required="true"
                   type="date"
-                  className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   {...register('expectedDate')}
                />
             </div>
@@ -125,7 +128,8 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <input
                   id="income-received-date"
                   type="date"
-                  className="w-full rounded-md border border-input p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   {...register('receivedDate')}
                />
             </div>

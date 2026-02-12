@@ -113,7 +113,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      id="commitment-description"
                      aria-required="true"
                      autoComplete="off"
-                     className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                     className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                        dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                      placeholder="Ex: Aluguel, Parcela Notebook"
                      {...register('description')}
                   />
@@ -173,7 +174,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                                  id="commitment-amount"
                                  aria-required="true"
                                  autoComplete="off"
-                                 className="mt-1 w-full rounded-md border p-2"
+                                 className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                                    dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
                               />
@@ -186,7 +188,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            id="commitment-due-date"
                            aria-required="true"
                            type="date"
-                           className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                           className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                              dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                            {...register('dueDate')}
                         />
                      </div>
@@ -204,7 +207,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            type="number"
                            min={1}
                            max={12}
-                           className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                           className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                              dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                            {...register('months')}
                         />
                      </div>
@@ -243,7 +247,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                                  id="commitment-total-amount"
                                  aria-required="true"
                                  autoComplete="off"
-                                 className="mt-1 w-full rounded-md border p-2"
+                                 className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                                    dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
                               />
@@ -260,7 +265,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            autoComplete="off"
                            aria-label="Total de parcelas do compromisso"
                            type="number"
-                           className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                           className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                              dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                            {...register('totalInstallments')}
                         />
                      </div>
@@ -272,7 +278,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         id="compromisso-data-vencimento-cartao"
                         aria-required="true"
                         type="date"
-                        className="w-full rounded-md border p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                        className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                           dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                         {...register('dueDate')}
                      />
                   </div>

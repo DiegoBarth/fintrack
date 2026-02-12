@@ -98,7 +98,8 @@ export function EditCommitmentModal({
                   <input
                      id="edit-commitment-value"
                      aria-label="Valor do compromisso em reais"
-                     className="w-full border rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                     className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                        dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                      value={amount}
                      onChange={e => setAmount(formatCurrency(e.target.value))}
                   />
@@ -111,7 +112,8 @@ export function EditCommitmentModal({
                   <input
                      id="edit-commitment-payment-date"
                      type="date"
-                     className="w-full border rounded-md p-2 text-sm outline-none focus:ring-2 focus:ring-primary"
+                     className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                        dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                      value={paymentDate}
                      onChange={e => setPaymentDate(e.target.value)}
                   />

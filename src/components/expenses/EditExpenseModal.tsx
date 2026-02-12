@@ -70,7 +70,8 @@ export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalP
                <input
                   id="edit-expense-amount"
                   aria-label="Valor do gasto em reais"
-                  className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                   value={amount}
                   onChange={e => setAmount(formatCurrency(e.target.value))}
                />

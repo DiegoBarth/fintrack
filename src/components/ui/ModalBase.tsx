@@ -61,25 +61,25 @@ export function BaseModal({
       >
          {/* Overlay / Backdrop */}
          <div
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-black/40 dark:bg-black/70"
             onClick={isLoading ? undefined : onClose}
          />
 
          {/* Container com focus trap */}
          <div
             ref={trapRef}
-            className="relative w-full md:w-[400px] max-h-[90vh] bg-white rounded-t-2xl md:rounded-2xl flex flex-col"
+            className="relative w-full md:w-[400px] max-h-[90vh] bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl flex flex-col"
          >
             {/* Header */}
             {title && (
-               <div className="flex items-center justify-between p-4 border-b flex-shrink-0">
-                  <h2 id="modal-titulo" className="text-lg font-semibold">{title}</h2>
+               <div className="flex items-center justify-between p-4 border-b dark:border-gray-700 flex-shrink-0">
+                  <h2 id="modal-titulo" className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
                   <button
                      onClick={isLoading ? undefined : onClose}
                      disabled={isLoading}
                      aria-label="Fechar modal"
-                     className={`text-sm text-muted-foreground hover:text-gray-700 transition ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
+                     className={`text-sm text-muted-foreground hover:text-gray-700 dark:hover:text-gray-300 transition
+                        ${isLoading ? 'opacity-50 cursor-not-allowed' : '' }`}
                   >
                      Fechar
                   </button>
@@ -90,13 +90,14 @@ export function BaseModal({
             <div className="p-6 overflow-y-auto flex-1">{children}</div>
 
             {/* Smart Footer Actions */}
-            <div className="flex gap-2 p-4 border-t border-gray-200 bg-gray-50/50 flex-shrink-0">
+            <div className="flex gap-2 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 flex-shrink-0">
                <button
                   onClick={onClose}
                   disabled={isLoading}
                   aria-label="Cancelar e fechar modal"
-                  className={`flex-1 border rounded-md p-2 text-sm font-medium hover:bg-muted transition ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                     }`}
+                  className={`flex-1 border border-gray-300 dark:border-gray-600 rounded-md p-2
+                     text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition
+                     ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                >
                   Cancelar
                </button>
@@ -107,8 +108,9 @@ export function BaseModal({
                      aria-label="Excluir registro permanentemente"
                      type="button"
                      disabled={isLoading}
-                     className={`flex-1 border border-red-500 text-red-600 rounded-md p-2 text-sm font-medium hover:bg-red-50 transition ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
+                     className={`flex-1 border border-red-500 dark:border-red-700 text-red-600 dark:text-red-400
+                        rounded-md p-2 text-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition
+                        ${isLoading ? 'opacity-50 cursor-not-allowed hover:bg-red-500/10' : ''}`}
                   >
                      {isLoading && loadingText === 'Excluindo...' ? 'Excluindo...' : 'Excluir'}
                   </button>
@@ -120,8 +122,9 @@ export function BaseModal({
                      aria-label={type === 'create' ? 'Salvar novo registro' : 'Salvar alterações'}
                      type="button"
                      disabled={isLoading}
-                     className={`flex-1 bg-primary text-white rounded-md p-2 text-sm font-medium transition ${isLoading ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
+                     className={`flex-1 bg-primary dark:bg-blue-600 text-white rounded-md p-2 text-sm
+                        hover:bg-primary/90 dark:hover:bg-blue-700 transition
+                        ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                      {isLoading && loadingText !== 'Excluindo...' ? loadingText : 'Salvar'}
                   </button>

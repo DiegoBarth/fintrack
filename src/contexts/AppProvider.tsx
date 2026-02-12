@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 import { QUERY_STALE_TIME_MS } from '@/config/constants';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export function createQueryClient() {
    return new QueryClient({
@@ -28,9 +29,11 @@ export function AppProvider({ children, client }: AppProviderProps) {
 
    return (
       <QueryClientProvider client={queryClient}>
-         <PeriodProvider>
-            {children}
-         </PeriodProvider>
+         <ThemeProvider>
+            <PeriodProvider>
+               {children}
+            </PeriodProvider>
+         </ThemeProvider>
          <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
    );

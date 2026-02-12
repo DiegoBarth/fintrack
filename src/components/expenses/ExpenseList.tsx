@@ -33,14 +33,14 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
          <ListItemHeaderMobile
             title={expense.description}
             right={
-               <span className="text-red-600">
+               <span className="text-red-600 dark:text-red-400">
                   {numberToCurrency(expense.amount)}
                </span>
             }
          />
 
          <ListItemFooterMobile
-            left={<span className="text-green-700">Pago em {expense.paymentDate} • {expense.category}</span>}
+            left={<span className="text-green-700 dark:text-green-300">Pago em {expense.paymentDate} • {expense.category}</span>}
             right={
                <span className="text-green-600 font-medium">
                   Pago
@@ -64,17 +64,17 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
          </ListColMuted>
 
          <ListColMuted span={3}>
-            <span className="text-green-700">Pago em {expense.paymentDate}</span>
+            <span className="text-green-700 dark:text-green-300">Pago em {expense.paymentDate}</span>
          </ListColMuted>
 
          <ListColValue>
-            <span className="text-red-600 font-semibold">
+            <span className="text-red-600 dark:text-red-400 font-semibold">
                {numberToCurrency(expense.amount)}
             </span>
          </ListColValue>
 
          <ListColStatus>
-            <span className="text-green-600 font-semibold">
+            <span className="text-green-600 dark:text-green-400 font-semibold">
                Pago
             </span>
          </ListColStatus>

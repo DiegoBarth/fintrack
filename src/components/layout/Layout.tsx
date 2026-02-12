@@ -27,21 +27,22 @@ export function Layout({
    const { month, setMonth, year, setYear, isLoading } = usePeriod()
 
    return (
-      <div className="min-h-screen bg-background bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
          <div className={`mx-auto ${containerClassName} px-4 py-6`}>
             <header className="mb-6 space-y-4">
                <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-col gap-2">
                      {onBack ? (
                         <button
-                           className="w-fit rounded-md border px-3 py-1 text-sm transition-all duration-200 hover:bg-gray-100 hover:scale-105 hover:shadow-sm group"
+                           className="w-fit rounded-md border border-gray-300 dark:border-gray-600 px-3
+                              py-1 text-sm transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 hover:scale-105 hover:shadow-sm group"
                            onClick={onBack}
                         >
-                           <span className="group-hover:font-medium">← Voltar</span>
+                           <span className="group-hover:font-medium text-gray-700 dark:text-gray-300">← Voltar</span>
                         </button>
                      ) : null}
 
-                     <h1 className="text-2xl font-bold text-foreground">{title}</h1>
+                     <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -49,7 +50,9 @@ export function Layout({
                      {onLogout ? (
                         <button
                            onClick={onLogout}
-                           className="rounded-md border px-3 py-1 text-sm text-gray-600 transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 hover:scale-105 hover:shadow-sm group"
+                           className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm
+                              text-gray-600 dark:text-gray-400 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700
+                              dark:hover:text-red-400 hover:border-red-300 dark:hover:border-red-700 hover:scale-105 hover:shadow-sm group"
                         >
                            <span className="group-hover:font-medium">Logout</span>
                         </button>

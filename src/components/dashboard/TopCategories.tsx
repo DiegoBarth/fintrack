@@ -77,9 +77,9 @@ export function TopCategories({ categories }: TopCategoriesProps) {
          initial={{ opacity: 0, x: 20 }}
          animate={{ opacity: 1, x: 0 }}
          transition={{ delay: 0.2 }}
-         className="rounded-xl border bg-card p-6 shadow-sm h-full flex flex-col"
+         className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm h-full flex flex-col"
       >
-         <h2 className="mb-6 text-lg font-semibold text-gray-900">
+         <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
             Top Categories
          </h2>
          <div className="space-y-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
@@ -102,14 +102,14 @@ export function TopCategories({ categories }: TopCategoriesProps) {
 
                      <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline mb-1">
-                           <span className="text-sm font-medium text-gray-900 truncate">
+                           <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                               {item.category}
                            </span>
                            <span className={`text-sm font-semibold ml-2 ${styles.text}`}>
                               {numberToCurrency(item.total)}
                            </span>
                         </div>
-                        <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                        <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700">
                            <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${percentage}%` }}

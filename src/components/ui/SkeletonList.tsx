@@ -14,7 +14,7 @@ export function SkeletonList() {
             {[...Array(6)].map((_, i) => (
                <div
                   key={i}
-                  className="flex items-center justify-between rounded-xl border border-zinc-100 p-4 shadow-sm"
+                  className="flex items-center justify-between rounded-xl border border-zinc-100 dark:border-gray-700 p-4 shadow-sm"
                >
                   <div className="space-y-2">
                      <Skeleton className="h-5 w-40 sm:w-60" />

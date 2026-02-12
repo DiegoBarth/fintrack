@@ -1,21 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-   listCommitments,
-   createCommitment,
-   createCard,
-   updateCommitment,
-   deleteCommitment
-} from '@/api/endpoints/commitment'
-import type { Commitment } from '@/types/Commitment'
-import { dateBRToISO, getMonthAndYear } from '@/utils/formatters'
+import { listCommitments, createCommitment, createCard, updateCommitment, deleteCommitment } from '@/api/endpoints/commitment'
 import { useApiError } from '@/hooks/useApiError'
-import { Dashboard } from '@/types/Dashboard'
-import type { FullSummary } from '@/types/FullSummary'
-import {
-   updateDashboardAfterCreateCommitment,
-   updateDashboardAfterEditCommitment,
-   updateDashboardAfterDeleteCommitment
-} from '@/services/dashboardService'
+import { updateCacheAfterCreateCommitment, updateCacheAfterEditCommitment, updateCacheAfterDeleteCommitment } from '@/services/commitmentCacheService'
+import { dateBRToISO, getMonthAndYear } from '@/utils/formatters'
+import type { Commitment } from '@/types/Commitment'
 
 /**
  * Hook to manage financial commitments/obligations
@@ -97,15 +85,23 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          category: string,
          amount: number,
          dueDate: string,
-         months?: number // Number of months to create (Fixed only)
+         months?: number
       }) =>
          createCommitment(newCommitment),
       onSuccess: (newCommitments: Commitment[]) => {
          // Inserts new records into ALL relevant caches
-         insertIntoCache(newCommitments)
+         newCommitments.forEach(commitment => {
+            const { month: regisMonth, year: regisYear } = getMonthAndYear(commitment.dueDate)
+            updateCacheAfterCreateCommitment(queryClient, commitment, regisMonth, regisYear)
+
+            // Update alerts cache
+            queryClient.setQueryData<Commitment[]>(
+               ['alert-commitments', year],
+               old => old ? [...old, commitment] : [commitment]
+            )
+         })
       },
       onError: (error) => {
-         // Centralizes error - displays toast + logging
          handleError(error)
       }
    })
@@ -116,10 +112,18 @@ export function useCommitment(month: string, year: string, key?: string | null) 
     * Similar to createMutation but with specific types
     */
    const createCardMutation = useMutation({
-      mutationFn: (newCommitment: Omit<Commitment, 'rowIndex'>) =>
-         createCard(newCommitment),
+      mutationFn: (newCommitment: Omit<Commitment, 'rowIndex'>) => createCard(newCommitment),
       onSuccess: (newCommitments: Commitment[]) => {
-         insertIntoCache(newCommitments)
+         newCommitments.forEach(commitment => {
+            const { month: regisMonth, year: regisYear } = getMonthAndYear(commitment.dueDate)
+            updateCacheAfterCreateCommitment(queryClient, commitment, regisMonth, regisYear)
+
+            // Update cache alerts
+            queryClient.setQueryData<Commitment[]>(
+               ['alert-commitments', year],
+               old => old ? [...old, commitment] : [commitment]
+            )
+         })
       },
       onError: (error) => {
          handleError(error)
@@ -144,106 +148,27 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          amount: number
          paymentDate: string
          scope?: 'single'
-      }) =>
-         updateCommitment(data),
+      }) => updateCommitment(data),
       onSuccess: (_data, variables) => {
-         // Search old commitment for compare
          const oldCommitment = commitments.find(c => c.rowIndex === variables.rowIndex)
 
-         // ===== Update: Period Cache =====
-         queryClient.setQueryData<Commitment[]>(
-            queryKey,
-            old =>
-               old?.map(r =>
-                  r.rowIndex === variables.rowIndex
-                     ? {
-                        ...r,
-                        amount: variables.amount,
-                        paymentDate: variables.paymentDate
-                     }
-                     : r
-               ) ?? []
-         )
-
-         // ===== Update: Alert Cache =====
-         // Alerts fetch all months, so the query key is different
-         // Data must be kept in sync
-         queryClient.setQueryData<Commitment[]>(
-            ['alert-commitments', year],
-            old =>
-               old?.map(r =>
-                  r.rowIndex === variables.rowIndex
-                     ? {
-                        ...r,
-                        amount: variables.amount,
-                        paymentDate: dateBRToISO(variables.paymentDate)
-                     }
-                     : r
-               ) ?? []
-         )
-
-         // Update summary and dashboard
          if (oldCommitment) {
-            const oldAmountNum = Number(oldCommitment.amount)
-            const newAmountNum = Number(variables.amount)
-            const difference = newAmountNum - oldAmountNum
+            updateCacheAfterEditCommitment(queryClient, oldCommitment, variables, month, year)
 
-            const hadPaymentDate = !!oldCommitment.paymentDate
-            const hasPaymentDate = !!variables.paymentDate
-
-            // Update summary cache
-            const summaryData = queryClient.getQueryData<FullSummary>(['summary', month, year])
-
-            if (summaryData) {
-               let nextTotalPaidCommitments = summaryData.totalPaidCommitments
-               let nextTotalPaidCommitmentsInMonth = summaryData.totalPaidCommitmentsInMonth
-
-               // Case 1: Payment removed
-               if (hadPaymentDate && !hasPaymentDate) {
-                  nextTotalPaidCommitments -= oldAmountNum
-                  nextTotalPaidCommitmentsInMonth -= oldAmountNum
-               }
-               // Case 2: Payment added (marked as paid)
-               else if (!hadPaymentDate && hasPaymentDate) {
-                  nextTotalPaidCommitments += newAmountNum
-                  nextTotalPaidCommitmentsInMonth += newAmountNum
-               }
-               // Case 3: Already had payment, adjust the difference
-               else if (hadPaymentDate && hasPaymentDate) {
-                  nextTotalPaidCommitments += difference
-                  nextTotalPaidCommitmentsInMonth += difference
-               }
-
-               queryClient.setQueryData<FullSummary>(
-                  ['summary', month, year],
-                  {
-                     ...summaryData,
-                     totalCommitments: summaryData.totalCommitments + difference,
-                     totalPaidCommitments: nextTotalPaidCommitments,
-                     totalPaidCommitmentsInMonth: nextTotalPaidCommitmentsInMonth
-                  }
-               )
-            }
-
-            // Update dashboard cache
-            const { month: dueMonth, year: dueYear } = getMonthAndYear(oldCommitment.dueDate)
-            const dashboardData = queryClient.getQueryData<Dashboard>(['dashboard', dueMonth, dueYear])
-
-            if (dashboardData) {
-               const monthIndex = Number(dueMonth) - 1
-               const updatedDashboard = updateDashboardAfterEditCommitment(
-                  dashboardData,
-                  oldCommitment,
-                  variables.amount,
-                  variables.paymentDate,
-                  monthIndex
-               )
-
-               queryClient.setQueryData<Dashboard>(
-                  ['dashboard', dueMonth, dueYear],
-                  updatedDashboard
-               )
-            }
+            // Update alerts cache
+            queryClient.setQueryData<Commitment[]>(
+               ['alert-commitments', year],
+               old =>
+                  old?.map(r =>
+                     r.rowIndex === variables.rowIndex
+                        ? {
+                           ...r,
+                           valor: variables.amount,
+                           dataPagamento: dateBRToISO(variables.paymentDate)
+                        }
+                        : r
+                  ) ?? []
+            )
          }
       },
       onError: (error) => {
@@ -259,141 +184,24 @@ export function useCommitment(month: string, year: string, key?: string | null) 
     * - Uses filter to remove item with specific rowIndex
     */
    const removeMutation = useMutation({
-      mutationFn: (rowIndex: number) =>
-         deleteCommitment(rowIndex),
+      mutationFn: (rowIndex: number) => deleteCommitment(rowIndex),
       onSuccess: (_data, rowIndex) => {
-         // Search commitment before delete
          const deletedCommitment = commitments.find(c => c.rowIndex === rowIndex)
 
-         // ===== Delete: Period Cache =====
-         queryClient.setQueryData<Commitment[]>(
-            queryKey,
-            old => old?.filter(r => r.rowIndex !== rowIndex) ?? []
-         )
-
-         // ===== Delete: Alert Cache =====
-         queryClient.setQueryData<Commitment[]>(
-            ['alert-commitments', year],
-            old => old?.filter(r => r.rowIndex !== rowIndex) ?? []
-         )
-
-         // Update summary and dashboard
          if (deletedCommitment) {
-            const amountValue = Number(deletedCommitment.amount)
+            updateCacheAfterDeleteCommitment(queryClient, deletedCommitment, month, year)
 
-            // Update summary cache
-            const summaryData = queryClient.getQueryData<FullSummary>(['summary', month, year])
-            if (summaryData) {
-               queryClient.setQueryData<FullSummary>(
-                  ['summary', month, year],
-                  {
-                     ...summaryData,
-                     totalCommitments: summaryData.totalCommitments - amountValue,
-                     totalPaidCommitments: deletedCommitment.paymentDate
-                        ? summaryData.totalPaidCommitments - amountValue
-                        : summaryData.totalPaidCommitments,
-                     totalPaidCommitmentsInMonth: deletedCommitment.paymentDate
-                        ? summaryData.totalPaidCommitmentsInMonth - amountValue
-                        : summaryData.totalPaidCommitmentsInMonth
-                  }
-               )
-            }
-
-            // Update dashboard cache
-            const { month: dueMonth, year: dueYear } = getMonthAndYear(deletedCommitment.dueDate)
-            const dashboardData = queryClient.getQueryData<Dashboard>(['dashboard', dueMonth, dueYear])
-
-            if (dashboardData) {
-               const monthIndex = Number(dueMonth) - 1
-               const updatedDashboard = updateDashboardAfterDeleteCommitment(
-                  dashboardData,
-                  deletedCommitment,
-                  monthIndex
-               )
-
-               queryClient.setQueryData<Dashboard>(
-                  ['dashboard', dueMonth, dueYear],
-                  updatedDashboard
-               )
-            }
+            // Update alerts cache
+            queryClient.setQueryData<Commitment[]>(
+               ['alert-commitments', year],
+               old => old?.filter(r => r.rowIndex !== rowIndex) ?? []
+            )
          }
       },
       onError: (error) => {
          handleError(error)
       }
    })
-
-   /**
-    * INTERNAL FUNCTION: Inserts new commitment into multiple caches
-    * * Problem: Creating a commitment can generate multiple rows:
-    * - Fixed Type: 12 rows (one per month)
-    * - Variable Type: 1 row
-    * - Type card: N lines (one per installment)
-    * * Solution: For each returned record:
-    * 1. Extract month/year from dueDate
-    * 2. Update period cache (e.g., ['commitments', '2', '2025'])
-    * 3. Update alert cache (e.g., ['alert-commitments', '2025'])
-    *
-    * For installment cards:
-    * - Deducts from the total limit only once (on the first installment)
-    * - Updates the monthly statement for each installment period
-    *
-    * * This ensures the new item appears:
-    * - In the list for the month it was created
-    * - In alerts if applicable
-    * - Anywhere else subscribed to this data
-    * * @param records - Array of records returned from the API
-    */
-   function insertIntoCache(records: Commitment[]) {
-      records.forEach(record => {
-         // Extracts month/year from the due date
-         const { month: regisMonth, year: regisYear } = getMonthAndYear(record.dueDate)
-
-         // Updates the specific period cache
-         queryClient.setQueryData<Commitment[]>(
-            ['commitments', regisMonth, regisYear],
-            old => old ? [...old, record] : [record]
-         )
-
-         // Updates the alerts cache
-         // Note: year might differ (potentially spanning multiple years)
-         queryClient.setQueryData<Commitment[]>(
-            ['alert-commitments', year],
-            old => old ? [...old, record] : [record]
-         )
-
-         // Update summary cache
-         const amountValue = Number(record.amount)
-         const summaryData = queryClient.getQueryData<FullSummary>(['summary', regisMonth, regisYear])
-
-         if (summaryData) {
-            queryClient.setQueryData<FullSummary>(
-               ['summary', regisMonth, regisYear],
-               {
-                  ...summaryData,
-                  totalCommitments: summaryData.totalCommitments + amountValue
-               }
-            )
-         }
-
-         // Update dashboard cache
-         const dashboardData = queryClient.getQueryData<Dashboard>(['dashboard', regisMonth, regisYear])
-
-         if (dashboardData) {
-            const monthIndex = Number(regisMonth) - 1
-            const updatedDashboard = updateDashboardAfterCreateCommitment(
-               dashboardData,
-               record,
-               monthIndex
-            )
-
-            queryClient.setQueryData<Dashboard>(
-               ['dashboard', regisMonth, regisYear],
-               updatedDashboard
-            )
-         }
-      })
-   }
 
    return {
       commitments,           // Array of commitments for the period

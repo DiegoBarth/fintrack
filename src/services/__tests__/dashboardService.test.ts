@@ -75,7 +75,7 @@ describe('dashboardService - Commitments', () => {
          expect(result.topCategories[0].total).toBe(1300)
       })
 
-      it('should deduct total limit on card installment 1', () => {
+      it('should be deducter the total limit for installment credit card purchases.', () => {
          const commitment: Commitment = {
             rowIndex: 1,
             description: 'Notebook',
@@ -96,29 +96,6 @@ describe('dashboardService - Commitments', () => {
 
          expect(result.cardsSummary[0].statementTotal).toBe(1500)
          expect(result.cardsSummary[0].availableLimit).toBe(15000)
-      })
-
-      it('should not deduct limit on installments 2+', () => {
-         const commitment: Commitment = {
-            rowIndex: 2,
-            description: 'Notebook',
-            category: 'Eletrônicos',
-            type: 'Credit_card',
-            amount: 1500,
-            dueDate: '2026-02-15',
-            card: 'Bradesco',
-            installment: 2,
-            totalInstallments: 10
-         }
-
-         const result = updateDashboardAfterCreateCommitment(
-            baseDashboard,
-            commitment,
-            0
-         )
-
-         expect(result.cardsSummary[0].statementTotal).toBe(1500)
-         expect(result.cardsSummary[0].availableLimit).toBe(30000)
       })
    })
 

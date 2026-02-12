@@ -2,11 +2,7 @@ import { QueryClient } from '@tanstack/react-query'
 import type { Commitment } from '@/types/Commitment'
 import type { FullSummary } from '@/types/FullSummary'
 import type { Dashboard } from '@/types/Dashboard'
-import {
-   updateDashboardAfterCreateCommitment,
-   updateDashboardAfterEditCommitment,
-   updateDashboardAfterDeleteCommitment
-} from './dashboardService'
+import { updateDashboardAfterCreateCommitment, updateDashboardAfterEditCommitment, updateDashboardAfterDeleteCommitment } from './dashboardService'
 
 /**
  * Updates commitment cache after creation
@@ -106,9 +102,7 @@ function updateSummaryAfterCreateCommitment(
             ...summaryData,
             totalCommitments: summaryData.totalCommitments + numericValue,
             totalPaidCommitments: summaryData.totalPaidCommitments + paid,
-            totalPaidCommitmentsInMonth: summaryData.totalPaidCommitmentsInMonth + paid,
-            totalPaidExpenses: (summaryData as any).totalPaid + paid, // Keeping logic for totalPaid/totalPaidMonth if they exist in your type
-            totalPaidExpensesInMonth: (summaryData as any).totalPaidMonth + paid
+            totalPaidCommitmentsInMonth: summaryData.totalPaidCommitmentsInMonth + paid
          }
       )
    }
@@ -129,44 +123,51 @@ function updateSummaryAfterEditCommitment(
       // Update value
       if (newData.amount !== undefined) {
          const oldAmountNum = Number(oldCommitment.amount)
-         const newAmountNum = Number(newData.amount)
-         const difference = newAmountNum - oldAmountNum
+         const newAmountNum = Number(newData.amount ?? oldCommitment.amount)
+         const valueChanged = newData.amount !== undefined && newAmountNum !== oldAmountNum
 
-         newSummary.totalCommitments += difference
+         // Update total amount (regardless of payment)
+         if (valueChanged) {
+            const difference = newAmountNum - oldAmountNum
 
-         if (oldCommitment.paymentDate) {
+            newSummary.totalCommitments += difference
+         }
+
+         // Update paymentDate
+         if ('paymentDate' in newData) {
+            const hadPayment = !!oldCommitment.paymentDate
+            const hasPayment = !!newData.paymentDate
+
+            if (!hadPayment && hasPayment) {
+               // Marking as paid now - uses current value (may have changed)
+               const amountToPay = valueChanged ? newAmountNum : oldAmountNum
+               newSummary.totalPaidCommitments += amountToPay
+               newSummary.totalPaidCommitmentsInMonth += amountToPay
+            }
+            else if (hadPayment && !hasPayment) {
+               // Unmarking payment - uses CURRENT value (may have changed)
+               const amountToUnmark = valueChanged ? newAmountNum : oldAmountNum
+               newSummary.totalPaidCommitments -= amountToUnmark
+               newSummary.totalPaidCommitmentsInMonth -= amountToUnmark
+            }
+            else if (hadPayment && hasPayment && valueChanged) {
+               // Amount changed and was paid (remains paid) - adjust by the difference
+               const difference = newAmountNum - oldAmountNum
+               newSummary.totalPaidCommitments += difference
+               newSummary.totalPaidCommitmentsInMonth += difference
+            }
+         }
+         else if (valueChanged && oldCommitment.paymentDate) {
+            // Only the amount changed on a commitment that was already paid
+            const difference = newAmountNum - oldAmountNum
             newSummary.totalPaidCommitments += difference
             newSummary.totalPaidCommitmentsInMonth += difference
-               ; (newSummary as any).totalPaid += difference
-               ; (newSummary as any).totalPaidMonth += difference
          }
+
+         queryClient.setQueryData<FullSummary>(['summary', month, year], newSummary)
       }
-
-      // Update paymentDate
-      if ('paymentDate' in newData) {
-         const numericValue = Number(newData.amount ?? oldCommitment.amount)
-         const hadPayment = !!oldCommitment.paymentDate
-         const hasPayment = !!newData.paymentDate
-
-         if (!hadPayment && hasPayment) {
-            // Add payment
-            newSummary.totalPaidCommitments += numericValue
-            newSummary.totalPaidCommitmentsInMonth += numericValue
-               ; (newSummary as any).totalPaid += numericValue
-               ; (newSummary as any).totalPaidMonth += numericValue
-         } else if (hadPayment && !hasPayment) {
-            // Remove payment
-            newSummary.totalPaidCommitments -= numericValue
-            newSummary.totalPaidCommitmentsInMonth -= numericValue
-               ; (newSummary as any).totalPaid -= numericValue
-               ; (newSummary as any).totalPaidMonth -= numericValue
-         }
-      }
-
-      queryClient.setQueryData<FullSummary>(['summary', month, year], newSummary)
    }
 }
-
 function updateSummaryAfterDeleteCommitment(
    queryClient: QueryClient,
    commitment: Commitment,
@@ -185,9 +186,7 @@ function updateSummaryAfterDeleteCommitment(
             ...summaryData,
             totalCommitments: summaryData.totalCommitments - numericValue,
             totalPaidCommitments: summaryData.totalPaidCommitments - paid,
-            totalPaidCommitmentsInMonth: summaryData.totalPaidCommitmentsInMonth - paid,
-            totalPaidExpenses: (summaryData as any).totalPaid - paid,
-            totalPaidExpensesInMonth: (summaryData as any).totalPaidMonth - paid
+            totalPaidCommitmentsInMonth: summaryData.totalPaidCommitmentsInMonth - paid
          }
       )
    }

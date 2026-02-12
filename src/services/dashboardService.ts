@@ -40,24 +40,13 @@ export function updateDashboardAfterCreateCommitment(
 
    // Update card if it's a card purchase
    if (commitment.type === 'Credit_card' && commitment.card) {
-      if (commitment.installment === 1) {
-         // Installment 1: updates total limit and statement
-         const totalValue = numericValue * (commitment.totalInstallments || 1)
-         updatedDashboard = addCardPurchase(
-            updatedDashboard,
-            commitment.card,
-            numericValue,
-            totalValue
-         )
-      } else {
-         // Other installments: only updates statement
-         updatedDashboard = updateCard(
-            updatedDashboard,
-            commitment.card,
-            numericValue,
-            0 // no limit adjustment
-         )
-      }
+      const valorTotal = numericValue * (commitment.totalInstallments || 1)
+      updatedDashboard = addCardPurchase(
+         updatedDashboard,
+         commitment.card,
+         numericValue,
+         valorTotal
+      )
    }
 
    return updatedDashboard

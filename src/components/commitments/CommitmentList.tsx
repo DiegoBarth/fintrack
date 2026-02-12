@@ -95,7 +95,6 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
       return (
          <ListItemRowDesktop
             onClick={() => onSelect(commitment)}
-            cols={10}
             variant={variant}
          >
             <ListColDescription>
@@ -106,7 +105,7 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
                {commitment.type}
             </ListColMuted>
 
-            <ListColMuted span={3}>
+            <ListColMuted span={2}>
                <span className={isPaid ? 'text-green-700 dark:text-green-300' : isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'}>
                   {isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`}
                </span>

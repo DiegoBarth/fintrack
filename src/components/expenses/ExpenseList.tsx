@@ -54,7 +54,6 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
    const renderDesktopItem = useCallback((expense: Expense) => (
       <ListItemRowDesktop
          onClick={() => onSelect(expense)}
-         cols={10}
       >
          <ListColDescription>
             {expense.description}
@@ -63,7 +62,7 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
             {expense.category ?? '-'}
          </ListColMuted>
 
-         <ListColMuted span={3}>
+         <ListColMuted span={2}>
             <span className="text-green-700 dark:text-green-300">Pago em {expense.paymentDate}</span>
          </ListColMuted>
 

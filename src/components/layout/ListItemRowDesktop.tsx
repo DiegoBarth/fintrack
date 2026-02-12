@@ -8,12 +8,12 @@ interface Props {
    variant?: 'default' | 'success' | 'danger'
 }
 
-export function ListItemRowDesktop({ children, onClick, cols = 12, variant }: Props) {
+export function ListItemRowDesktop({ children, onClick, variant }: Props) {
    return (
       <ListItemLayout
          onClick={onClick}
          variant={variant}
-         className={`col-span-12 grid grid-cols-${cols} items-center p-4 hover:shadow-md`}
+         className={`col-span-12 grid grid-cols-12 items-center p-4 hover:shadow-md`}
       >
          {children}
       </ListItemLayout>

@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react'
 
 import { PeriodFilters } from '@/components/home/PeriodFilters'
+import { InstallPWA } from '@/components/InstallPWA'
 import { usePeriod } from '@/contexts/PeriodContext'
 
 interface LayoutProps {
@@ -73,6 +74,7 @@ export function Layout({
 
             <main className={contentClassName}>{children}</main>
          </div>
+         <InstallPWA />
       </div>
    )
 }

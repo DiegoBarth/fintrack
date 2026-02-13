@@ -114,7 +114,6 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <Controller
                   control={control}
                   name="expectedDate"
-                  rules={{ required: true }}
                   render={({ field }) => (
                      <DateField
                         value={field.value}

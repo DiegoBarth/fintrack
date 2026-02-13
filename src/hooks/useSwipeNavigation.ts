@@ -18,18 +18,18 @@ export function useSwipeNavigation() {
          const startedOnRight = e.initial[0] > screenWidth - EDGE_ZONE
 
          if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-            if (e.deltaX > SWIPE_MIN_DISTANCE_PX  && startedOnLeft && currentIndex > 0) {
+            if (e.deltaX > SWIPE_MIN_DISTANCE_PX && startedOnLeft && currentIndex > 0) {
                setArrow('left')
                return
             }
 
-            if (e.deltaX < -SWIPE_MIN_DISTANCE_PX  && startedOnRight && currentIndex < SWIPE_ROUTES.length - 1) {
+            if (e.deltaX < -SWIPE_MIN_DISTANCE_PX && startedOnRight && currentIndex < SWIPE_ROUTES.length - 1) {
                setArrow('right')
                return
             }
          }
 
-         if (e.deltaY > SWIPE_MIN_DISTANCE_PX  && window.scrollY === 0) {
+         if (e.deltaY > SWIPE_MIN_DISTANCE_PX && window.scrollY === 0) {
             setArrow('up')
          } else if (arrow === 'up') {
             setArrow(null)
@@ -52,8 +52,8 @@ export function useSwipeNavigation() {
          }
       },
 
-      onSwipedDown: () => {
-         if (window.scrollY === 0) {
+      onSwipedDown: (e) => {
+         if (window.scrollY === 0 && e.deltaY > SWIPE_MIN_DISTANCE_PX * 2) {
             setArrow(null)
             window.location.reload()
          }

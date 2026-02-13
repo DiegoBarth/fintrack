@@ -184,40 +184,42 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            )}
                         />
                      </div>
-                     <div>
-                        <label htmlFor="commitment-due-date" className="block text-xs font-medium text-muted-foreground mb-1">Vencimento *</label>
-                        <Controller
-                           control={control}
-                           name="dueDate"
-                           rules={{ required: true }}
-                           render={({ field }) => (
-                              <DateField
-                                 value={field.value}
-                                 onChange={field.onChange}
-                              />
-                           )}
-                        />
-                     </div>
+
+                     {type === 'Fixo' && (
+                        <div>
+                           <label htmlFor="commitment-months" className="block text-xs font-medium text-muted-foreground mb-1">
+                              Repetir por (meses)
+                           </label>
+                           <input
+                              id="commitment-months"
+                              aria-label="Número de meses para repetir o compromisso"
+                              autoComplete="off"
+                              type="number"
+                              min={1}
+                              max={12}
+                              className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                              dark:text-gray-100 rounded-md p-2"
+                              {...register('months')}
+                           />
+                        </div>
+                     )}
+
+
+                  </div>
+                  <div>
+                     <label htmlFor="commitment-due-date" className="block text-xs font-medium text-muted-foreground mb-1">Vencimento *</label>
+                     <Controller
+                        control={control}
+                        name="dueDate"
+                        render={({ field }) => (
+                           <DateField
+                              value={field.value}
+                              onChange={field.onChange}
+                           />
+                        )}
+                     />
                   </div>
 
-                  {type === 'Fixo' && (
-                     <div>
-                        <label htmlFor="commitment-months" className="block text-xs font-medium text-muted-foreground mb-1">
-                           Repetir por (meses)
-                        </label>
-                        <input
-                           id="commitment-months"
-                           aria-label="Número de meses para repetir o compromisso"
-                           autoComplete="off"
-                           type="number"
-                           min={1}
-                           max={12}
-                           className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                              dark:text-gray-100 rounded-md p-2"
-                           {...register('months')}
-                        />
-                     </div>
-                  )}
                </div>
             )}
 
@@ -284,7 +286,6 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      <Controller
                         control={control}
                         name="dueDate"
-                        rules={{ required: true }}
                         render={({ field }) => (
                            <DateField
                               value={field.value}

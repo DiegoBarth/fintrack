@@ -41,7 +41,6 @@ export function QuickActions() {
       },
    ]
 
-
    return (
       <div className="py-4 px-6 bg-white dark:bg-gray-800 rounded-lg">
          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Ações rápidas</h3>
@@ -71,7 +70,12 @@ export function QuickActions() {
                      `}>
                         <Icone className="w-6 h-6" />
                      </div>
-                     <span className="text-xs text-gray-600 dark:text-gray-300 text-center group-hover:font-medium transition-all">
+                     <span className={`
+                        text-xs text-gray-600 dark:text-gray-300
+                        group-hover:text-gray-600 dark:group-hover:text-gray-700
+                        text-center group-hover:font-medium
+                        transition-all`}
+                     >
                         {action.label}
                      </span>
                   </Link>

@@ -81,19 +81,24 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                />
             </div>
 
-            {/* Date */}
+            {/* Amount */}
             <div>
-               <label htmlFor="expense-payment-date" className="block text-xs font-medium text-muted-foreground mb-1">
-                  Data de pagamento *
+               <label htmlFor="expense-amount" className="block text-xs font-medium text-muted-foreground mb-1">
+                  Valor *
                </label>
                <Controller
+                  name="amount"
                   control={control}
-                  name="paymentDate"
-                  rules={{ required: true }}
                   render={({ field }) => (
-                     <DateField
+                     <input
+                        id="expense-amount"
+                        aria-required="true"
+                        aria-label="Valor do gasto em reais"
+                        className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                           dark:text-gray-100 rounded-md p-2"
+                        autoComplete="off"
                         value={field.value}
-                        onChange={field.onChange}
+                        onChange={e => field.onChange(formatCurrency(e.target.value))}
                      />
                   )}
                />
@@ -119,24 +124,18 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                />
             </div>
 
-            {/* Amount */}
+            {/* Date */}
             <div>
-               <label htmlFor="expense-amount" className="block text-xs font-medium text-muted-foreground mb-1">
-                  Valor *
+               <label htmlFor="expense-payment-date" className="block text-xs font-medium text-muted-foreground mb-1">
+                  Data de pagamento *
                </label>
                <Controller
-                  name="amount"
                   control={control}
+                  name="paymentDate"
                   render={({ field }) => (
-                     <input
-                        id="expense-amount"
-                        aria-required="true"
-                        aria-label="Valor do gasto em reais"
-                        className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                           dark:text-gray-100 rounded-md p-2"
-                        autoComplete="off"
+                     <DateField
                         value={field.value}
-                        onChange={e => field.onChange(formatCurrency(e.target.value))}
+                        onChange={field.onChange}
                      />
                   )}
                />

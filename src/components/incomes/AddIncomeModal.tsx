@@ -6,6 +6,7 @@ import { BaseModal } from '@/components/ui/ModalBase'
 import { useIncome } from '@/hooks/useIncome'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateIncomeSchema } from '@/schemas/income.schema'
+import { DateField } from '@/components/ui/DateField'
 import type { Income } from '@/types/Income'
 
 interface AddIncomeModalProps {
@@ -110,13 +111,16 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <label htmlFor="income-expected-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data Prevista *
                </label>
-               <input
-                  id="income-expected-date"
-                  aria-required="true"
-                  type="date"
-                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  {...register('expectedDate')}
+               <Controller
+                  control={control}
+                  name="expectedDate"
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                     <DateField
+                        value={field.value}
+                        onChange={field.onChange}
+                     />
+                  )}
                />
             </div>
 
@@ -125,12 +129,15 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                <label htmlFor="income-received-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data de Recebimento (opcional)
                </label>
-               <input
-                  id="income-received-date"
-                  type="date"
-                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  {...register('receivedDate')}
+               <Controller
+                  control={control}
+                  name="receivedDate"
+                  render={({ field }) => (
+                     <DateField
+                        value={field.value}
+                        onChange={field.onChange}
+                     />
+                  )}
                />
             </div>
          </div>

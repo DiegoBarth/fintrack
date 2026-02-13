@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
@@ -9,6 +9,8 @@ import { useValidation } from '@/hooks/useValidation'
 import { CreateCommitmentSchema, CreateCardCommitmentSchema } from '@/schemas/commitment.schema'
 import { CATEGORIES, COMMITMENT_TYPES, CARDS } from '@/config/constants'
 import type { Commitment } from '@/types/Commitment'
+
+import { DateField } from '@/components/ui/DateField'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -271,16 +273,21 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         />
                      </div>
                   </div>
-
                   <div>
-                     <label htmlFor="commitment-due-date-card" className="block text-xs font-medium text-muted-foreground mb-1">Primeiro Vencimento *</label>
-                     <input
-                        id="compromisso-data-vencimento-cartao"
-                        aria-required="true"
-                        type="date"
-                        className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                           dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        {...register('dueDate')}
+                     <label className="block text-xs font-medium text-muted-foreground mb-1">
+                        Primeiro Vencimento *
+                     </label>
+
+                     <Controller
+                        control={control}
+                        name="dueDate"
+                        rules={{ required: true }}
+                        render={({ field }) => (
+                           <DateField
+                              value={field.value}
+                              onChange={field.onChange}
+                           />
+                        )}
                      />
                   </div>
                </div>

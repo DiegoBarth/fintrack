@@ -4,10 +4,14 @@ import type { Commitment } from '@/types/Commitment'
 import {
    formatCurrency,
    currencyToNumber,
-   numberToCurrency
+   numberToCurrency,
+   parseLocalDate,
+   dateBRToISO
 } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
 import { useCommitment } from '@/hooks/useCommitment'
+import { DateField } from '@/components/ui/DateField'
+import { format } from "date-fns"
 
 interface EditCommitmentModalProps {
    isOpen: boolean
@@ -30,8 +34,10 @@ export function EditCommitmentModal({
 
    useEffect(() => {
       if (commitment) {
+         const date = commitment.paymentDate ? dateBRToISO(commitment.paymentDate) : new Date().toISOString().slice(0, 10)
+
          setAmount(numberToCurrency(commitment.amount))
-         setPaymentDate(new Date().toISOString().slice(0, 10))
+         setPaymentDate(date)
       }
    }, [commitment])
 
@@ -106,20 +112,25 @@ export function EditCommitmentModal({
                </div>
 
                <div>
-                  <label htmlFor="edit-commitment-payment-date" className="block text-xs font-medium text-muted-foreground mb-1">
+                  <label
+                     htmlFor="edit-commitment-payment-date"
+                     className="block text-xs font-medium text-muted-foreground mb-1"
+                  >
                      Data de Pagamento
                   </label>
-                  <input
-                     id="edit-commitment-payment-date"
-                     type="date"
-                     className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                        dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                     value={paymentDate}
-                     onChange={e => setPaymentDate(e.target.value)}
+                  <DateField
+                     value={paymentDate ? parseLocalDate(paymentDate) : undefined}
+                     onChange={(date: Date | undefined) => {
+                        if (!date) return
+                        setPaymentDate(format(date, "yyyy-MM-dd"))
+                     }}
                   />
-                  <p className="text-[10px] text-muted-foreground mt-1 italic">
-                     * Preencha para marcar este compromisso como pago.
-                  </p>
+
+                  {!commitment.paymentDate && (
+                     <p className="text-[10px] text-muted-foreground mt-1 italic">
+                        * Preencha para marcar este compromisso como pago.
+                     </p>
+                  )}
                </div>
             </div>
          </div>

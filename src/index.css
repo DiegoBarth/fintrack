@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.custom-calendar {
+  --rdp-accent-color: #60A5FA;
+}
+
 @layer base {
    :root {
       --background: 0 0% 100%;

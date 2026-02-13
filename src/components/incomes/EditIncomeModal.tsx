@@ -6,9 +6,12 @@ import {
    numberToCurrency,
    currencyToNumber,
    dateBRToISO,
-   formatCurrency
+   formatCurrency,
+   parseLocalDate
 } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
+import { DateField } from '@/components/ui/DateField'
+import { format } from "date-fns"
 
 interface EditIncomeModalProps {
    isOpen: boolean
@@ -88,13 +91,12 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
                <label htmlFor="edit-income-received-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data de recebimento
                </label>
-               <input
-                  id="edit-income-received-date"
-                  type="date"
-                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  value={receivedDate}
-                  onChange={e => setReceivedDate(e.target.value)}
+               <DateField
+                  value={receivedDate ? parseLocalDate(receivedDate) : undefined}
+                  onChange={(date: Date | undefined) => {
+                     if (!date) return
+                     setReceivedDate(format(date, "yyyy-MM-dd"))
+                  }}
                />
             </div>
          </div>

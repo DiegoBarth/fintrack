@@ -8,6 +8,7 @@ import { useExpense } from '@/hooks/useExpense'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateExpenseSchema } from '@/schemas/expense.schema'
 import { CATEGORIES } from '@/config/constants'
+import { DateField } from '@/components/ui/DateField'
 import type { Expense } from '@/types/Expense'
 
 interface AddExpenseModalProps {
@@ -85,13 +86,16 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                <label htmlFor="expense-payment-date" className="block text-xs font-medium text-muted-foreground mb-1">
                   Data de pagamento *
                </label>
-               <input
-                  id="expense-payment-date"
-                  aria-required="true"
-                  type="date"
-                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  {...register('paymentDate')}
+               <Controller
+                  control={control}
+                  name="paymentDate"
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                     <DateField
+                        value={field.value}
+                        onChange={field.onChange}
+                     />
+                  )}
                />
             </div>
 

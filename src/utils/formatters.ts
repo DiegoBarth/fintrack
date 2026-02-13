@@ -152,3 +152,22 @@ export function getMonthAndYear(ISODataOrBR: string) {
 
    return { month: String(Number(month)), year };
 }
+
+/**
+ * Parses a date string in "yyyy-MM-dd" format into a local Date object.
+ *
+ * IMPORTANT:
+ * Avoid using `new Date("yyyy-MM-dd")` because JavaScript interprets
+ * that format as UTC, which can cause off-by-one-day issues depending
+ * on the user's timezone.
+ *
+ * This function ensures the date is created in the local timezone,
+ * preventing unintended date shifts.
+ *
+ * @param dateString - Date string in "yyyy-MM-dd" format
+ * @returns A Date object in the local timezone
+ */
+export function parseLocalDate(dateString: string): Date {
+   const [year, month, day] = dateString.split("-").map(Number)
+   return new Date(year, month - 1, day)
+}

@@ -28,7 +28,7 @@ export function SummaryCard({
       >
          <div
             className="flex items-center justify-between rounded-xl bg-white dark:bg-gray-800 p-4 md:p-5
-               shadow-sm transition-all hover:shadow-lg hover:scale-[1.02] cursor-pointer border border-gray-100 dark:border-gray-700"
+               shadow-sm transition-all hover:shadow-lg border border-gray-100 dark:border-gray-700"
             style={{ borderLeft: `5px solid ${color}` }}
          >
             <div className="flex items-center gap-3 md:gap-4">

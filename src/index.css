@@ -76,8 +76,8 @@
    textarea:focus,
    select:focus {
       @apply outline-none;
-      --tw-ring-color: theme(colors.red.500);
-      @apply ring-2 border-red-500;
+      --tw-ring-color: theme(colors.gray.300);
+      @apply ring-2 border-gray-300;
    }
 
    .dark input:focus,
@@ -110,4 +110,45 @@
       transform: translateX(400px);
       opacity: 0;
    }
+}
+
+.custom-scrollbar {
+   scrollbar-width: thin;
+   scrollbar-color: #a3a3a3 #f3f4f6;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+   width: 8px;
+   background: #f3f4f6;
+   border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+   background: #a3a3a3;
+   border-radius: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+   background: #737373;
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+   background: transparent;
+}
+
+/* Dark mode */
+.dark .custom-scrollbar {
+   scrollbar-color: #d1d5db #374151;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar {
+   background: #18181b;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+   background: #52525b;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+   background: #a1a1aa;
 }

@@ -144,7 +144,7 @@ export function CustomSelect({ value, onChange, options, label, id, placeholder 
             aria-controls={isOpen ? listboxId : undefined}
             aria-activedescendant={isOpen && highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
             className="flex h-10 w-full items-center justify-between rounded-md border border-gray-300 dark:border-gray-600
-               bg-white dark:bg-gray-700 p-2 text-sm outline-none focus:ring-2 focus:ring-gray dark:focus:ring-gray-500"
+               bg-white dark:bg-gray-700 p-2 text-sm outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
          >
             <span className={value ? "text-black dark:text-white" : "text-muted-foreground dark:text-gray-400"}>
                {value || placeholder}
@@ -169,7 +169,7 @@ export function CustomSelect({ value, onChange, options, label, id, placeholder 
                   id={listboxId}
                   role="listbox"
                   aria-label={label || 'Opções'}
-                  className="max-h-60 overflow-y-auto p-1 scroll-smooth dark:bg-gray-700"
+                  className="max-h-60 overflow-y-auto p-1 scroll-smooth dark:bg-gray-700 custom-scrollbar"
                >
                   {options.map((option, index) => {
                      const isSelected = value === option;

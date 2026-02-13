@@ -21,7 +21,7 @@ export function DateField({ value, onChange }: any) {
                    bg-white dark:bg-gray-700 
                    text-gray-900 dark:text-gray-100
                    rounded-md p-2 text-left
-                   focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-500"
+                   focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
          >
             {value
                ? format(value, "PPP", { locale: ptBR })

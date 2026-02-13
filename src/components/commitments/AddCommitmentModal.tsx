@@ -116,7 +116,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      aria-required="true"
                      autoComplete="off"
                      className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                        dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        dark:text-gray-100 rounded-md p-2"
                      placeholder="Ex: Aluguel, Parcela Notebook"
                      {...register('description')}
                   />
@@ -177,7 +177,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                                  aria-required="true"
                                  autoComplete="off"
                                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                                    dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                    dark:text-gray-100 rounded-md p-2"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
                               />
@@ -186,13 +186,16 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      </div>
                      <div>
                         <label htmlFor="commitment-due-date" className="block text-xs font-medium text-muted-foreground mb-1">Vencimento *</label>
-                        <input
-                           id="commitment-due-date"
-                           aria-required="true"
-                           type="date"
-                           className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                              dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                           {...register('dueDate')}
+                        <Controller
+                           control={control}
+                           name="dueDate"
+                           rules={{ required: true }}
+                           render={({ field }) => (
+                              <DateField
+                                 value={field.value}
+                                 onChange={field.onChange}
+                              />
+                           )}
                         />
                      </div>
                   </div>
@@ -210,7 +213,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            min={1}
                            max={12}
                            className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                              dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                              dark:text-gray-100 rounded-md p-2"
                            {...register('months')}
                         />
                      </div>
@@ -250,7 +253,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                                  aria-required="true"
                                  autoComplete="off"
                                  className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                                    dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                    dark:text-gray-100 rounded-md p-2"
                                  value={field.value}
                                  onChange={e => field.onChange(formatCurrency(e.target.value))}
                               />
@@ -268,7 +271,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            aria-label="Total de parcelas do compromisso"
                            type="number"
                            className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                              dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                              dark:text-gray-100 rounded-md p-2"
                            {...register('totalInstallments')}
                         />
                      </div>

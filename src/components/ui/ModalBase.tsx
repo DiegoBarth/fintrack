@@ -79,7 +79,7 @@ export function BaseModal({
                      disabled={isLoading}
                      aria-label="Fechar modal"
                      className={`text-sm text-muted-foreground hover:text-gray-700 dark:hover:text-gray-300 transition
-                        ${isLoading ? 'opacity-50 cursor-not-allowed' : '' }`}
+                        ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                      Fechar
                   </button>
@@ -87,17 +87,24 @@ export function BaseModal({
             )}
 
             {/* Scrollable Content Area */}
-            <div className="p-6 overflow-y-auto flex-1">{children}</div>
-
+            <div className="px-6 pb-6 pt-4 overflow-y-auto flex-1">{children}</div>
             {/* Smart Footer Actions */}
             <div className="flex gap-2 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30 flex-shrink-0">
                <button
                   onClick={onClose}
                   disabled={isLoading}
                   aria-label="Cancelar e fechar modal"
-                  className={`flex-1 border border-gray-300 dark:border-gray-600 rounded-md p-2
-                     text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition
-                     ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`
+                     flex-1 rounded-lg p-2 text-sm font-medium
+                     border border-gray-600
+                     text-gray-300
+                     bg-gray-800
+                     hover:bg-gray-700
+                     hover:scale-105 transition-all duration-200
+                     transition-all duration-200
+                     active:scale-[0.98]
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                  `}
                >
                   Cancelar
                </button>
@@ -105,12 +112,19 @@ export function BaseModal({
                {type === 'edit' && onDelete && (
                   <button
                      onClick={onDelete}
-                     aria-label="Excluir registro permanentemente"
                      type="button"
                      disabled={isLoading}
-                     className={`flex-1 border border-red-500 dark:border-red-700 text-red-600 dark:text-red-400
-                        rounded-md p-2 text-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition
-                        ${isLoading ? 'opacity-50 cursor-not-allowed hover:bg-red-500/10' : ''}`}
+                     aria-label="Excluir registro permanentemente"
+                     className={`
+                        flex-1 rounded-lg p-2 text-sm font-medium
+                        bg-rose-600
+                        hover:bg-rose-700
+                        hover:scale-105 transition-all duration-200
+                        text-white
+                        transition-all duration-200
+                        active:scale-[0.98]
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                     `}
                   >
                      {isLoading && loadingText === 'Excluindo...' ? 'Excluindo...' : 'Excluir'}
                   </button>
@@ -122,9 +136,17 @@ export function BaseModal({
                      aria-label={type === 'create' ? 'Salvar novo registro' : 'Salvar alterações'}
                      type="button"
                      disabled={isLoading}
-                     className={`flex-1 bg-primary dark:bg-blue-600 text-white rounded-md p-2 text-sm
-                        hover:bg-primary/90 dark:hover:bg-blue-700 transition
-                        ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                     className={`
+                        flex-1 rounded-lg p-2 text-sm font-medium
+                        bg-emerald-600
+                        hover:bg-emerald-700
+                        hover:scale-105 transition-all duration-200
+                        text-white
+                        shadow-md shadow-emerald-900/20
+                        transition-all duration-200
+                        active:scale-[0.98]
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                     `}
                   >
                      {isLoading && loadingText !== 'Excluindo...' ? loadingText : 'Salvar'}
                   </button>

@@ -76,7 +76,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                   placeholder="Ex: Aluguel, Supermercado"
                   autoComplete="off"
                   className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                     dark:text-gray-100 rounded-md p-2"
                   {...register('description')}
                />
             </div>
@@ -133,7 +133,7 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                         aria-required="true"
                         aria-label="Valor do gasto em reais"
                         className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                           dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                           dark:text-gray-100 rounded-md p-2"
                         autoComplete="off"
                         value={field.value}
                         onChange={e => field.onChange(formatCurrency(e.target.value))}

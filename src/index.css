@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .custom-calendar {
-  --rdp-accent-color: #60A5FA;
+   --rdp-accent-color: #60A5FA;
 }
 
 @layer base {
@@ -70,6 +70,21 @@
 
    body {
       @apply bg-background text-foreground;
+   }
+
+   input:focus,
+   textarea:focus,
+   select:focus {
+      @apply outline-none;
+      --tw-ring-color: theme(colors.red.500);
+      @apply ring-2 border-red-500;
+   }
+
+   .dark input:focus,
+   .dark textarea:focus,
+   .dark select:focus {
+      --tw-ring-color: theme(colors.gray.500);
+      @apply ring-2 border-gray-500;
    }
 }
 

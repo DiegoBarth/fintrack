@@ -67,7 +67,7 @@ export function MonthlySummary() {
             <SummaryCard
                title="Saldo Final do Mês"
                amount={balances.monthFinalBalance}
-               color={(balances.monthFinalBalance < 0) ? "#ef4444" : "#8b5cf6"}
+               color={(balances.monthFinalBalance < 0) ? "#ef4444" : "#4ADE80"}
                isLoading={isLoading}
                icon={<TrendingUp className="h-4 w-4 md:h-5 md:w-5" />}
             />

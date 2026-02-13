@@ -80,12 +80,12 @@ export function EditCommitmentModal({
          onSave={handleUpdate}
          onDelete={handleDelete}
       >
-         <div className="space-y-4">
-            <div className="bg-muted/40 p-3 rounded-lg border border-dashed text-[11px] text-muted-foreground grid grid-cols-2 gap-2">
+         <div>
+            <div className="-mt-4 grid grid-cols-2 gap-2 bg-muted/30 p-3 rounded-lg border border-dashed text-xs text-muted-foreground">
                <div>
                   Tipo: <span className="font-medium text-foreground">{commitment.type}</span>
                </div>
-               <div>
+               <div className="justify-self-end">
                   Vencimento: <span className="font-medium text-foreground">{commitment.dueDate}</span>
                </div>
                {commitment.card && (
@@ -105,7 +105,7 @@ export function EditCommitmentModal({
                      id="edit-commitment-value"
                      aria-label="Valor do compromisso em reais"
                      className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                        dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        dark:text-gray-100 rounded-md p-2"
                      value={amount}
                      onChange={e => setAmount(formatCurrency(e.target.value))}
                   />

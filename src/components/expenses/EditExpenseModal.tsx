@@ -54,12 +54,11 @@ export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalP
          onSave={() => handleUpdate()}
          onDelete={() => handleDelete()}
       >
-         <div className="space-y-4">
+         <div>
             {/* Info Summary (Versão Anterior) */}
-            <div className="bg-muted/30 p-3 rounded-lg border border-dashed text-xs text-muted-foreground">
-               Categoria: <span className="font-medium text-foreground">{expense.category}</span>
-               <br />
-               Data original: <span className="font-medium text-foreground">{expense.paymentDate}</span>
+            <div className="-mt-4 flex items-center justify-between bg-muted/30 p-3 rounded-lg border border-dashed text-xs text-muted-foreground">
+               <div>Categoria: <span className="font-medium text-foreground">{expense.category}</span></div>
+               <div>Data original: <span className="font-medium text-foreground">{expense.paymentDate}</span></div>
             </div>
 
             {/* Amount Input */}
@@ -71,7 +70,7 @@ export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalP
                   id="edit-expense-amount"
                   aria-label="Valor do gasto em reais"
                   className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                     dark:text-gray-100 rounded-md p-2 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                     dark:text-gray-100 rounded-md p-2 focus:ring-2"
                   value={amount}
                   onChange={e => setAmount(formatCurrency(e.target.value))}
                />

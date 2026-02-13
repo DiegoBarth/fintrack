@@ -17,7 +17,7 @@ interface AddCommitmentModalProps {
    onClose: () => void
 }
 
-type CommitmentType = 'Fixed' | 'Variable' | 'Credit_card' | ''
+type CommitmentType = 'Fixo' | 'Variável' | 'Cartão' | ''
 
 const defaultValues: Partial<Commitment> = {
    description: '',
@@ -46,7 +46,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
       REGRAS FIXO
       ========================= */
    useEffect(() => {
-      if (type === 'Fixed' && dueDate) {
+      if (type === 'Fixo' && dueDate) {
          const selectedDate = new Date(dueDate)
          setValue('months', 12 - selectedDate.getMonth())
       }
@@ -62,7 +62,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
    }, [isOpen, reset])
 
    async function handleSave(values: Commitment) {
-      if (type === 'Credit_card') {
+      if (type === 'Cartão') {
          const data = validate(CreateCardCommitmentSchema, {
             description: values.description,
             category: values.category,
@@ -84,7 +84,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             type,
             amount: currencyToNumber(String(values.amount)),
             dueDate: values.dueDate,
-            months: type === 'Fixed' ? values.months : 1
+            months: type === 'Fixo' ? values.months : 1
          })
 
          if (!data) return
@@ -162,7 +162,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             <hr className="border-dashed" />
 
             {/* Fixed / Variable Fields */}
-            {(type === 'Fixed' || type === 'Variable') && (
+            {(type === 'Fixo' || type === 'Variável') && (
                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                   <div className="grid grid-cols-2 gap-3">
                      <div>
@@ -200,7 +200,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      </div>
                   </div>
 
-                  {type === 'Fixed' && (
+                  {type === 'Fixo' && (
                      <div>
                         <label htmlFor="commitment-months" className="block text-xs font-medium text-muted-foreground mb-1">
                            Repetir por (meses)
@@ -222,7 +222,7 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             )}
 
             {/* Card Fields */}
-            {type === 'Credit_card' && (
+            {type === 'Cartão' && (
                <div className="space-y-4 animate-in fade-in slide-in-from-top-2">
                   <div>
                      <label id="commitment-card-label" className="block text-xs font-medium text-muted-foreground mb-1">Selecione o Cartão *</label>

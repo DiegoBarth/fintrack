@@ -41,7 +41,7 @@ function checkIfOverdue(dueDate: string) {
 export const CommitmentList = memo(function CommitmentList({ commitments, onSelect }: Props) {
    const renderMobileItem = useCallback((commitment: Commitment) => {
       const isPaid = !!commitment.paymentDate
-      const isCard = commitment.type === 'Credit_card'
+      const isCard = commitment.type === 'Cartão'
       const isOverdue = !isPaid && checkIfOverdue(commitment.dueDate)
       const variant = isPaid ? 'success' : isOverdue ? 'danger' : 'warning'
 

@@ -80,7 +80,7 @@ export function useCommitment(month: string, year: string, key?: string | null) 
     */
    const createMutation = useMutation({
       mutationFn: (newCommitment: {
-         type: 'Fixed' | 'Variable',
+         type: 'Fixo' | 'Variável',
          description: string,
          category: string,
          amount: number,

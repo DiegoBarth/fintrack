@@ -37,7 +37,7 @@ describe('dashboardService - Commitments', () => {
             rowIndex: 1,
             description: 'Mensalidade',
             category: 'Educação',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 500,
             dueDate: '2026-01-15'
          }
@@ -60,7 +60,7 @@ describe('dashboardService - Commitments', () => {
             rowIndex: 1,
             description: 'Mercado',
             category: 'Alimentação',
-            type: 'Variable',
+            type: 'Variável',
             amount: 300,
             dueDate: '2026-01-15'
          }
@@ -80,7 +80,7 @@ describe('dashboardService - Commitments', () => {
             rowIndex: 1,
             description: 'Notebook',
             category: 'Eletrônicos',
-            type: 'Credit_card',
+            type: 'Cartão',
             amount: 1500,
             dueDate: '2026-01-15',
             card: 'Bradesco',
@@ -105,7 +105,7 @@ describe('dashboardService - Commitments', () => {
             rowIndex: 1,
             description: 'Aluguel',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 2000,
             dueDate: '2026-01-10'
          }
@@ -131,7 +131,7 @@ describe('dashboardService - Commitments', () => {
             rowIndex: 1,
             description: 'Aluguel',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 2000,
             dueDate: '2026-01-10',
             paymentDate: '2026-01-10'
@@ -160,7 +160,7 @@ describe('dashboardService - Commitments', () => {
             rowIndex: 1,
             description: 'Aluguel',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 2000,
             dueDate: '2026-01-10',
             paymentDate: '2026-01-10'
@@ -194,7 +194,7 @@ describe('dashboardService - Commitments', () => {
             rowIndex: 1,
             description: 'Compra',
             category: 'Compras',
-            type: 'Credit_card',
+            type: 'Cartão',
             amount: 1500,
             dueDate: '2026-01-15',
             card: 'Bradesco'

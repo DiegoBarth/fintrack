@@ -41,7 +41,7 @@ describe('useCommitment', () => {
                rowIndex: 1,
                description: 'Aluguel',
                category: 'Casa',
-               type: 'Fixed',
+               type: 'Fixo',
                amount: 2000,
                dueDate: '2026-01-10'
             }
@@ -75,7 +75,7 @@ describe('useCommitment', () => {
    describe('Mutation: create commitment', () => {
       it('should create a commitment and update the cache', async () => {
          const newCommitment = {
-            type: 'Fixed' as const,
+            type: 'Fixo' as const,
             description: 'Academia',
             category: 'Saúde',
             amount: 150,
@@ -107,7 +107,7 @@ describe('useCommitment', () => {
          const newCardExpense: Omit<Commitment, 'rowIndex'> = {
             description: 'Notebook',
             category: 'Eletrônicos',
-            type: 'Credit_card',
+            type: 'Cartão',
             amount: 1500,
             dueDate: '2026-01-15',
             card: 'Bradesco',
@@ -141,7 +141,7 @@ describe('useCommitment', () => {
             rowIndex: 1,
             description: 'Aluguel',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 2000,
             dueDate: '10/01/2026'
          }
@@ -185,7 +185,7 @@ describe('useCommitment', () => {
             rowIndex: 1,
             description: 'Aluguel',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 2000,
             dueDate: '10/01/2026'
          }
@@ -224,7 +224,7 @@ describe('useCommitment', () => {
                rowIndex: 1,
                description: 'Aluguel',
                category: 'Casa',
-               type: 'Fixed',
+               type: 'Fixo',
                amount: 2000,
                dueDate: '2026-01-10'
             }
@@ -247,7 +247,7 @@ describe('useCommitment', () => {
             rowIndex: 1,
             description: 'Aluguel',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 2000,
             dueDate: '2026-01-10',
             paymentDate: '2026-01-10'

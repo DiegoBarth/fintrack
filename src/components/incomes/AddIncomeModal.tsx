@@ -45,7 +45,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
          description: values.description,
          amount: currencyToNumber(String(values.amount)),
          expectedDate: values.expectedDate,
-         receivedDate: values.receivedDate
+         receivedDate: !values.receivedDate ? undefined : values.receivedDate
       })
 
       if (!data) return

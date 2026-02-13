@@ -39,7 +39,7 @@ export function updateDashboardAfterCreateCommitment(
    updatedDashboard = addCategory(updatedDashboard, commitment.category, numericValue)
 
    // Update card if it's a card purchase
-   if (commitment.type === 'Credit_card' && commitment.card) {
+   if (commitment.type === 'Cartão' && commitment.card) {
       const valorTotal = numericValue * (commitment.totalInstallments || 1)
       updatedDashboard = addCardPurchase(
          updatedDashboard,
@@ -86,7 +86,7 @@ export function updateDashboardAfterEditCommitment(
    updatedDashboard = updateCategory(updatedDashboard, oldCommitment.category, difference)
 
    // Update card if it's a card purchase
-   if (oldCommitment.type === 'Credit_card' && oldCommitment.card) {
+   if (oldCommitment.type === 'Cartão' && oldCommitment.card) {
       let limitAdjustment = 0
 
       // Adjust limit based on payment status
@@ -132,7 +132,7 @@ export function updateDashboardAfterDeleteCommitment(
    updatedDashboard = removeCategory(updatedDashboard, commitment.category, numericValue)
 
    // Update card if it's a card purchase
-   if (commitment.type === 'Credit_card' && commitment.card) {
+   if (commitment.type === 'Cartão' && commitment.card) {
       updatedDashboard = removeCardPurchase(
          updatedDashboard,
          commitment.card,

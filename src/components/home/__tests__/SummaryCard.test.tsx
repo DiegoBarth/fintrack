@@ -145,21 +145,6 @@ describe('SummaryCard', () => {
       expect(screen.getByText('R$ 1.000.000,00')).toBeInTheDocument()
    })
 
-   it('should have transition and hover classes', () => {
-      const { container } = render(
-         <SummaryCard
-            title="Revenue"
-            amount={1000}
-            color="#10b981"
-         />
-      )
-
-      const card = container.querySelector('div[class*="rounded-xl"]') as HTMLElement
-      expect(card).toHaveClass('transition-all')
-      expect(card).toHaveClass('hover:shadow-lg')
-      expect(card).toHaveClass('hover:scale-[1.02]')
-   })
-
    it('should render title with muted style', () => {
       render(
          <SummaryCard

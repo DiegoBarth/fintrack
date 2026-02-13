@@ -40,7 +40,7 @@ describe('useCommitment - additional tests', () => {
             rowIndex: 1,
             description: 'Aluguel pendente',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 2000,
             dueDate: '2026-01-10'
          },
@@ -48,7 +48,7 @@ describe('useCommitment - additional tests', () => {
             rowIndex: 2,
             description: 'Internet pendente',
             category: 'Casa',
-            type: 'Fixed',
+            type: 'Fixo',
             amount: 100,
             dueDate: '2026-02-10'
          }
@@ -73,7 +73,7 @@ describe('useCommitment - additional tests', () => {
          rowIndex: 1,
          description: 'Aluguel',
          category: 'Casa',
-         type: 'Fixed',
+         type: 'Fixo',
          amount: 2000,
          dueDate: '10/01/2026'
       }
@@ -126,7 +126,7 @@ describe('useCommitment - additional tests', () => {
 
    it('should create card commitment', async () => {
       const newCardExpense: Omit<Commitment, 'rowIndex'> = {
-         type: 'Credit_card',
+         type: 'Cartão',
          description: 'Fatura Nubank',
          category: 'Alimentação',
          amount: 850,
@@ -160,7 +160,7 @@ describe('useCommitment - additional tests', () => {
          rowIndex: 1,
          description: 'Aluguel',
          category: 'Casa',
-         type: 'Fixed',
+         type: 'Fixo',
          amount: 2000,
          dueDate: '2026-01-10'
       }

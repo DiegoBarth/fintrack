@@ -14,7 +14,7 @@ export function listCommitments(month: string, year: string) {
 export function createCommitment(payload: {
    description: string;
    category: string;
-   type: 'Fixed' | 'Variable';
+   type: 'Fixo' | 'Variável';
    amount: number;
    dueDate: string;
    months?: number;

@@ -2,7 +2,7 @@ export interface Commitment {
    rowIndex: number;
    description: string;
    category: string;
-   type: 'Fixed' | 'Variable' | 'Credit_card' | '';
+   type: 'Fixo' | 'Variável' | 'Cartão' | '';
    amount: number | string;
    dueDate: string;
    paymentDate?: string;

@@ -10,7 +10,7 @@ export const CreateCommitmentSchema = z.object({
       message: 'Tipo inválido'
    }),
    amount: z.number().positive('O Valor deve ser positivo'),
-   dueDate: z.string().min(1, 'A Data de vencimento é obrigatória'),
+   dueDate: z.date().min(1, 'A Data de vencimento é obrigatória'),
    months: z.number().int().positive().optional().default(1)
 });
 
@@ -27,7 +27,7 @@ export const CreateCardCommitmentSchema = z.object({
       .number()
       .int('As Parcelas devem ser um número inteiro')
       .positive('As Parcelas devem ser um número positivo'),
-   dueDate: z.string().min(1, 'A Data de vencimento é obrigatória')
+   dueDate: z.date().min(1, 'A Data de vencimento é obrigatória')
 });
 
 export type CreateCommitment = z.infer<typeof CreateCommitmentSchema>;

@@ -14,10 +14,10 @@ import {
  */
 export function updateCacheAfterCreateIncome(
    queryClient: QueryClient,
-   newIncome: Income
+   newIncome: Income,
+   month: string,
+   year: string
 ) {
-   const { month, year } = getMonthAndYear(newIncome.expectedDate)
-
    // Update income list
    queryClient.setQueryData<Income[]>(
       ['incomes', month, year],

@@ -14,7 +14,7 @@ export function createIncome(payload: {
       description: sanitizeText(payload.description)
    };
 
-   return apiPost<Income>({
+   return apiPost<Income[]>({
       action: 'createIncome',
       ...sanitizedPayload
    });
@@ -28,10 +28,11 @@ export function listIncomes(month: string, year: string) {
    });
 }
 
-export function deleteIncome(rowIndex: number, month: string, year: string) {
+export function deleteIncome(rowIndex: number, month: string, year: string, scope?: 'single' | 'future') {
    return apiPost({
       action: 'deleteIncome',
-      rowIndex
+      rowIndex,
+      scope: scope || 'single'
    });
 }
 
@@ -39,6 +40,7 @@ export async function updateIncome(payload: {
    rowIndex: number;
    amount: number;
    receivedDate?: string | null;
+   scope?: 'single' | 'future';
 }) {
    const res = await apiPost({
       action: 'updateIncome',

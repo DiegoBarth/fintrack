@@ -147,7 +147,7 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          rowIndex: number
          amount: number
          paymentDate: string
-         scope?: 'single'
+         scope?: 'single' | 'future'
       }) => updateCommitment(data),
       onSuccess: (_data, variables) => {
          const oldCommitment = commitments.find(c => c.rowIndex === variables.rowIndex)
@@ -184,8 +184,12 @@ export function useCommitment(month: string, year: string, key?: string | null) 
     * - Uses filter to remove item with specific rowIndex
     */
    const removeMutation = useMutation({
-      mutationFn: (rowIndex: number) => deleteCommitment(rowIndex),
-      onSuccess: (_data, rowIndex) => {
+      mutationFn: (args: number | { rowIndex: number; scope?: 'single' | 'future' }) => {
+         if (typeof args === 'number') return deleteCommitment(args);
+         return deleteCommitment(args.rowIndex, args.scope);
+      },
+      onSuccess: (_data, args) => {
+         const rowIndex = typeof args === 'number' ? args : args.rowIndex;
          const deletedCommitment = commitments.find(c => c.rowIndex === rowIndex)
 
          if (deletedCommitment) {

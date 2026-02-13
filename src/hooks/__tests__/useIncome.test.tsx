@@ -86,7 +86,7 @@ describe('useIncome', () => {
          }
 
          vi.mocked(incomeApi.listIncomes).mockResolvedValue([])
-         vi.mocked(incomeApi.createIncome).mockResolvedValue(createdIncome)
+         vi.mocked(incomeApi.createIncome).mockResolvedValue([createdIncome])
 
          const mockDashboard: Dashboard = {
             monthlyBalance: [{ date: '2026-01', balance: 15000 }],
@@ -123,7 +123,7 @@ describe('useIncome', () => {
          }
 
          vi.mocked(incomeApi.listIncomes).mockResolvedValue([])
-         vi.mocked(incomeApi.createIncome).mockResolvedValue(createdIncome)
+         vi.mocked(incomeApi.createIncome).mockResolvedValue([createdIncome])
 
          const { result } = renderHook(() => useIncome('1', '2026'), {
             wrapper: createWrapper()

@@ -48,7 +48,7 @@ describe('useIncome - additional tests', () => {
       }
 
       vi.mocked(incomeApi.listIncomes).mockResolvedValue([])
-      vi.mocked(incomeApi.createIncome).mockResolvedValue(createdIncome)
+      vi.mocked(incomeApi.createIncome).mockResolvedValue([createdIncome])
 
       const { result } = renderHook(() => useIncome('1', '2026'), {
          wrapper: createWrapper()

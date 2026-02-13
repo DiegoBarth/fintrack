@@ -197,9 +197,20 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                               type="number"
                               min={1}
                               max={12}
+                              pattern="[0-9]*"
+                              inputMode="numeric"
                               className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
                               dark:text-gray-100 rounded-md p-2"
-                              {...register('months')}
+                              {...register('months', {
+                                 valueAsNumber: true,
+                                 validate: value => value !== undefined && Number.isInteger(value) && value > 0 && value <= 12
+                              })}
+                              onInput={e => {
+                                 const input = e.target as HTMLInputElement;
+                                 input.value = input.value.replace(/[^\d]/g, '');
+                                 if (input.value && Number(input.value) < 1) input.value = '1';
+                                 if (input.value && Number(input.value) > 12) input.value = '12';
+                              }}
                            />
                         </div>
                      )}

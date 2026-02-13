@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listIncomes, createIncome, updateIncome, deleteIncome } from '@/api/endpoints/income'
 import { useApiError } from '@/hooks/useApiError'
 import { updateCacheAfterCreateIncome, updateCacheAfterEditIncome, updateCacheAfterDeleteIncome } from '@/services/incomeCacheService'
+import { getMonthAndYear } from '@/utils/formatters'
 import type { Income } from '@/types/Income'
 
 export function useIncome(month: string, year: string) {
@@ -18,8 +19,11 @@ export function useIncome(month: string, year: string) {
 
    const createMutation = useMutation({
       mutationFn: (newIncome: Omit<Income, 'rowIndex'>) => createIncome(newIncome),
-      onSuccess: (newIncome: Income) => {
-         updateCacheAfterCreateIncome(queryClient, newIncome)
+      onSuccess: (newIncomes: Income[]) => {
+         newIncomes.forEach(income => {
+            const { month: regisMonth, year: regisYear } = getMonthAndYear(income.expectedDate)
+            updateCacheAfterCreateIncome(queryClient, income, regisMonth, regisYear)
+         })
       },
       onError: (error) => {
          handleError(error)
@@ -27,7 +31,7 @@ export function useIncome(month: string, year: string) {
    })
 
    const updateMutation = useMutation({
-      mutationFn: (data: { rowIndex: number, amount: number, receivedDate?: string | null }) => updateIncome(data),
+      mutationFn: (data: { rowIndex: number, amount: number, receivedDate?: string | null, scope?: 'single' | 'future' }) => updateIncome(data),
       onSuccess: (_data, variables) => {
          const oldIncome = incomes.find(r => r.rowIndex === variables.rowIndex)
 
@@ -41,10 +45,13 @@ export function useIncome(month: string, year: string) {
    })
 
    const removeMutation = useMutation({
-      mutationFn: (rowIndex: number) => deleteIncome(rowIndex, month, String(year)),
-      onSuccess: (_data, rowIndex) => {
+      mutationFn: (args: number | { rowIndex: number; scope?: 'single' | 'future' }) => {
+         if (typeof args === 'number') return deleteIncome(args, month, String(year));
+         return deleteIncome(args.rowIndex, month, String(year), args.scope);
+      },
+      onSuccess: (_data, args) => {
+         const rowIndex = typeof args === 'number' ? args : args.rowIndex;
          const deletedIncome = incomes.find(r => r.rowIndex === rowIndex)
-
          if (deletedIncome) {
             updateCacheAfterDeleteIncome(queryClient, deletedIncome, month, year)
          }

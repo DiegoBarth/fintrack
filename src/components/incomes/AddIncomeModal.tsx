@@ -14,11 +14,12 @@ interface AddIncomeModalProps {
    onClose: () => void
 }
 
-const defaultValues: Partial<Income> = {
+const defaultValues: Partial<Income & { months?: number }> = {
    description: '',
    amount: '',
    expectedDate: '',
-   receivedDate: ''
+   receivedDate: '',
+   months: 1
 }
 
 /**
@@ -30,7 +31,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
    const { create, isSaving } = useIncome(month, String(year))
    const { validate } = useValidation()
 
-   const { control, register, handleSubmit, reset } = useForm<Income>({
+   const { control, register, handleSubmit, reset, watch, setValue } = useForm<Income & { months?: number }>({
       defaultValues
    })
 
@@ -40,20 +41,25 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
       }
    }, [isOpen, reset])
 
-   const handleSave = async (values: Income) => {
+   const handleSave = async (values: Income & { months?: number }) => {
+      const months = Number(values.months) || 1;
+      const baseDate = values.expectedDate ? new Date(values.expectedDate) : null;
+      if (!baseDate) return;
+
       const data = validate(CreateIncomeSchema, {
          description: values.description,
          amount: currencyToNumber(String(values.amount)),
          expectedDate: values.expectedDate,
-         receivedDate: !values.receivedDate ? undefined : values.receivedDate
-      })
+         receivedDate: !values.receivedDate ? undefined : values.receivedDate,
+         months: values.months
+      });
 
-      if (!data) return
+      if (data) {
+         await create(data as any);
+      }
 
-      await create(data as any)
-
-      reset(defaultValues)
-      onClose()
+      reset(defaultValues);
+      onClose();
    }
 
    return (
@@ -83,27 +89,53 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                />
             </div>
 
-            {/* Amount Field */}
-            <div>
-               <label htmlFor="income-amount" className="block text-xs font-medium text-muted-foreground mb-1">
-                  Valor *
-               </label>
-               <Controller
-                  name="amount"
-                  control={control}
-                  render={({ field }) => (
-                     <input
-                        id="income-amount"
-                        aria-required="true"
-                        aria-label="Valor da receita em reais"
-                        className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
-                           dark:text-gray-100 rounded-md p-2"
-                        autoComplete="off"
-                        value={field.value}
-                        onChange={e => field.onChange(formatCurrency(e.target.value))}
-                     />
-                  )}
-               />
+            {/* Amount + Repeat Fields */}
+            <div className="flex gap-2">
+               <div className="flex-1">
+                  <label htmlFor="income-amount" className="block text-xs font-medium text-muted-foreground mb-1">
+                     Valor *
+                  </label>
+                  <Controller
+                     name="amount"
+                     control={control}
+                     render={({ field }) => (
+                        <input
+                           id="income-amount"
+                           aria-required="true"
+                           aria-label="Valor da receita em reais"
+                           className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900
+                              dark:text-gray-100 rounded-md p-2"
+                           autoComplete="off"
+                           value={field.value}
+                           onChange={e => field.onChange(formatCurrency(e.target.value))}
+                        />
+                     )}
+                  />
+               </div>
+               <div className="w-30">
+                  <label htmlFor="income-months" className="block text-xs font-medium text-muted-foreground mb-1">
+                     Repetir por (meses)
+                  </label>
+                  <input
+                     id="income-months"
+                     type="number"
+                     min={1}
+                     max={12}
+                     pattern="[0-9]*"
+                     inputMode="numeric"
+                     className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md p-2"
+                     {...register('months', {
+                        valueAsNumber: true,
+                        validate: value => value !== undefined && Number.isInteger(value) && value > 0 && value <= 12
+                     })}
+                     onInput={e => {
+                        const input = e.target as HTMLInputElement;
+                        input.value = input.value.replace(/[^\d]/g, '');
+                        if (input.value && Number(input.value) < 1) input.value = '1';
+                        if (input.value && Number(input.value) > 12) input.value = '12';
+                     }}
+                  />
+               </div>
             </div>
 
             {/* Expected Date Field */}

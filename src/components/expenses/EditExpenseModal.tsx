@@ -4,6 +4,7 @@ import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/form
 import { BaseModal } from '@/components/ui/ModalBase'
 import type { Expense } from '@/types/Expense'
 import { useExpense } from '@/hooks/useExpense'
+import { useToast } from '@/contexts/toast';
 
 interface EditExpenseModalProps {
    isOpen: boolean
@@ -14,6 +15,7 @@ interface EditExpenseModalProps {
 export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalProps) {
    const { month, year } = usePeriod()
    const { update, remove, isSaving, isDeleting } = useExpense(month, String(year))
+   const toast = useToast();
 
    const [amount, setAmount] = useState('')
 
@@ -27,16 +29,17 @@ export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalP
       await update({
          rowIndex: expense!.rowIndex,
          amount: currencyToNumber(amount)
-      })
-      setAmount('')
-      onClose()
+      });
+      toast.success('Gasto atualizado com sucesso!');
+      setAmount('');
+      onClose();
    }
 
    const handleDelete = async () => {
-      await remove(expense!.rowIndex)
-      setAmount('')
-
-      onClose()
+      await remove(expense!.rowIndex);
+      toast.success('Gasto excluído com sucesso!');
+      setAmount('');
+      onClose();
    }
 
    if (!expense) return null

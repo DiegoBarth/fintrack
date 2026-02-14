@@ -13,6 +13,7 @@ import { BaseModal } from '@/components/ui/ModalBase'
 import { ScopeChoiceModal } from '@/components/ScopeChoiceModal'
 import { DateField } from '@/components/ui/DateField'
 import { format } from "date-fns"
+import { useToast } from '@/contexts/toast';
 
 interface EditIncomeModalProps {
    isOpen: boolean
@@ -23,6 +24,7 @@ interface EditIncomeModalProps {
 export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProps) {
    const { month, year } = usePeriod()
    const { update, remove, isSaving, isDeleting } = useIncome(month, String(year))
+   const toast = useToast();
 
    const [amount, setAmount] = useState('')
    const [receivedDate, setReceivedDate] = useState('')
@@ -53,6 +55,7 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
          receivedDate,
          scope
       });
+      toast.success('Receita atualizada com sucesso!');
       setAmount('');
       setReceivedDate('');
       onClose();
@@ -65,6 +68,7 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
 
    const doDelete = async (scope: 'single' | 'future') => {
       await remove({ rowIndex: income!.rowIndex, scope });
+      toast.success('Receita excluída com sucesso!');
       onClose();
    };
 

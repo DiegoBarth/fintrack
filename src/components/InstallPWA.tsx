@@ -1,3 +1,4 @@
+import { useToast } from '@/contexts/toast';
 import { useEffect, useState } from 'react'
 import { Download, X } from 'lucide-react'
 
@@ -9,6 +10,7 @@ interface BeforeInstallPromptEvent extends Event {
 export function InstallPWA() {
    const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
    const [showInstallPrompt, setShowInstallPrompt] = useState(false)
+   const toast = useToast();
 
    useEffect(() => {
       const handler = (e: Event) => {
@@ -31,16 +33,17 @@ export function InstallPWA() {
    }, [])
 
    const handleInstallClick = async () => {
-      if (!deferredPrompt) return
+      if (!deferredPrompt) return;
 
-      deferredPrompt.prompt()
-      const { outcome } = await deferredPrompt.userChoice
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
 
       if (outcome === 'accepted') {
-         setShowInstallPrompt(false)
+         setShowInstallPrompt(false);
+         toast.success('Aplicativo instalado com sucesso!');
       }
 
-      setDeferredPrompt(null)
+      setDeferredPrompt(null);
    }
 
    const handleDismiss = () => {

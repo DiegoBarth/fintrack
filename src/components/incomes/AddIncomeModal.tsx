@@ -7,6 +7,7 @@ import { useIncome } from '@/hooks/useIncome'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateIncomeSchema } from '@/schemas/income.schema'
 import { DateField } from '@/components/ui/DateField'
+import { useToast } from '@/contexts/toast';
 import type { Income } from '@/types/Income'
 
 interface AddIncomeModalProps {
@@ -29,6 +30,7 @@ const defaultValues: Partial<Income & { months?: number }> = {
 export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
    const { month, year } = usePeriod()
    const { create, isSaving } = useIncome(month, String(year))
+   const toast = useToast();
    const { validate } = useValidation()
 
    const { control, register, handleSubmit, reset, watch, setValue } = useForm<Income & { months?: number }>({
@@ -53,7 +55,7 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
       if (!data) return;
 
       await create(data as any);
-
+      toast.success('Receita criada com sucesso!');
       reset(defaultValues);
       onClose();
    }

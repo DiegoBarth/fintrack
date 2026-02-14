@@ -13,6 +13,7 @@ import { ScopeChoiceModal } from '@/components/ScopeChoiceModal'
 import { useCommitment } from '@/hooks/useCommitment'
 import { DateField } from '@/components/ui/DateField'
 import { format } from "date-fns"
+import { useToast } from '@/contexts/toast';
 
 interface EditCommitmentModalProps {
    isOpen: boolean
@@ -29,6 +30,7 @@ export function EditCommitmentModal({
 }: EditCommitmentModalProps) {
    const { month, year } = usePeriod()
    const { update, remove, isSaving, isDeleting } = useCommitment(month, String(year))
+   const toast = useToast();
 
    const [amount, setAmount] = useState('')
    const [paymentDate, setPaymentDate] = useState('')
@@ -73,6 +75,7 @@ export function EditCommitmentModal({
          paymentDate,
          scope
       });
+      toast.success('Compromisso atualizado com sucesso!');
       setAmount('');
       setPaymentDate('');
       onConfirm(commitment.rowIndex);
@@ -92,6 +95,7 @@ export function EditCommitmentModal({
    const doDelete = async (scope: 'single' | 'future') => {
       if (!commitment) return;
       await remove({ rowIndex: commitment.rowIndex, scope });
+      toast.success('Compromisso excluído com sucesso!');
       onConfirm(commitment.rowIndex);
       onClose();
    };

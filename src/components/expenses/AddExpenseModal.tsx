@@ -9,6 +9,7 @@ import { useValidation } from '@/hooks/useValidation'
 import { CreateExpenseSchema } from '@/schemas/expense.schema'
 import { CATEGORIES } from '@/config/constants'
 import { DateField } from '@/components/ui/DateField'
+import { useToast } from '@/contexts/toast';
 import type { Expense } from '@/types/Expense'
 
 interface AddExpenseModalProps {
@@ -26,6 +27,7 @@ const defaultValues: Partial<Expense> = {
 export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
    const { month, year } = usePeriod()
    const { create, isSaving } = useExpense(month, String(year))
+   const toast = useToast();
    const { validate } = useValidation()
 
    const { control, register, handleSubmit, reset } = useForm<Expense>({
@@ -45,14 +47,14 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
          category: values.category,
          amount: currencyToNumber(String(values.amount)),
          paymentDate: values.paymentDate
-      })
+      });
 
-      if (!data) return
+      if (!data) return;
 
-      await create(data as any)
-
-      reset(defaultValues)
-      onClose()
+      await create(data as any);
+      toast.success('Gasto criado com sucesso!');
+      reset(defaultValues);
+      onClose();
    }
 
    return (

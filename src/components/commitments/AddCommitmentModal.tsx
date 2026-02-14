@@ -8,6 +8,7 @@ import { useCommitment } from '@/hooks/useCommitment'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateCommitmentSchema, CreateCardCommitmentSchema } from '@/schemas/commitment.schema'
 import { CATEGORIES, COMMITMENT_TYPES, CARDS } from '@/config/constants'
+import { useToast } from '@/contexts/toast';
 import type { Commitment } from '@/types/Commitment'
 
 import { DateField } from '@/components/ui/DateField'
@@ -33,6 +34,7 @@ const defaultValues: Partial<Commitment> = {
 export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
    const { month, year } = usePeriod()
    const { create, createCard, isSaving } = useCommitment(month, String(year))
+   const toast = useToast();
    const { validate } = useValidation()
 
    const { control, register, handleSubmit, watch, setValue, reset } = useForm<Commitment>({
@@ -73,9 +75,10 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             dueDate: values.dueDate
          })
 
-         if (!data) return
+         if (!data) return;
 
-         await createCard(data as any)
+         await createCard(data as any);
+         toast.success('Compromisso de cartão criado com sucesso!');
       }
       else {
          const data = validate(CreateCommitmentSchema, {
@@ -87,13 +90,14 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             months: type === 'Fixo' ? values.months : 1
          })
 
-         if (!data) return
+         if (!data) return;
 
-         await create(data as any)
+         await create(data as any);
+         toast.success('Compromisso criado com sucesso!');
       }
 
-      reset(defaultValues)
-      onClose()
+      reset(defaultValues);
+      onClose();
    }
 
    return (

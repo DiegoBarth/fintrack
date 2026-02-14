@@ -63,14 +63,12 @@ export const PeriodContext = createContext<PeriodContextType>({
  * * @returns Object containing the initial month and year
  */
 function getInitialPeriod() {
-   // Attempts to retrieve a previously saved period
    const saved = sessionStorage.getItem('period');
    if (saved) return JSON.parse(saved);
 
-   // If nothing is saved, uses the current date
    const today = new Date();
    return {
-      month: String(today.getMonth() + 1),  // getMonth() returns 0-11, converts to 1-12
+      month: String(today.getMonth() + 1),
       year: today.getFullYear()
    };
 }
@@ -123,7 +121,7 @@ export function PeriodProvider({ children }: { children: ReactNode }) {
    // Executes AFTER render (non-blocking)
    useEffect(() => {
       sessionStorage.setItem(
-         'app_period',
+         'period',
          JSON.stringify({ month, year })
       );
    }, [month, year]);

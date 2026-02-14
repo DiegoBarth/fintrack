@@ -134,8 +134,8 @@ export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
                   name="paymentDate"
                   render={({ field }) => (
                      <DateField
-                        value={field.value}
-                        onChange={field.onChange}
+                        value={field.value ? new Date(field.value) : undefined}
+                        onChange={date => field.onChange(date)}
                      />
                   )}
                />

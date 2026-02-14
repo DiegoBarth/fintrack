@@ -224,8 +224,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         name="dueDate"
                         render={({ field }) => (
                            <DateField
-                              value={field.value}
-                              onChange={field.onChange}
+                              value={field.value ? new Date(field.value) : undefined}
+                              onChange={date => field.onChange(date)}
                            />
                         )}
                      />
@@ -299,8 +299,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                         name="dueDate"
                         render={({ field }) => (
                            <DateField
-                              value={field.value}
-                              onChange={field.onChange}
+                              value={field.value ? new Date(field.value) : undefined}
+                              onChange={date => field.onChange(date)}
                            />
                         )}
                      />

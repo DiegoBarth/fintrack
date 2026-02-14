@@ -27,12 +27,24 @@ export function useFocusTrap(isActive: boolean) {
       if (!container) return;
 
       // Focusable elements
-      const focusableSelector =
-         '[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      const focusableSelector = [
+         'a[href]',
+         'input:not([disabled])',
+         'select:not([disabled])',
+         'textarea:not([disabled])',
+         'button:not([disabled])',
+         '[tabindex]:not([tabindex="-1"])',
+         '[role="button"]',
+         '[data-focusable="true"]'
+      ].join(', ');
 
-      // Focuses the first focusable element within the modal
-      const firstFocusable = container.querySelector<HTMLElement>(focusableSelector);
-      firstFocusable?.focus();
+      // Focus the second focusable element within the modal, if it exists; otherwise, focus the first
+      const focusableElementsInit = Array.from(container.querySelectorAll<HTMLElement>(focusableSelector));
+      if (focusableElementsInit.length > 1) {
+         focusableElementsInit[1].focus();
+      } else {
+         focusableElementsInit[0]?.focus();
+      }
 
       /**
        * Keyboard handler for focus cycling.

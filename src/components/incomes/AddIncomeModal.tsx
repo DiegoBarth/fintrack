@@ -42,10 +42,6 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
    }, [isOpen, reset])
 
    const handleSave = async (values: Income & { months?: number }) => {
-      const months = Number(values.months) || 1;
-      const baseDate = values.expectedDate ? new Date(values.expectedDate) : null;
-      if (!baseDate) return;
-
       const data = validate(CreateIncomeSchema, {
          description: values.description,
          amount: currencyToNumber(String(values.amount)),
@@ -54,9 +50,9 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
          months: values.months
       });
 
-      if (data) {
-         await create(data as any);
-      }
+      if (!data) return;
+
+      await create(data as any);
 
       reset(defaultValues);
       onClose();
@@ -148,8 +144,8 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                   name="expectedDate"
                   render={({ field }) => (
                      <DateField
-                        value={field.value}
-                        onChange={field.onChange}
+                        value={field.value ? new Date(field.value) : undefined}
+                        onChange={date => field.onChange(date)}
                      />
                   )}
                />
@@ -165,8 +161,8 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                   name="receivedDate"
                   render={({ field }) => (
                      <DateField
-                        value={field.value}
-                        onChange={field.onChange}
+                        value={field.value ? new Date(field.value) : undefined}
+                        onChange={date => field.onChange(date)}
                      />
                   )}
                />

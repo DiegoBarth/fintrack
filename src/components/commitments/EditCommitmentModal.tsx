@@ -151,8 +151,11 @@ export function EditCommitmentModal({
                      <DateField
                         value={paymentDate ? parseLocalDate(paymentDate) : undefined}
                         onChange={(date: Date | undefined) => {
-                           if (!date) return
-                           setPaymentDate(format(date, "yyyy-MM-dd"))
+                           if (!date) {
+                              setPaymentDate('');
+                              return;
+                           }
+                           setPaymentDate(format(date, "yyyy-MM-dd"));
                         }}
                      />
 

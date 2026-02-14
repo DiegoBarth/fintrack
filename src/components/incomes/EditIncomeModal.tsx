@@ -108,8 +108,11 @@ export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProp
                   <DateField
                      value={receivedDate ? parseLocalDate(receivedDate) : undefined}
                      onChange={(date: Date | undefined) => {
-                        if (!date) return
-                        setReceivedDate(format(date, "yyyy-MM-dd"))
+                        if (!date) {
+                           setReceivedDate('');
+                           return;
+                        }
+                        setReceivedDate(format(date, "yyyy-MM-dd"));
                      }}
                   />
                </div>

@@ -37,7 +37,7 @@ export const SWIPE_DELTA_PX = 10;
 export const WEEKLY_ALERT_DAYS = 7;
 
 /** Default toast duration (in ms). */
-export const TOAST_DEFAULT_DURATION_MS = 3000;
+export const TOAST_DEFAULT_DURATION_MS = 6000;
 
 /** Length of the generated toast ID. */
 export const TOAST_ID_LENGTH = 9;

@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query'
 import type { Commitment } from '@/types/Commitment'
 import type { FullSummary } from '@/types/FullSummary'
 import type { Dashboard } from '@/types/Dashboard'
+import { dateBRToISO, getMonthAndYear } from '@/utils/formatters'
 import { updateDashboardAfterCreateCommitment, updateDashboardAfterEditCommitment, updateDashboardAfterDeleteCommitment } from './dashboardService'
 
 /**
@@ -16,7 +17,20 @@ export function updateCacheAfterCreateCommitment(
    // Update commitments list
    queryClient.setQueryData<Commitment[]>(
       ['commitments', month, year],
-      old => old ? [...old, newCommitment] : [newCommitment]
+      old => {
+         const updated = old ? [...old, newCommitment] : [newCommitment]
+
+         return updated.sort((a, b) => {
+            const dateA = new Date(dateBRToISO(a.dueDate))
+            const dateB = new Date(dateBRToISO(b.dueDate))
+
+            if (dateA.getTime() !== dateB.getTime()) {
+               return dateA.getTime() - dateB.getTime()
+            }
+
+            return a.description.localeCompare(b.description)
+         })
+      }
    )
 
    // Update summary
@@ -67,32 +81,68 @@ export function updateCacheAfterEditCommitment(
  */
 export function updateCacheAfterDeleteCommitment(
    queryClient: QueryClient,
-   deletedCommitment: Commitment,
+   deletedCommitments: Commitment[],
    month: string,
    year: string
 ) {
-   const deletedRowIndex = deletedCommitment.rowIndex
-
-   // Update commitments list: remove deleted and reorder rowIndex to match spreadsheet
    queryClient.setQueryData<Commitment[]>(
       ['commitments', month, year],
       old => {
          if (!old) return []
-         return old
-            .filter(c => c.rowIndex !== deletedRowIndex)
-            .map(c => ({
+
+         const deletedSet = new Set(
+            deletedCommitments.map(c => c.rowIndex)
+         )
+
+         const remaining = old.filter(
+            c => !deletedSet.has(c.rowIndex)
+         )
+
+         const adjusted = remaining.map(c => {
+            const shift = deletedCommitments.filter(
+               d => d.rowIndex < c.rowIndex
+            ).length
+
+            return {
                ...c,
-               rowIndex: c.rowIndex > deletedRowIndex ? c.rowIndex - 1 : c.rowIndex
-            }))
-            .sort((a, b) => a.rowIndex - b.rowIndex)
+               rowIndex: c.rowIndex - shift
+            }
+         })
+
+         return adjusted.sort((a, b) => {
+            const dateA = new Date(dateBRToISO(a.dueDate))
+            const dateB = new Date(dateBRToISO(b.dueDate))
+
+            if (dateA.getTime() !== dateB.getTime()) {
+               return dateA.getTime() - dateB.getTime()
+            }
+
+            return a.description.localeCompare(b.description)
+         })
       }
    )
 
-   // Update summary
-   updateSummaryAfterDeleteCommitment(queryClient, deletedCommitment, month, year)
+   deletedCommitments.forEach(commitment => {
+      let { month: expectedMonth, year: expectedYear } = getMonthAndYear(commitment.dueDate)
 
-   // Update dashboard
-   updateDashboardCacheAfterDeleteCommitment(queryClient, deletedCommitment, month, year)
+      if (month == 'all') {
+         expectedMonth = month;
+      }
+
+      updateSummaryAfterDeleteCommitment(
+         queryClient,
+         commitment,
+         expectedMonth,
+         expectedYear
+      )
+
+      updateDashboardCacheAfterDeleteCommitment(
+         queryClient,
+         commitment,
+         expectedMonth,
+         expectedYear
+      )
+   })
 }
 
 // ==================== SUMMARY ====================

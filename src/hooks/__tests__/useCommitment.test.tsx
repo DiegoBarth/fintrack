@@ -147,7 +147,13 @@ describe('useCommitment', () => {
          }
 
          vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-         vi.mocked(commitmentApi.updateCommitment).mockResolvedValue({})
+         vi.mocked(commitmentApi.updateCommitment).mockResolvedValue([
+            {
+               ...existingCommitment,
+               amount: 2000,
+               paymentDate: '10/01/2026'
+            }
+         ])
 
          const mockDashboard: Dashboard = {
             monthlyBalance: [{ date: '2026-01', balance: 10000 }],
@@ -191,7 +197,7 @@ describe('useCommitment', () => {
          }
 
          vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-         vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue({})
+         vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue([existingCommitment])
 
          const mockDashboard: Dashboard = {
             monthlyBalance: [{ date: '2026-01', balance: 12000 }],
@@ -227,7 +233,7 @@ describe('useCommitment', () => {
          }
 
          vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-         vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue({})
+         vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue([existingCommitment])
 
          const { result } = renderHook(() => useCommitment('1', '2026'), {
             wrapper: createWrapper()
@@ -300,7 +306,12 @@ describe('useCommitment', () => {
          }
 
          vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-         vi.mocked(commitmentApi.updateCommitment).mockResolvedValue({})
+         vi.mocked(commitmentApi.updateCommitment).mockResolvedValue([
+            {
+               ...existingCommitment,
+               paymentDate: undefined
+            }
+         ])
 
          const { result } = renderHook(() => useCommitment('1', '2026'), {
             wrapper: createWrapper()

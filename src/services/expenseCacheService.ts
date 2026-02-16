@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query'
 import type { Expense } from '@/types/Expense'
 import type { FullSummary } from '@/types/FullSummary'
 import type { Dashboard } from '@/types/Dashboard'
-import { getMonthAndYear } from '@/utils/formatters'
+import { getMonthAndYear, dateBRToISO } from '@/utils/formatters'
 import {
    updateDashboardAfterCreateExpense,
    updateDashboardAfterEditExpense,
@@ -14,21 +14,43 @@ import {
  */
 export function updateCacheAfterCreateExpense(
    queryClient: QueryClient,
-   newExpense: Expense
+   newExpense: Expense,
+   month: string,
+   year: string
 ) {
-   const { month, year } = getMonthAndYear(newExpense.paymentDate)
-
-   // Update expenses list
    queryClient.setQueryData<Expense[]>(
       ['expenses', month, year],
-      old => old ? [...old, newExpense] : [newExpense]
+      old => {
+         const updated = old
+            ? [...old, newExpense]
+            : [newExpense]
+
+         return updated.sort((a, b) => {
+            const dateA = new Date(dateBRToISO(a.paymentDate))
+            const dateB = new Date(dateBRToISO(b.paymentDate))
+
+            if (dateA.getTime() !== dateB.getTime()) {
+               return dateA.getTime() - dateB.getTime()
+            }
+
+            return a.description.localeCompare(b.description)
+         })
+      }
    )
 
-   // Update summary
-   updateSummaryAfterCreateExpense(queryClient, newExpense, month, year)
+   updateSummaryAfterCreateExpense(
+      queryClient,
+      newExpense,
+      month,
+      year
+   )
 
-   // Update dashboard
-   updateDashboardCacheAfterCreateExpense(queryClient, newExpense, month, year)
+   updateDashboardCacheAfterCreateExpense(
+      queryClient,
+      newExpense,
+      month,
+      year
+   )
 }
 
 /**
@@ -79,27 +101,44 @@ export function updateCacheAfterDeleteExpense(
    year: string
 ) {
    const { month: paymentMonth, year: paymentYear } = getMonthAndYear(deletedExpense.paymentDate)
+
    const deletedRowIndex = deletedExpense.rowIndex
 
-   // Update expenses list: remove deleted and reorder rowIndex to match spreadsheet
    queryClient.setQueryData<Expense[]>(
       ['expenses', month, year],
       old => {
          if (!old) return []
-         return old
+
+         const adjusted = old
             .filter(g => g.rowIndex !== deletedRowIndex)
             .map(g => ({
                ...g,
-               rowIndex: g.rowIndex > deletedRowIndex ? g.rowIndex - 1 : g.rowIndex
+               rowIndex:
+                  g.rowIndex > deletedRowIndex
+                     ? g.rowIndex - 1
+                     : g.rowIndex
             }))
-            .sort((a, b) => a.rowIndex - b.rowIndex)
+
+         return adjusted.sort((a, b) => {
+            const dateA = new Date(dateBRToISO(a.paymentDate))
+            const dateB = new Date(dateBRToISO(b.paymentDate))
+
+            if (dateA.getTime() !== dateB.getTime()) {
+               return dateA.getTime() - dateB.getTime()
+            }
+
+            return a.description.localeCompare(b.description)
+         })
       }
    )
 
-   // Update summary
-   updateSummaryAfterDeleteExpense(queryClient, deletedExpense, month, year)
+   updateSummaryAfterDeleteExpense(
+      queryClient,
+      deletedExpense,
+      month,
+      year
+   )
 
-   // Update dashboard
    updateDashboardCacheAfterDeleteExpense(
       queryClient,
       deletedExpense,

@@ -56,7 +56,7 @@ export function createCard(payload: {
 
 export function deleteCommitment(rowIndex: number, scope: 'single' | 'future' | 'all' = 'single'
 ) {
-   return apiPost({
+   return apiPost<Commitment[]>({
       action: 'deleteCommitment',
       rowIndex,
       scope
@@ -66,7 +66,7 @@ export function deleteCommitment(rowIndex: number, scope: 'single' | 'future' | 
 export async function updateCommitment(
    payload: { rowIndex: number; amount: number; paymentDate: string; scope?: 'single' | 'future' }
 ) {
-   const res = await apiPost({
+   const res = await apiPost<Commitment[]>({
       action: 'updateCommitment',
       ...payload
    });

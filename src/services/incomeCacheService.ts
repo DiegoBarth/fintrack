@@ -95,29 +95,52 @@ export function updateCacheAfterDeleteIncome(
       ['incomes', month, year],
       old => {
          if (!old) return []
-         const sorted = [...old].sort((a, b) => a.rowIndex - b.rowIndex)
-         const deletedSet = new Set(deletedIncomes.map(i => i.rowIndex))
 
-         return sorted
-            .filter(r => !deletedSet.has(r.rowIndex))
-            .map(r => {
-               const shift = deletedIncomes.filter(
-                  d => d.rowIndex < r.rowIndex
-               ).length
+         const deletedSet = new Set(
+            deletedIncomes.map(i => i.rowIndex)
+         )
 
-               return {
-                  ...r,
-                  rowIndex: r.rowIndex - shift
-               }
-            })
+         const remaining = old.filter(
+            r => !deletedSet.has(r.rowIndex)
+         )
+
+         const adjusted = remaining.map(r => {
+            const shift = deletedIncomes.filter(
+               d => d.rowIndex < r.rowIndex
+            ).length
+
+            return {
+               ...r,
+               rowIndex: r.rowIndex - shift
+            }
+         })
+
+         return adjusted.sort((a, b) => {
+            const dateA = new Date(dateBRToISO(a.expectedDate))
+            const dateB = new Date(dateBRToISO(b.expectedDate))
+
+            if (dateA.getTime() !== dateB.getTime()) {
+               return dateA.getTime() - dateB.getTime()
+            }
+
+            return a.description.localeCompare(b.description)
+         })
       }
    )
 
    deletedIncomes.forEach(income => {
-      const { month: expectedMonth, year: expectedYear } =
-         getMonthAndYear(income.expectedDate)
+      let { month: expectedMonth, year: expectedYear } = getMonthAndYear(income.expectedDate)
 
-      updateSummaryAfterDeleteIncome(queryClient, income, month, year)
+      if (month == 'all') {
+         expectedMonth = month;
+      }
+
+      updateSummaryAfterDeleteIncome(
+         queryClient,
+         income,
+         expectedMonth,
+         expectedYear
+      )
 
       updateDashboardCacheAfterDeleteIncome(
          queryClient,

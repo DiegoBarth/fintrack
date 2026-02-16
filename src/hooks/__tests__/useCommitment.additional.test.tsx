@@ -92,7 +92,13 @@ describe('useCommitment - additional tests', () => {
       }
 
       vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-      vi.mocked(commitmentApi.updateCommitment).mockResolvedValue({})
+      vi.mocked(commitmentApi.updateCommitment).mockResolvedValue([
+         {
+            ...existingCommitment,
+            amount: 2500,
+            paymentDate: '10/01/2026'
+         }
+      ])
 
       const { result } = renderHook(() => useCommitment('1', '2026'), {
          wrapper: createWrapper()
@@ -179,7 +185,7 @@ describe('useCommitment - additional tests', () => {
       }
 
       vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-      vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue({})
+      vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue([existingCommitment])
 
       const { result } = renderHook(() => useCommitment('1', '2026'), {
          wrapper: createWrapper()

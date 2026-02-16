@@ -148,7 +148,10 @@ describe('useExpense', () => {
          }
 
          vi.mocked(expenseApi.listExpenses).mockResolvedValue([existingExpense])
-         vi.mocked(expenseApi.updateExpense).mockResolvedValue({})
+         vi.mocked(expenseApi.updateExpense).mockResolvedValue({
+            ...existingExpense,
+            amount: 80
+         })
 
          const mockDashboard: Dashboard = {
             monthlyBalance: [{ date: '2026-01', balance: 9920 }],
@@ -189,7 +192,7 @@ describe('useExpense', () => {
          }
 
          vi.mocked(expenseApi.listExpenses).mockResolvedValue([existingExpense])
-         vi.mocked(expenseApi.deleteExpense).mockResolvedValue({})
+         vi.mocked(expenseApi.deleteExpense).mockResolvedValue(existingExpense)
 
          const mockDashboard: Dashboard = {
             monthlyBalance: [{ date: '2026-01', balance: 10050 }],

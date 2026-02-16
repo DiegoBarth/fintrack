@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listCommitments, createCommitment, createCard, updateCommitment, deleteCommitment } from '@/api/endpoints/commitment'
 import { useApiError } from '@/hooks/useApiError'
 import { updateCacheAfterCreateCommitment, updateCacheAfterEditCommitment, updateCacheAfterDeleteCommitment } from '@/services/commitmentCacheService'
-import { dateBRToISO, getMonthAndYear } from '@/utils/formatters'
+import { dateBRToISO, getMonthAndYear, parseLocalDate } from '@/utils/formatters'
 import type { Commitment } from '@/types/Commitment'
 
 /**
@@ -91,7 +91,12 @@ export function useCommitment(month: string, year: string, key?: string | null) 
       onSuccess: (newCommitments: Commitment[]) => {
          // Inserts new records into ALL relevant caches
          newCommitments.forEach(commitment => {
-            const { month: regisMonth, year: regisYear } = getMonthAndYear(commitment.dueDate)
+            let { month: regisMonth, year: regisYear } = getMonthAndYear(commitment.dueDate)
+
+            if (month == 'all') {
+               regisMonth = month;
+            }
+
             updateCacheAfterCreateCommitment(queryClient, commitment, regisMonth, regisYear)
 
             // Update alerts cache
@@ -115,7 +120,12 @@ export function useCommitment(month: string, year: string, key?: string | null) 
       mutationFn: (newCommitment: Omit<Commitment, 'rowIndex'>) => createCard(newCommitment),
       onSuccess: (newCommitments: Commitment[]) => {
          newCommitments.forEach(commitment => {
-            const { month: regisMonth, year: regisYear } = getMonthAndYear(commitment.dueDate)
+            let { month: regisMonth, year: regisYear } = getMonthAndYear(commitment.dueDate)
+
+            if (month == 'all') {
+               regisMonth = month;
+            }
+
             updateCacheAfterCreateCommitment(queryClient, commitment, regisMonth, regisYear)
 
             // Update cache alerts
@@ -149,28 +159,47 @@ export function useCommitment(month: string, year: string, key?: string | null) 
          paymentDate: string
          scope?: 'single' | 'future'
       }) => updateCommitment(data),
-      onSuccess: (_data, variables) => {
-         const oldCommitment = commitments.find(c => c.rowIndex === variables.rowIndex)
 
-         if (oldCommitment) {
-            updateCacheAfterEditCommitment(queryClient, oldCommitment, variables, month, year)
+      onSuccess: (updatedCommitments: Commitment[]) => {
+         updatedCommitments.forEach(updatedCommitment => {
+            let { month: regisMonth, year: regisYear } = getMonthAndYear(updatedCommitment.dueDate)
 
-            // Update alerts cache
+            if (month == 'all') {
+               regisMonth = month;
+            }
+
+            const oldCommitment = queryClient
+               .getQueryData<Commitment[]>(['commitments', regisMonth, regisYear])
+               ?.find(c => c.rowIndex === updatedCommitment.rowIndex)
+
+            if (!oldCommitment) return
+
+            updateCacheAfterEditCommitment(
+               queryClient,
+               oldCommitment,
+               updatedCommitment,
+               regisMonth,
+               regisYear
+            )
+
             queryClient.setQueryData<Commitment[]>(
-               ['alert-commitments', year],
+               ['alert-commitments', regisYear],
                old =>
                   old?.map(r =>
-                     r.rowIndex === variables.rowIndex
+                     r.rowIndex === updatedCommitment.rowIndex
                         ? {
                            ...r,
-                           valor: variables.amount,
-                           dataPagamento: dateBRToISO(variables.paymentDate)
+                           valor: updatedCommitment.amount,
+                           dataPagamento: updatedCommitment.paymentDate
+                              ? dateBRToISO(updatedCommitment.paymentDate)
+                              : null
                         }
                         : r
                   ) ?? []
             )
-         }
+         })
       },
+
       onError: (error) => {
          handleError(error)
       }
@@ -184,23 +213,37 @@ export function useCommitment(month: string, year: string, key?: string | null) 
     * - Uses filter to remove item with specific rowIndex
     */
    const removeMutation = useMutation({
-      mutationFn: (args: number | { rowIndex: number; scope?: 'single' | 'future' }) => {
-         if (typeof args === 'number') return deleteCommitment(args);
-         return deleteCommitment(args.rowIndex, args.scope);
-      },
-      onSuccess: (_data, args) => {
-         const rowIndex = typeof args === 'number' ? args : args.rowIndex;
-         const deletedCommitment = commitments.find(c => c.rowIndex === rowIndex)
-
-         if (deletedCommitment) {
-            updateCacheAfterDeleteCommitment(queryClient, deletedCommitment, month, year)
-
-            // Update alerts cache
-            queryClient.setQueryData<Commitment[]>(
-               ['alert-commitments', year],
-               old => old?.filter(r => r.rowIndex !== rowIndex) ?? []
-            )
+      mutationFn: (
+         args: number | { rowIndex: number; scope?: 'single' | 'future' }
+      ) => {
+         if (typeof args === 'number') {
+            return deleteCommitment(args)
          }
+
+         return deleteCommitment(
+            args.rowIndex,
+            args.scope
+         )
+      },
+      onSuccess: (deletedCommitments: Commitment[]) => {
+         if (!deletedCommitments?.length) return
+
+         updateCacheAfterDeleteCommitment(
+            queryClient,
+            deletedCommitments,
+            month,
+            year
+         )
+
+         const deletedSet = new Set(
+            deletedCommitments.map(d => d.rowIndex)
+         )
+
+         queryClient.setQueryData<Commitment[]>(
+            ['alert-commitments', year],
+            old =>
+               old?.filter(c => !deletedSet.has(c.rowIndex)) ?? []
+         )
       },
       onError: (error) => {
          handleError(error)

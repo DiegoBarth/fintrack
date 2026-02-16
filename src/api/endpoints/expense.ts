@@ -29,7 +29,7 @@ export function listExpenses(month: string, year: string) {
 }
 
 export function deleteExpense(rowIndex: number) {
-   return apiPost({
+   return apiPost<Expense>({
       action: 'deleteExpense',
       rowIndex
    });
@@ -39,7 +39,7 @@ export function updateExpense(payload: {
    rowIndex: number;
    amount: number;
 }) {
-   return apiPost({
+   return apiPost<Expense>({
       action: 'updateExpense',
       ...payload
    });

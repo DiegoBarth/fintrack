@@ -68,7 +68,9 @@ export function updateCacheAfterEditExpense(
 }
 
 /**
- * Updates expense cache after deletion
+ * Updates expense cache after deletion.
+ * Reorders rowIndex in cache to match the spreadsheet: when a row is deleted in Sheets,
+ * rows below shift up, so we remove the item and decrement rowIndex for items that were below it.
  */
 export function updateCacheAfterDeleteExpense(
    queryClient: QueryClient,
@@ -77,11 +79,21 @@ export function updateCacheAfterDeleteExpense(
    year: string
 ) {
    const { month: paymentMonth, year: paymentYear } = getMonthAndYear(deletedExpense.paymentDate)
+   const deletedRowIndex = deletedExpense.rowIndex
 
-   // Update expenses list
+   // Update expenses list: remove deleted and reorder rowIndex to match spreadsheet
    queryClient.setQueryData<Expense[]>(
       ['expenses', month, year],
-      old => old?.filter(g => g.rowIndex !== deletedExpense.rowIndex) ?? []
+      old => {
+         if (!old) return []
+         return old
+            .filter(g => g.rowIndex !== deletedRowIndex)
+            .map(g => ({
+               ...g,
+               rowIndex: g.rowIndex > deletedRowIndex ? g.rowIndex - 1 : g.rowIndex
+            }))
+            .sort((a, b) => a.rowIndex - b.rowIndex)
+      }
    )
 
    // Update summary

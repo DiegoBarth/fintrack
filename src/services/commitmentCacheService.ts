@@ -61,7 +61,9 @@ export function updateCacheAfterEditCommitment(
 }
 
 /**
- * Updates commitment cache after deletion
+ * Updates commitment cache after deletion.
+ * Reorders rowIndex in cache to match the spreadsheet: when a row is deleted in Sheets,
+ * rows below shift up, so we remove the item and decrement rowIndex for items that were below it.
  */
 export function updateCacheAfterDeleteCommitment(
    queryClient: QueryClient,
@@ -69,10 +71,21 @@ export function updateCacheAfterDeleteCommitment(
    month: string,
    year: string
 ) {
-   // Update commitments list
+   const deletedRowIndex = deletedCommitment.rowIndex
+
+   // Update commitments list: remove deleted and reorder rowIndex to match spreadsheet
    queryClient.setQueryData<Commitment[]>(
       ['commitments', month, year],
-      old => old?.filter(c => c.rowIndex !== deletedCommitment.rowIndex) ?? []
+      old => {
+         if (!old) return []
+         return old
+            .filter(c => c.rowIndex !== deletedRowIndex)
+            .map(c => ({
+               ...c,
+               rowIndex: c.rowIndex > deletedRowIndex ? c.rowIndex - 1 : c.rowIndex
+            }))
+            .sort((a, b) => a.rowIndex - b.rowIndex)
+      }
    )
 
    // Update summary

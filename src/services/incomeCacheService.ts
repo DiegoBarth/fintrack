@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query'
 import type { Income } from '@/types/Income'
 import type { FullSummary } from '@/types/FullSummary'
 import type { Dashboard } from '@/types/Dashboard'
-import { getMonthAndYear } from '@/utils/formatters'
+import { getMonthAndYear, dateBRToISO } from '@/utils/formatters'
 import {
    updateDashboardAfterCreateIncome,
    updateDashboardAfterEditIncome,
@@ -21,7 +21,20 @@ export function updateCacheAfterCreateIncome(
    // Update income list
    queryClient.setQueryData<Income[]>(
       ['incomes', month, year],
-      old => old ? [...old, newIncome] : [newIncome]
+      old => {
+         const updated = old ? [...old, newIncome] : [newIncome]
+
+         return updated.sort((a, b) => {
+            const dateA = new Date(dateBRToISO(a.expectedDate))
+            const dateB = new Date(dateBRToISO(b.expectedDate))
+
+            if (dateA.getTime() !== dateB.getTime()) {
+               return dateA.getTime() - dateB.getTime()
+            }
+
+            return a.description.localeCompare(b.description)
+         })
+      }
    )
 
    // Update summary
@@ -74,38 +87,45 @@ export function updateCacheAfterEditIncome(
  */
 export function updateCacheAfterDeleteIncome(
    queryClient: QueryClient,
-   deletedIncome: Income,
+   deletedIncomes: Income[],
    month: string,
    year: string
 ) {
-   const { month: expectedMonth, year: expectedYear } = getMonthAndYear(deletedIncome.expectedDate)
-   const deletedRowIndex = deletedIncome.rowIndex
-
-   // Update income list: remove deleted and reorder rowIndex to match spreadsheet
    queryClient.setQueryData<Income[]>(
       ['incomes', month, year],
       old => {
          if (!old) return []
-         return old
-            .filter(r => r.rowIndex !== deletedRowIndex)
-            .map(r => ({
-               ...r,
-               rowIndex: r.rowIndex > deletedRowIndex ? r.rowIndex - 1 : r.rowIndex
-            }))
-            .sort((a, b) => a.rowIndex - b.rowIndex)
+         const sorted = [...old].sort((a, b) => a.rowIndex - b.rowIndex)
+         const deletedSet = new Set(deletedIncomes.map(i => i.rowIndex))
+
+         return sorted
+            .filter(r => !deletedSet.has(r.rowIndex))
+            .map(r => {
+               const shift = deletedIncomes.filter(
+                  d => d.rowIndex < r.rowIndex
+               ).length
+
+               return {
+                  ...r,
+                  rowIndex: r.rowIndex - shift
+               }
+            })
       }
    )
 
-   // Update summary
-   updateSummaryAfterDeleteIncome(queryClient, deletedIncome, month, year)
+   deletedIncomes.forEach(income => {
+      const { month: expectedMonth, year: expectedYear } =
+         getMonthAndYear(income.expectedDate)
 
-   // Update dashboard
-   updateDashboardCacheAfterDeleteIncome(
-      queryClient,
-      deletedIncome,
-      expectedMonth,
-      expectedYear
-   )
+      updateSummaryAfterDeleteIncome(queryClient, income, month, year)
+
+      updateDashboardCacheAfterDeleteIncome(
+         queryClient,
+         income,
+         expectedMonth,
+         expectedYear
+      )
+   })
 }
 
 // ==================== SUMMARY ====================

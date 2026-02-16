@@ -83,8 +83,13 @@ describe('useIncome - additional tests', () => {
          availableYears: [2026]
       }
 
+      const updatedIncome: Income = {
+         ...existingIncome,
+         amount: 6000
+      }
+
       vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-      vi.mocked(incomeApi.updateIncome).mockResolvedValue({})
+      vi.mocked(incomeApi.updateIncome).mockResolvedValue([updatedIncome])
 
       const { result } = renderHook(() => useIncome('1', '2026'), {
          wrapper: createWrapper()
@@ -140,8 +145,13 @@ describe('useIncome - additional tests', () => {
          availableYears: [2026]
       }
 
+      const updatedIncome: Income = {
+         ...existingIncome,
+         receivedDate: null
+      }
+
       vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-      vi.mocked(incomeApi.updateIncome).mockResolvedValue({})
+      vi.mocked(incomeApi.updateIncome).mockResolvedValue([updatedIncome])
 
       const { result } = renderHook(() => useIncome('1', '2026'), {
          wrapper: createWrapper()
@@ -193,8 +203,16 @@ describe('useIncome - additional tests', () => {
          availableYears: [2026]
       }
 
+      const updatedIncome: Income = {
+         rowIndex: 1,
+         description: 'Salary',
+         amount: 5000,
+         expectedDate: '05/01/2026',
+         receivedDate: '05/01/2026'
+      }
+
       vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-      vi.mocked(incomeApi.updateIncome).mockResolvedValue({})
+      vi.mocked(incomeApi.updateIncome).mockResolvedValue([updatedIncome])
 
       const { result } = renderHook(() => useIncome('1', '2026'), {
          wrapper: createWrapper()

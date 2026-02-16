@@ -25,7 +25,7 @@ const createWrapper = () => {
    })
 
    return ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client= { queryClient } > { children } </QueryClientProvider>
+      <QueryClientProvider client={queryClient} > {children} </QueryClientProvider>
    )
 }
 
@@ -148,7 +148,7 @@ describe('useIncome', () => {
          }
 
          vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-         vi.mocked(incomeApi.updateIncome).mockResolvedValue({})
+         vi.mocked(incomeApi.updateIncome).mockResolvedValue([existingIncome])
 
          const mockDashboard: Dashboard = {
             monthlyBalance: [{ date: '2026-01', balance: 10500 }],
@@ -218,9 +218,9 @@ describe('useIncome', () => {
          const existingIncome: Income = {
             rowIndex: 2,
             description: 'Salary',
-            expectedDate: '2026-01-05',
+            expectedDate: '05/01/2026',
             amount: 5000,
-            receivedDate: '2026-01-05'
+            receivedDate: '05/01/2026'
          }
 
          vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
@@ -289,7 +289,7 @@ describe('useIncome', () => {
          }
 
          vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-         vi.mocked(incomeApi.updateIncome).mockResolvedValue({})
+         vi.mocked(incomeApi.updateIncome).mockResolvedValue([existingIncome])
 
          const { result } = renderHook(() => useIncome('1', '2026'), {
             wrapper: createWrapper()

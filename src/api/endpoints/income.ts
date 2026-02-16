@@ -42,7 +42,7 @@ export async function updateIncome(payload: {
    receivedDate?: string | null;
    scope?: 'single' | 'future';
 }) {
-   const res = await apiPost({
+   const res = await apiPost<Income[]>({
       action: 'updateIncome',
       ...payload
    });

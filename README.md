@@ -2,7 +2,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Tests-250%20passing-success)](./src/test)
+[![Tests](https://img.shields.io/badge/Tests-200%2B%20passing-success)](./src/test)
 [![Coverage](https://img.shields.io/badge/Coverage-~87%25-success)](./coverage)
 [![Quality](https://img.shields.io/badge/Code%20Quality-9.7%2F10-brightgreen)](#-project-quality)
 
@@ -12,7 +12,7 @@ Modern **production-level** personal financial control web system, built with Re
 
 This project achieved a **9.7/10 code quality score**, implementing:
 
-- 🧪 **250+ Automated Tests** with 87.27% coverage.
+- 🧪 **200+ Automated Tests** with ~87% coverage.
 - ♿ **WCAG 2.1 Accessibility** complete (ARIA, focus trap, keyboard navigation).
 - ⚡ **Optimized Performance** (React.memo, useMemo, useCallback).
 - 🔒 **Robust Security** (CSRF protection, rate limiting, timeout).
@@ -34,7 +34,7 @@ This project achieved a **9.7/10 code quality score**, implementing:
 - 🛡️ **Robust Validation** - Centralized Zod schemas with type inference.
 - 🔄 **Global Error Handling** - ErrorBoundary + centralized useApiError.
 - ♿ **Total Accessibility** - WCAG 2.1 Level AA (keyboard navigation, ARIA, focus management).
-- 🧪 **Automated Testing** - 250 tests (utils, hooks, components, API).
+- 🧪 **Automated Testing** - 200+ tests (utils, hooks, components, API).
 - 🔒 **Security** - CSRF tokens, rate limiting, input validation.
 
 ## 📚 Standards Documentation
@@ -238,10 +238,10 @@ npm run format            # Format code
 
 ## 🧪 Automated Testing
 
-### Current Coveragel: 87.27%
+### Current Coverage: ~87%
 
 ```
-✅ 210 tests passing in 16 files
+✅ 200+ tests in 16 files
 
 File                      | % Stmts | % Branch | % Funcs | % Lines
 --------------------------|---------|----------|---------|--------
@@ -291,6 +291,10 @@ button.tsx                |  100.00 |   100.00 |  100.00 |  100.00
 ✅ **Input Validation** - Zod schemas prevent SQL injection
 ✅ **XSS Protection** - React auto-escape + data validation
 ✅ **Type Safety** - TypeScript prevents type-related bugs
+
+### Authentication (Google OAuth)
+
+Login uses Google OAuth 2.0. The client decodes the JWT **only to read the email** (e.g. for display and to send to the backend). **Authorization is not decided on the client:** the backend validates the token and checks whether the email is allowed via `verifyEmailAuthorization`. Never trust the client for access control.
 
 ### Configuration (client.ts)
 

@@ -213,6 +213,49 @@ describe('useIncome', () => {
 
          expect(incomeApi.deleteIncome).toHaveBeenCalledWith(1, '1', '2026')
       })
+
+      it('should delete income with scope when remove receives object arg', async () => {
+         const existingIncome: Income = {
+            rowIndex: 2,
+            description: 'Salary',
+            expectedDate: '2026-01-05',
+            amount: 5000,
+            receivedDate: '2026-01-05'
+         }
+
+         vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
+         vi.mocked(incomeApi.deleteIncome).mockResolvedValue({})
+
+         const { result } = renderHook(() => useIncome('1', '2026'), {
+            wrapper: createWrapper()
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await result.current.remove({ rowIndex: 2, scope: 'future' })
+
+         expect(incomeApi.deleteIncome).toHaveBeenCalledWith(2, '1', '2026', 'future')
+      })
+
+      it('should call handleError when delete fails', async () => {
+         const existingIncome: Income = {
+            rowIndex: 1,
+            description: 'Salary',
+            expectedDate: '2026-01-05',
+            amount: 5000
+         }
+
+         vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
+         vi.mocked(incomeApi.deleteIncome).mockRejectedValue(new Error('Delete failed'))
+
+         const { result } = renderHook(() => useIncome('1', '2026'), {
+            wrapper: createWrapper()
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await expect(result.current.remove(1)).rejects.toThrow('Delete failed')
+      })
    })
 
    describe('Mutation: edge cases and errors', () => {
@@ -265,6 +308,28 @@ describe('useIncome', () => {
             amount: 5000,
             receivedDate: null
          })
+      })
+
+      it('should handle error when updating income', async () => {
+         const existingIncome: Income = {
+            rowIndex: 1,
+            description: 'Salary',
+            expectedDate: '2026-01-05',
+            amount: 5000
+         }
+
+         vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
+         vi.mocked(incomeApi.updateIncome).mockRejectedValue(new Error('Update failed'))
+
+         const { result } = renderHook(() => useIncome('1', '2026'), {
+            wrapper: createWrapper()
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await expect(
+            result.current.update({ rowIndex: 1, amount: 5500, receivedDate: '2026-01-05' })
+         ).rejects.toThrow('Update failed')
       })
    })
 })

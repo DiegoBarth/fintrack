@@ -26,6 +26,11 @@ function App() {
       return saved;
    });
 
+   /**
+    * Handles Google OAuth success. Decodes the JWT payload only to read the user's email
+    * (for display and to send to the backend). Authorization is NOT determined here:
+    * the backend must validate the token and call verifyEmailAuthorization to allow access.
+    */
    async function handleLoginSuccess(credentialResponse: CredentialResponse) {
       try {
          if (!credentialResponse.credential) return;

@@ -215,6 +215,52 @@ describe('useCommitment', () => {
 
          expect(commitmentApi.deleteCommitment).toHaveBeenCalledWith(1)
       })
+
+      it('should delete commitment with scope when remove receives object arg', async () => {
+         const existingCommitment: Commitment = {
+            rowIndex: 2,
+            description: 'Aluguel',
+            category: 'Casa',
+            type: 'Fixo',
+            amount: 2000,
+            dueDate: '10/01/2026'
+         }
+
+         vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
+         vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue({})
+
+         const { result } = renderHook(() => useCommitment('1', '2026'), {
+            wrapper: createWrapper()
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await result.current.remove({ rowIndex: 2, scope: 'future' })
+
+         expect(commitmentApi.deleteCommitment).toHaveBeenCalledWith(2, 'future')
+      })
+
+      it('should call handleError when delete fails', async () => {
+         const existingCommitment: Commitment = {
+            rowIndex: 1,
+            description: 'Aluguel',
+            category: 'Casa',
+            type: 'Fixo',
+            amount: 2000,
+            dueDate: '10/01/2026'
+         }
+
+         vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
+         vi.mocked(commitmentApi.deleteCommitment).mockRejectedValue(new Error('Delete failed'))
+
+         const { result } = renderHook(() => useCommitment('1', '2026'), {
+            wrapper: createWrapper()
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await expect(result.current.remove(1)).rejects.toThrow('Delete failed')
+      })
    })
 
    describe('Mutation: additional commitment scenarios', () => {
@@ -273,6 +319,34 @@ describe('useCommitment', () => {
             amount: 2000,
             paymentDate: null
          })
+      })
+
+      it('should handle error when updating commitment', async () => {
+         const existingCommitment: Commitment = {
+            rowIndex: 1,
+            description: 'Aluguel',
+            category: 'Casa',
+            type: 'Fixo',
+            amount: 2000,
+            dueDate: '2026-01-10'
+         }
+
+         vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
+         vi.mocked(commitmentApi.updateCommitment).mockRejectedValue(new Error('Update failed'))
+
+         const { result } = renderHook(() => useCommitment('1', '2026'), {
+            wrapper: createWrapper()
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await expect(
+            result.current.update({
+               rowIndex: 1,
+               amount: 2000,
+               paymentDate: '10/01/2026'
+            })
+         ).rejects.toThrow('Update failed')
       })
    })
 })

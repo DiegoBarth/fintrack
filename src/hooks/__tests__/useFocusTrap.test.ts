@@ -17,11 +17,13 @@ describe('useFocusTrap', () => {
       expect(result.current.current).toBeNull(); // Ref not attached yet
    });
 
-   it('should focus on the first focusable element when activated', () => {
-      const input1 = document.createElement('input');
-      const input2 = document.createElement('input');
-      container.appendChild(input1);
-      container.appendChild(input2);
+   it('should focus on the second focusable element when activated (first is typically close button)', () => {
+      const closeButton = document.createElement('button');
+      closeButton.textContent = 'Fechar';
+      const input = document.createElement('input');
+
+      container.appendChild(closeButton);
+      container.appendChild(input);
 
       const { result, rerender } = renderHook(({ active }) => useFocusTrap(active), {
          initialProps: { active: false }
@@ -31,7 +33,8 @@ describe('useFocusTrap', () => {
 
       rerender({ active: true });
 
-      expect(document.activeElement).toBe(input1);
+      // Hook skips the first element (close button) and focuses the second
+      expect(document.activeElement).toBe(input);
    });
 
    it('should NOT focus on a button as the first element', () => {

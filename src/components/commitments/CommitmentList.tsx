@@ -56,31 +56,43 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
                right={numberToCurrency(commitment.amount)}
             />
 
-            {isCard && (
-               <div className="mt-1 text-xs text-muted-foreground">
-                  {commitment.card}
-                  {(commitment.totalInstallments ?? 1) > 1 && (
-                     <> • Parcela {commitment.installment}/{commitment.totalInstallments}</>
-                  )}
-               </div>
-            )}
+            <div className={`mt-1 text-xs text-muted-foreground ${isCard ? 'min-h-[1rem]' : ''}`}>
+               {isCard ? (
+                  <span>
+                     {commitment.card}
+                     {(commitment.totalInstallments ?? 1) > 1 && (
+                        <> • Parcela {commitment.installment}/{commitment.totalInstallments}</>
+                     )}
+                  </span>
+               ) : (
+                  <span>{commitment.type}</span>
+               )}
+            </div>
 
             <ListItemFooterMobile
                left={
-                  <span className={isPaid ? 'text-green-700 dark:text-green-300' : isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'}>
-                     {isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`}
-                  </span>
+                  <div className="flex flex-col text-xs mt-1">
+                     <span className={isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'}>
+                        Vence em {commitment.dueDate}
+                     </span>
+
+                     <span className={`text-green-700 dark:text-green-300 ${!isPaid ? 'invisible select-none' : ''}`}>
+                        {isPaid ? `Pago em ${commitment.paymentDate}` : 'Aguardando'}
+                     </span>
+                  </div>
                }
                right={
-                  <span
-                     className={`font-medium
-                        ${isPaid && 'text-green-600 dark:text-green-400'}
-                        ${isOverdue && 'text-red-600 dark:text-red-400'}
-                        ${!isPaid && !isOverdue && 'text-amber-600 dark:text-amber-400'}
-                     `}
-                  >
-                     {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Em aberto'}
-                  </span>
+                  <div className="flex items-end h-full">
+                     <span
+                        className={`font-medium text-sm
+                ${isPaid && 'text-green-600 dark:text-green-400'}
+                ${isOverdue && 'text-red-600 dark:text-red-400'}
+                ${!isPaid && !isOverdue && 'text-amber-600 dark:text-amber-400'}
+              `}
+                     >
+                        {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Em aberto'}
+                     </span>
+                  </div>
                }
             />
          </ListItemLayout>

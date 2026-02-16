@@ -27,7 +27,6 @@ export function IncomeExpenseProgress({ summary }: Props) {
 
    const IncomesColor = incomePercentage > 100 ? 'bg-emerald-500' : incomePercentage > 80 ? 'bg-emerald-500' : 'bg-amber-500'
    const ExpensesColor = expensePercentage > 100 ? 'bg-red-600' : expensePercentage > 80 ? 'bg-amber-500' : 'bg-red-500'
-console.log(summary)
 
    return (
       <motion.section

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { usePeriod } from '@/contexts/PeriodContext';
-import { useCommitment } from './useCommitment';
+import { useCommitment } from '@/hooks/useCommitment';
 import { WEEKLY_ALERT_DAYS, MS_PER_DAY } from '@/config/constants';
 
 /**

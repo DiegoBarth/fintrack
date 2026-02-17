@@ -174,7 +174,7 @@ describe('useIncome', () => {
 
          await result.current.remove({ rowIndex: 2, scope: 'future' })
 
-         expect(incomeApi.deleteIncome).toHaveBeenCalledWith(2, '1', '2026', 'future')
+         expect(incomeApi.deleteIncome).toHaveBeenCalledWith(2, 'future')
       })
 
       it('should call handleError when delete fails', async () => {

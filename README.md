@@ -2,8 +2,8 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Tests-190%2B%20passing-success)](./src/test)
-[![Coverage](https://img.shields.io/badge/Coverage-~87%25-success)](./coverage)
+[![Tests](https://img.shields.io/badge/Tests-217%2B%20passing-success)](#-automated-testing)
+[![Coverage](https://img.shields.io/badge/Coverage-~97%25-success)](#-automated-testing)
 [![Quality](https://img.shields.io/badge/Code%20Quality-9.7%2F10-brightgreen)](#-project-quality)
 
 Modern **production-level** personal financial control web system, built with React 19, TypeScript 5.9, and industry best practices.
@@ -12,7 +12,7 @@ Modern **production-level** personal financial control web system, built with Re
 
 This project achieved a **9.7/10 code quality score**, implementing:
 
-- 🧪 **190+ Automated Tests** with ~87% coverage.
+- 🧪 **217+ Automated Tests** with ~97% coverage.
 - ♿ **WCAG 2.1 Accessibility** complete (ARIA, focus trap, keyboard navigation).
 - ⚡ **Optimized Performance** (React.memo, useMemo, useCallback).
 - 🔒 **Robust Security** (CSRF protection, rate limiting, timeout).
@@ -34,7 +34,7 @@ This project achieved a **9.7/10 code quality score**, implementing:
 - 🛡️ **Robust Validation** - Centralized Zod schemas with type inference.
 - 🔄 **Global Error Handling** - ErrorBoundary + centralized useApiError.
 - ♿ **Total Accessibility** - WCAG 2.1 Level AA (keyboard navigation, ARIA, focus management).
-- 🧪 **Automated Testing** - 190+ tests (utils, hooks, components, API).
+- 🧪 **Automated Testing** - 217+ tests (utils, hooks, components, API, cache services).
 - 🔒 **Security** - CSRF tokens, rate limiting, input validation.
 
 ## 📚 Standards Documentation
@@ -225,7 +225,7 @@ npm run preview      # Preview build
 ```bash
 npm test                  # Watch mode (recommended)
 npm run test:ui           # Visual interface
-npm run test:coverage     # Full coverage (~85%)
+npm run test:coverage     # Full coverage (~97%)
 ```
 
 ### Code Quality
@@ -237,25 +237,23 @@ npm run format            # Format code
 
 ## 🧪 Automated Testing
 
-### Current Coverage: ~87%
+### Current Coverage: ~97%
 
 ```
-✅ 190+ tests in 16 files
+✅ 217+ tests in 18 files
 
 File                      | % Stmts | % Branch | % Funcs | % Lines
 --------------------------|---------|----------|---------|--------
-All files                 |   87.27 |    79.94 |   93.93 |   87.77
-client.ts                 |   95.83 |    97.14 |   85.71 |  100.00
-formatters.ts             |  100.00 |   100.00 |  100.00 |  100.00
-useValidation.ts          |  100.00 |   100.00 |  100.00 |  100.00  
-useApiError.ts            |   95.23 |    91.66 |  100.00 |   95.23
-useFocusTrap.ts           |   88.88 |    83.33 |  100.00 |   88.88
-useCommitment.ts          |   79.12 |    68.67 |   85.71 |   79.81
-useIncome.ts              |   70.27 |    63.88 |   85.71 |   70.27
-useExpense.ts             |   80.32 |    69.56 |   85.71 |   80.32
-CustomSelect.tsx          |   85.71 |    80.00 |   87.50 |   85.71
-SummaryCard.tsx           |   92.30 |   100.00 |  100.00 |   92.30
-button.tsx                |  100.00 |   100.00 |  100.00 |  100.00
+All files                 |   95.46 |    85.60 |   98.60 |   97.52
+api/client.ts             |   93.75 |    94.28 |   85.71 |   97.72
+hooks/useCommitment.ts    |   93.75 |    82.35 |  100.00 |  100.00
+hooks/useExpense.ts       |  100.00 |    77.77 |  100.00 |  100.00
+hooks/useIncome.ts        |   95.55 |    76.19 |  100.00 |  100.00
+hooks/useValidation.ts    |  100.00 |    50.00 |  100.00 |  100.00
+hooks/useApiError.ts      |   93.75 |    92.85 |  100.00 |   93.75
+services/*CacheService   |   92.30 |    65.78 |  100.00 |   93.18
+utils/formatters.ts      |   96.55 |    87.50 |  100.00 |  100.00
+components/ui/*           |   98.61 |    93.84 |   94.44 |   98.57
 ```
 
 ## ♿ Accessibility (WCAG 2.1)

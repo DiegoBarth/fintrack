@@ -4,7 +4,8 @@ import {
    createCommitment,
    createCard,
    updateCommitment,
-   deleteCommitment
+   deleteCommitment,
+   payCardStatement
 } from '@/api/endpoints/commitment'
 
 import { useApiError } from '@/hooks/useApiError'
@@ -79,8 +80,10 @@ export function useCommitment(month: string, year: string) {
       mutationFn: updateCommitment,
       onSuccess: (updatedCommitments: Commitment[]) => {
          updatedCommitments.forEach(updatedCommitment => {
+            const { year: yearCommitment } = getMonthAndYearFromReference(updatedCommitment.referenceMonth)
+
             const oldCommitment = queryClient
-               .getQueryData<Commitment[]>(['commitments', year])
+               .getQueryData<Commitment[]>(['commitments', yearCommitment])
                ?.find(c => c.rowIndex === updatedCommitment.rowIndex)
 
             if (!oldCommitment) return
@@ -89,7 +92,30 @@ export function useCommitment(month: string, year: string) {
                queryClient,
                oldCommitment,
                updatedCommitment,
-               year
+               yearCommitment
+            )
+         })
+      },
+      onError: handleError
+   })
+
+   const payCardStatementMutation = useMutation({
+      mutationFn: payCardStatement,
+      onSuccess: (updatedCommitments: Commitment[]) => {
+         updatedCommitments.forEach(updatedCommitment => {
+            const { year: yearCommitment } = getMonthAndYearFromReference(updatedCommitment.referenceMonth)
+
+            const oldCommitment = queryClient
+               .getQueryData<Commitment[]>(['commitments', yearCommitment])
+               ?.find(c => c.rowIndex === updatedCommitment.rowIndex)
+
+            if (!oldCommitment) return
+
+            updateCacheAfterEditCommitment(
+               queryClient,
+               oldCommitment,
+               updatedCommitment,
+               yearCommitment
             )
          })
       },
@@ -112,11 +138,20 @@ export function useCommitment(month: string, year: string) {
       onSuccess: (deletedCommitments: Commitment[]) => {
          if (!deletedCommitments?.length) return
 
-         updateCacheAfterDeleteCommitment(
-            queryClient,
-            deletedCommitments,
-            year
-         )
+         const byYear = new Map<string, Commitment[]>()
+         deletedCommitments.forEach(commitment => {
+            const { year: yearCommitment } = getMonthAndYearFromReference(commitment.referenceMonth)
+            const list = byYear.get(yearCommitment) ?? []
+            list.push(commitment)
+            byYear.set(yearCommitment, list)
+         })
+         byYear.forEach((commitmentsForYear, yearCommitment) => {
+            updateCacheAfterDeleteCommitment(
+               queryClient,
+               commitmentsForYear,
+               yearCommitment
+            )
+         })
       },
       onError: handleError
    })
@@ -129,11 +164,13 @@ export function useCommitment(month: string, year: string) {
       create: createMutation.mutateAsync,
       createCard: createCardMutation.mutateAsync,
       update: updateMutation.mutateAsync,
+      payCardStatement: payCardStatementMutation.mutateAsync,
       remove: removeMutation.mutateAsync,
       isSaving:
          createMutation.isPending ||
          createCardMutation.isPending ||
-         updateMutation.isPending,
+         updateMutation.isPending ||
+         payCardStatementMutation.isPending,
       isDeleting: removeMutation.isPending
    }
 }

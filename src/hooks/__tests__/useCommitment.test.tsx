@@ -337,4 +337,125 @@ describe('useCommitment', () => {
          ).rejects.toThrow('Update failed')
       })
    })
+
+   describe('Mutation: pay card statement', () => {
+      it('should call payCardStatement and update cache with returned commitments', async () => {
+         const existingCommitment: Commitment = {
+            rowIndex: 1,
+            description: 'Fatura Nubank',
+            category: 'Cartão',
+            type: 'Cartão',
+            amount: 500,
+            dueDate: '2026-01-15',
+            card: 'Nubank',
+            referenceMonth: '2026-01'
+         }
+
+         const updatedCommitment: Commitment = {
+            ...existingCommitment,
+            paymentDate: '2026-01-10'
+         }
+
+         vi.mocked(commitmentApi.listCommitments)
+            .mockResolvedValue([existingCommitment])
+         vi.mocked(commitmentApi.payCardStatement)
+            .mockResolvedValue([updatedCommitment])
+
+         const queryClient = new QueryClient({
+            defaultOptions: {
+               queries: { retry: false },
+               mutations: { retry: false }
+            }
+         })
+
+         const wrapper = ({ children }: { children: React.ReactNode }) => (
+            <QueryClientProvider client={queryClient}>
+               {children}
+            </QueryClientProvider>
+         )
+
+         const { result } = renderHook(
+            () => useCommitment('1', '2026'),
+            { wrapper }
+         )
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await result.current.payCardStatement({
+            rowIndexes: [1],
+            paymentDate: '2026-01-10'
+         })
+
+         expect(commitmentApi.payCardStatement).toHaveBeenCalledWith(
+            expect.objectContaining({
+               rowIndexes: [1],
+               paymentDate: '2026-01-10'
+            }),
+            expect.anything()
+         )
+
+         const cached = queryClient.getQueryData<Commitment[]>(['commitments', '2026'])
+         expect(cached).toHaveLength(1)
+         expect(cached?.[0].paymentDate).toBe('2026-01-10')
+      })
+   })
+
+   describe('Mutation: delete commitment cache by year', () => {
+      it('should update cache per year when delete returns commitments from multiple years', async () => {
+         const commitment2026: Commitment = {
+            rowIndex: 1,
+            description: 'Aluguel',
+            category: 'Casa',
+            type: 'Fixo',
+            amount: 2000,
+            dueDate: '2026-01-10',
+            referenceMonth: '2026-01'
+         }
+
+         const commitment2027: Commitment = {
+            rowIndex: 2,
+            description: 'Aluguel',
+            category: 'Casa',
+            type: 'Fixo',
+            amount: 2000,
+            dueDate: '2027-01-10',
+            referenceMonth: '2027-01'
+         }
+
+         vi.mocked(commitmentApi.listCommitments)
+            .mockResolvedValue([commitment2026, commitment2027])
+         vi.mocked(commitmentApi.deleteCommitment)
+            .mockResolvedValue([commitment2026, commitment2027])
+
+         const queryClient = new QueryClient({
+            defaultOptions: {
+               queries: { retry: false },
+               mutations: { retry: false }
+            }
+         })
+
+         const wrapper = ({ children }: { children: React.ReactNode }) => (
+            <QueryClientProvider client={queryClient}>
+               {children}
+            </QueryClientProvider>
+         )
+
+         const { result } = renderHook(
+            () => useCommitment('all', '2026'),
+            { wrapper }
+         )
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await result.current.remove({ rowIndex: 1, scope: 'future' })
+
+         expect(commitmentApi.deleteCommitment).toHaveBeenCalledWith(1, 'future')
+
+         const cache2026 = queryClient.getQueryData<Commitment[]>(['commitments', '2026'])
+         const cache2027 = queryClient.getQueryData<Commitment[]>(['commitments', '2027'])
+         expect(cache2026).toHaveLength(1)
+         expect(cache2026?.[0].referenceMonth).toBe('2027-01')
+         expect(cache2027).toEqual([])
+      })
+   })
 })

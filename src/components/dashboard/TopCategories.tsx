@@ -62,6 +62,8 @@ export function TopCategories({ categories }: TopCategoriesProps) {
       [categories]
    )
 
+   console.log(categories)
+
    const getStyles = (value: number, max: number) => {
       const percentage = (value / max) * 100
       if (percentage > 70) return {

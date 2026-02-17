@@ -83,6 +83,35 @@ describe('useExpense', () => {
 
          expect(result.current.expenses).toEqual([])
       })
+
+      it('should return all expenses when month is all', async () => {
+         const mockExpenses: Expense[] = [
+            {
+               rowIndex: 1,
+               description: 'Uber Janeiro',
+               category: 'Transporte',
+               amount: 50,
+               paymentDate: '2026-01-15'
+            },
+            {
+               rowIndex: 2,
+               description: 'Uber Fevereiro',
+               category: 'Transporte',
+               amount: 80,
+               paymentDate: '2026-02-10'
+            }
+         ]
+
+         vi.mocked(expenseApi.listExpenses).mockResolvedValue(mockExpenses)
+
+         const { result } = renderHook(() => useExpense('all', '2026'), {
+            wrapper: createWrapper()
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         expect(result.current.expenses).toEqual(mockExpenses)
+      })
    })
 
    describe('Mutation: create expense', () => {
@@ -111,6 +140,87 @@ describe('useExpense', () => {
          expect(result.current.expenses).toHaveLength(0)
 
          await result.current.create(newExpense)
+      })
+   })
+
+   describe('Mutation: update expense', () => {
+      it('should update expense in cache after update', async () => {
+         const existingExpense: Expense = {
+            rowIndex: 1,
+            description: 'Mercado',
+            category: 'Alimentação',
+            amount: 350,
+            paymentDate: '2026-01-15'
+         }
+
+         const updatedExpense: Expense = {
+            ...existingExpense,
+            amount: 400
+         }
+
+         vi.mocked(expenseApi.listExpenses).mockResolvedValue([existingExpense])
+         vi.mocked(expenseApi.updateExpense).mockResolvedValue(updatedExpense)
+
+         const queryClient = new QueryClient({
+            defaultOptions: {
+               queries: { retry: false },
+               mutations: { retry: false }
+            }
+         })
+
+         const wrapper = ({ children }: { children: React.ReactNode }) => (
+            <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+         )
+
+         const { result } = renderHook(() => useExpense('1', '2026'), {
+            wrapper
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+
+         await result.current.update({ rowIndex: 1, amount: 400 })
+
+         const cached = queryClient.getQueryData<Expense[]>(['expenses', '2026'])
+         expect(cached).toHaveLength(1)
+         expect(cached?.[0].amount).toBe(400)
+      })
+   })
+
+   describe('Mutation: remove expense', () => {
+      it('should remove expense from cache after delete', async () => {
+         const existingExpense: Expense = {
+            rowIndex: 1,
+            description: 'Mercado',
+            category: 'Alimentação',
+            amount: 350,
+            paymentDate: '2026-01-15'
+         }
+
+         vi.mocked(expenseApi.listExpenses).mockResolvedValue([existingExpense])
+         vi.mocked(expenseApi.deleteExpense).mockResolvedValue(undefined as any)
+
+         const queryClient = new QueryClient({
+            defaultOptions: {
+               queries: { retry: false },
+               mutations: { retry: false }
+            }
+         })
+
+         const wrapper = ({ children }: { children: React.ReactNode }) => (
+            <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+         )
+
+         const { result } = renderHook(() => useExpense('1', '2026'), {
+            wrapper
+         })
+
+         await waitFor(() => expect(result.current.isLoading).toBe(false))
+         expect(result.current.expenses).toHaveLength(1)
+
+         await result.current.remove(1)
+
+         const cached = queryClient.getQueryData<Expense[]>(['expenses', '2026'])
+         expect(cached).toHaveLength(0)
       })
    })
 

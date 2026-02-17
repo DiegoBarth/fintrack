@@ -77,3 +77,11 @@ export async function updateCommitment(
 
    return res;
 }
+
+export function payCardStatement(payload: { rowIndexes: number[]; paymentDate: string }) {
+   return apiPost<Commitment[]>({
+      action: 'payCardStatement',
+      rowIndexes: payload.rowIndexes,
+      paymentDate: payload.paymentDate
+   });
+}

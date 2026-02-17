@@ -58,8 +58,10 @@ export function useIncome(month: string, year: string) {
       }) => updateIncome(data),
       onSuccess: (updatedIncomes: Income[]) => {
          updatedIncomes.forEach(updatedIncome => {
+            const { year: yearIncome } = getMonthAndYearFromReference(updatedIncome.referenceMonth)
+
             const oldIncome = queryClient
-               .getQueryData<Income[]>(['incomes', year])
+               .getQueryData<Income[]>(['incomes', yearIncome])
                ?.find(r => r.rowIndex === updatedIncome.rowIndex)
 
             if (!oldIncome) return
@@ -68,7 +70,7 @@ export function useIncome(month: string, year: string) {
                queryClient,
                oldIncome,
                updatedIncome,
-               year
+               yearIncome
             )
          })
       },
@@ -80,13 +82,11 @@ export function useIncome(month: string, year: string) {
          args: number | { rowIndex: number; scope?: 'single' | 'future' }
       ) => {
          if (typeof args === 'number') {
-            return deleteIncome(args, month, String(year))
+            return deleteIncome(args)
          }
 
          return deleteIncome(
             args.rowIndex,
-            month,
-            String(year),
             args.scope
          )
       },
@@ -103,30 +103,35 @@ export function useIncome(month: string, year: string) {
 
          if (!baseIncome) return
 
-         if (scope === 'future') {
-            const baseDate = new Date(
-               parseLocalDate(dateBRToISO(baseIncome.expectedDate))
-            )
+         const incomesToDelete =
+            scope === 'future'
+               ? (() => {
+                    const baseDate = new Date(
+                       parseLocalDate(dateBRToISO(baseIncome.expectedDate))
+                    )
+                    return allIncomes.filter(r =>
+                       r.description === baseIncome.description &&
+                       new Date(
+                          parseLocalDate(dateBRToISO(r.expectedDate))
+                       ) >= baseDate
+                    )
+                 })()
+               : [baseIncome]
 
-            const incomesToDelete = allIncomes.filter(r =>
-               r.description === baseIncome.description &&
-               new Date(
-                  parseLocalDate(dateBRToISO(r.expectedDate))
-               ) >= baseDate
-            )
-
+         const byYear = new Map<string, Income[]>()
+         incomesToDelete.forEach(income => {
+            const { year: yearIncome } = getMonthAndYearFromReference(income.referenceMonth)
+            const list = byYear.get(yearIncome) ?? []
+            list.push(income)
+            byYear.set(yearIncome, list)
+         })
+         byYear.forEach((incomesForYear, yearIncome) => {
             updateCacheAfterDeleteIncome(
                queryClient,
-               incomesToDelete,
-               year
+               incomesForYear,
+               yearIncome
             )
-         } else {
-            updateCacheAfterDeleteIncome(
-               queryClient,
-               [baseIncome],
-               year
-            )
-         }
+         })
       },
 
       onError: handleError

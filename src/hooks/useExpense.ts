@@ -51,8 +51,10 @@ export function useExpense(month: string, year: string) {
       mutationFn: (data: { rowIndex: number; amount: number }) =>
          updateExpense(data),
       onSuccess: (updatedExpense: Expense) => {
+         const { year: yearExpense } = getMonthAndYear(updatedExpense.paymentDate)
+
          const oldExpense = queryClient
-            .getQueryData<Expense[]>(['expenses', year])
+            .getQueryData<Expense[]>(['expenses', yearExpense])
             ?.find(e => e.rowIndex === updatedExpense.rowIndex)
 
          if (oldExpense) {
@@ -60,7 +62,7 @@ export function useExpense(month: string, year: string) {
                queryClient,
                oldExpense,
                updatedExpense,
-               year
+               yearExpense
             )
          }
       },
@@ -75,10 +77,12 @@ export function useExpense(month: string, year: string) {
          )
 
          if (deletedExpense) {
+            const { year: yearExpense } = getMonthAndYear(deletedExpense.paymentDate)
+
             updateCacheAfterDeleteExpense(
                queryClient,
                deletedExpense,
-               year
+               yearExpense
             )
          }
       },

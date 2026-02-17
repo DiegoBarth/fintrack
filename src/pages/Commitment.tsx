@@ -12,12 +12,11 @@ import { usePeriod } from '@/contexts/PeriodContext';
 import type { Commitment } from '@/types/Commitment';
 import { useCommitment } from '@/hooks/useCommitment';
 import { Layout } from '@/components/layout/Layout';
-import { formatDateBR } from '@/utils/formatters';
 import { Plus } from 'lucide-react';
 
 export function Commitment() {
    const { month, year } = usePeriod()
-   const { commitments, isLoading, update } = useCommitment(month, String(year))
+   const { commitments, isLoading, payCardStatement } = useCommitment(month, String(year))
    const [commitmentSelected, setCommitmentSelected] = useState<Commitment | null>(null)
    const [modalIsOpen, setModalOpen] = useState(false)
    const [typeFilter, setTypeFilter] = useState<CommitmentTypeFilterValue>(null)
@@ -57,22 +56,19 @@ export function Commitment() {
 
    const handlePayStatement = useCallback(async () => {
       if (unpaidFiltered.length === 0) return
-      const todayBR = formatDateBR(new Date().toISOString().slice(0, 10))
+      const paymentDate = new Date().toISOString().slice(0, 10)
       setIsPayingStatement(true)
       try {
-         for (const c of unpaidFiltered) {
-            await update({
-               rowIndex: c.rowIndex,
-               amount: Number(c.amount),
-               paymentDate: todayBR,
-            })
-         }
+         await payCardStatement({
+            rowIndexes: unpaidFiltered.map(c => c.rowIndex),
+            paymentDate
+         })
       } catch {
          // handleError já foi chamado pelo hook
       } finally {
          setIsPayingStatement(false)
       }
-   }, [unpaidFiltered, update])
+   }, [unpaidFiltered, payCardStatement])
 
    if (isLoading) {
       return (

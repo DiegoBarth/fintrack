@@ -29,7 +29,7 @@ export function listIncomes(month: string, year: string) {
    });
 }
 
-export function deleteIncome(rowIndex: number, month: string, year: string, scope?: 'single' | 'future') {
+export function deleteIncome(rowIndex: number, scope?: 'single' | 'future') {
    return apiPost({
       action: 'deleteIncome',
       rowIndex,

@@ -121,18 +121,18 @@ export function MonthField({
                   <div className="flex justify-between items-center mb-4">
                      <button
                         onClick={() => setYear(prev => prev - 1)}
-                        className="px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="text-2xl text-blue-400 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                      >
-                        ◀
+                        -
                      </button>
 
                      <span className="font-medium">{year}</span>
 
                      <button
                         onClick={() => setYear(prev => prev + 1)}
-                        className="px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="text-2xl text-blue-400 px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
                      >
-                        ▶
+                        +
                      </button>
                   </div>
 

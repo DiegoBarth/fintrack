@@ -14,7 +14,7 @@ import {
    updateCacheAfterDeleteCommitment
 } from '@/services/commitmentCacheService'
 
-import { getMonthAndYear } from '@/utils/formatters'
+import { getMonthAndYear, getMonthAndYearFromReference } from '@/utils/formatters'
 import type { Commitment } from '@/types/Commitment'
 
 export function useCommitment(month: string, year: string) {
@@ -47,10 +47,12 @@ export function useCommitment(month: string, year: string) {
 
       onSuccess: (newCommitments: Commitment[]) => {
          newCommitments.forEach(commitment => {
+            const { year: yearCommitment } = getMonthAndYearFromReference(commitment.referenceMonth)
+
             updateCacheAfterCreateCommitment(
                queryClient,
                commitment,
-               year
+               yearCommitment
             )
          })
       },
@@ -63,10 +65,12 @@ export function useCommitment(month: string, year: string) {
 
       onSuccess: (newCommitments: Commitment[]) => {
          newCommitments.forEach(commitment => {
+            const { year: yearCommitment } = getMonthAndYearFromReference(commitment.referenceMonth)
+
             updateCacheAfterCreateCommitment(
                queryClient,
                commitment,
-               year
+               yearCommitment
             )
          })
       },

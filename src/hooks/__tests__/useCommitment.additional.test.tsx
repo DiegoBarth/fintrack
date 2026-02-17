@@ -45,7 +45,8 @@ describe('useCommitment - updated architecture', () => {
             category: 'Casa',
             type: 'Fixo',
             amount: 2000,
-            dueDate: '2026-01-10'
+            dueDate: '2026-01-10',
+            referenceMonth: '2026-01'
          }
       ]
 
@@ -78,7 +79,8 @@ describe('useCommitment - updated architecture', () => {
          dueDate: '2026-01-15',
          card: 'Nubank',
          installment: 1,
-         totalInstallments: 1
+         totalInstallments: 1,
+         referenceMonth: '2026-01'
       }
 
       const created: Commitment = {
@@ -133,7 +135,8 @@ describe('useCommitment - updated architecture', () => {
          category: 'Casa',
          type: 'Fixo',
          amount: 2000,
-         dueDate: '2026-01-10'
+         dueDate: '2026-01-10',
+         referenceMonth: '2026-01'
       }
 
       vi.mocked(commitmentApi.listCommitments)

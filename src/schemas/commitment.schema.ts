@@ -12,6 +12,10 @@ export const CreateCommitmentSchema = z.object({
       message: 'O Tipo é obrigatório'
    }),
 
+   referenceMonth: z
+      .string()
+      .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Mês de referência inválido'),
+
    amount: z.number().positive('O Valor é obrigatório'),
 
    months: z.number().int().positive().optional().default(1),
@@ -32,6 +36,10 @@ export const CreateCardCommitmentSchema = z.object({
    type: z.literal('Cartão'),
 
    card: z.string().min(1, 'O Cartão é obrigatório'),
+
+   referenceMonth: z
+      .string()
+      .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Mês de referência inválido'),
 
    amount: z.number().positive('O Valor é obrigatório'),
 

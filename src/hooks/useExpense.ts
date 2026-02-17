@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listExpenses, createExpense, updateExpense, deleteExpense } from '@/api/endpoints/expense'
 import { useApiError } from '@/hooks/useApiError'
-import { getMonthAndYearFromReference } from '@/utils/formatters'
+import { getMonthAndYear, getMonthAndYearFromReference } from '@/utils/formatters'
 import {
    updateCacheAfterCreateExpense,
    updateCacheAfterEditExpense,
@@ -36,10 +36,12 @@ export function useExpense(month: string, year: string) {
       mutationFn: (newExpense: Omit<Expense, 'rowIndex'>) =>
          createExpense(newExpense),
       onSuccess: (newExpense: Expense) => {
+         const { year: yearExpense } = getMonthAndYear(newExpense.paymentDate)
+
          updateCacheAfterCreateExpense(
             queryClient,
             newExpense,
-            year
+            yearExpense
          )
       },
       onError: handleError

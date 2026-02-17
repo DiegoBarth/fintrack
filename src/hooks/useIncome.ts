@@ -37,10 +37,12 @@ export function useIncome(month: string, year: string) {
          createIncome(newIncome),
       onSuccess: (newIncomes: Income[]) => {
          newIncomes.forEach(income => {
+            const { year: yearIncome } = getMonthAndYearFromReference(income.referenceMonth)
+
             updateCacheAfterCreateIncome(
                queryClient,
                income,
-               year
+               yearIncome
             )
          })
       },

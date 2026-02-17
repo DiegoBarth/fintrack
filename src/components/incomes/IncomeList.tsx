@@ -119,7 +119,7 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
 
                {outOfReference && (
                   <div className="mt-1 text-xs text-amber-600 dark:text-amber-400">
-                     Pago fora do mês de referência
+                     Recebido fora do mês de referência
                   </div>
                )}
             </ListColMuted>
@@ -127,7 +127,6 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
             <ListColValue>
                {numberToCurrency(income.amount)}
             </ListColValue>
-
             <div className="col-span-2 text-right flex justify-end items-center gap-2">
                <span
                   className={
@@ -138,12 +137,6 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
                >
                   {received ? 'Recebido' : 'Em aberto'}
                </span>
-
-               {outOfReference && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 font-medium">
-                     Fora do mês
-                  </span>
-               )}
             </div>
          </ListItemRowDesktop>
       )

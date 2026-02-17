@@ -12,6 +12,7 @@ import { useToast } from '@/contexts/toast';
 import type { Commitment } from '@/types/Commitment'
 
 import { DateField } from '@/components/ui/DateField'
+import { MonthField } from '@/components/ui/MonthField'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -28,7 +29,8 @@ const defaultValues: Partial<Commitment> = {
    months: 1,
    card: '',
    amount: '',
-   totalInstallments: 1
+   totalInstallments: 1,
+   referenceMonth: ''
 }
 
 export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
@@ -44,9 +46,6 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
    const type = watch('type')
    const dueDate = watch('dueDate')
 
-   /* =========================
-      REGRAS FIXO
-      ========================= */
    useEffect(() => {
       if (type === 'Fixo' && dueDate) {
          const selectedDate = new Date(dueDate)
@@ -54,14 +53,32 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
       }
    }, [type, dueDate])
 
-   /* =========================
-      RESET ON CLOSE
-      ========================= */
    useEffect(() => {
       if (!isOpen) {
          reset(defaultValues)
       }
    }, [isOpen, reset])
+
+   useEffect(() => {
+      if (!isOpen) return;
+
+      const now = new Date();
+
+      const resolvedMonth =
+         month === 'all'
+            ? now.getMonth() + 1
+            : Number(month);
+
+      const resolvedYear =
+         month === 'all'
+            ? now.getFullYear()
+            : year;
+
+      setValue(
+         'referenceMonth',
+         `${resolvedYear}-${String(resolvedMonth).padStart(2, '0')}`
+      );
+   }, [isOpen, month, year, setValue]);
 
    async function handleSave(values: Commitment) {
       if (type === 'Cartão') {
@@ -72,7 +89,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             card: values.card,
             amount: currencyToNumber(String(values.amount)),
             totalInstallments: Number(values.totalInstallments),
-            dueDate: values.dueDate
+            dueDate: values.dueDate,
+            referenceMonth: values.referenceMonth
          })
 
          if (!data) return;
@@ -87,7 +105,8 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
             type,
             amount: currencyToNumber(String(values.amount)),
             dueDate: values.dueDate,
-            months: type === 'Fixo' ? values.months : 1
+            months: type === 'Fixo' ? values.months : 1,
+            referenceMonth: values.referenceMonth,
          })
 
          if (!data) return;
@@ -235,6 +254,22 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                      />
                   </div>
 
+                  <div>
+                     <label className="block text-xs font-medium text-muted-foreground mb-1">
+                        Mês de Referência *
+                     </label>
+                     <Controller
+                        control={control}
+                        name="referenceMonth"
+                        render={({ field }) => (
+                           <MonthField
+                              value={field.value}
+                              onChange={field.onChange}
+                           />
+                        )}
+                     />
+                  </div>
+
                </div>
             )}
 
@@ -305,6 +340,22 @@ export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps)
                            <DateField
                               value={field.value ? new Date(field.value) : undefined}
                               onChange={date => field.onChange(date)}
+                           />
+                        )}
+                     />
+                  </div>
+
+                  <div>
+                     <label className="block text-xs font-medium text-muted-foreground mb-1">
+                        Mês de Referência *
+                     </label>
+                     <Controller
+                        control={control}
+                        name="referenceMonth"
+                        render={({ field }) => (
+                           <MonthField
+                              value={field.value}
+                              onChange={field.onChange}
                            />
                         )}
                      />

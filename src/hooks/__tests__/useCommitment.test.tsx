@@ -48,7 +48,8 @@ describe('useCommitment', () => {
                category: 'Casa',
                type: 'Fixo',
                amount: 2000,
-               dueDate: '2026-01-10'
+               dueDate: '2026-01-10',
+               referenceMonth: '2026-01'
             },
             {
                rowIndex: 2,
@@ -56,7 +57,8 @@ describe('useCommitment', () => {
                category: 'Casa',
                type: 'Fixo',
                amount: 2000,
-               dueDate: '2026-02-10'
+               dueDate: '2026-02-10',
+               referenceMonth: '2026-02'
             }
          ]
 
@@ -105,7 +107,8 @@ describe('useCommitment', () => {
             description: 'Academia',
             category: 'Saúde',
             amount: 150,
-            dueDate: '2026-01-15'
+            dueDate: '2026-01-15',
+            referenceMonth: '2026-01'
          }
 
          const createdCommitment: Commitment = {
@@ -148,7 +151,8 @@ describe('useCommitment', () => {
             dueDate: '2026-01-15',
             card: 'Bradesco',
             installment: 1,
-            totalInstallments: 10
+            totalInstallments: 10,
+            referenceMonth: '2026-01'
          }
 
          const cardCreated: Commitment = {
@@ -189,7 +193,8 @@ describe('useCommitment', () => {
             category: 'Casa',
             type: 'Fixo',
             amount: 2000,
-            dueDate: '10/01/2026'
+            dueDate: '10/01/2026',
+            referenceMonth: '2026-01'
          }
 
          vi.mocked(commitmentApi.listCommitments)
@@ -223,7 +228,8 @@ describe('useCommitment', () => {
             category: 'Casa',
             type: 'Fixo',
             amount: 2000,
-            dueDate: '10/01/2026'
+            dueDate: '10/01/2026',
+            referenceMonth: '2026-01'
          }
 
          vi.mocked(commitmentApi.listCommitments)
@@ -255,7 +261,8 @@ describe('useCommitment', () => {
             type: 'Fixo',
             amount: 2000,
             dueDate: '2026-01-10',
-            paymentDate: '2026-01-10'
+            paymentDate: '2026-01-10',
+            referenceMonth: '2026-01'
          }
 
          vi.mocked(commitmentApi.listCommitments)
@@ -302,7 +309,8 @@ describe('useCommitment', () => {
             category: 'Casa',
             type: 'Fixo',
             amount: 2000,
-            dueDate: '2026-01-10'
+            dueDate: '2026-01-10',
+            referenceMonth: '2026-01'
          }
 
          vi.mocked(commitmentApi.listCommitments)

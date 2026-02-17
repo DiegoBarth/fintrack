@@ -18,6 +18,7 @@ export function createCommitment(payload: {
    amount: number;
    dueDate: string;
    months?: number;
+   referenceMonth: string;
 }) {
    const sanitizedPayload = {
       ...payload,
@@ -39,6 +40,7 @@ export function createCard(payload: {
    type: string;
    installments?: number;
    dueDate: string;
+   referenceMonth: string;
 }) {
    const payloadSanitizado = {
       ...payload,

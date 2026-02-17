@@ -10,4 +10,5 @@ export interface Commitment {
    card?: string;
    installment?: number;
    totalInstallments?: number;
+   referenceMonth: string;
 }

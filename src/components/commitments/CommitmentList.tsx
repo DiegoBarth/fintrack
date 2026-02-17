@@ -16,17 +16,6 @@ interface Props {
    onSelect: (commitment: Commitment) => void;
 }
 
-function isPaidOutOfReference(commitment: Commitment) {
-   if (!commitment.paymentDate || !commitment.referenceMonth) return false
-
-   const received = new Date(dateBRToISO(commitment.paymentDate))
-   const [refYear, refMonth] = commitment.referenceMonth.split('-')
-
-   return (
-      received.getFullYear() !== Number(refYear) ||
-      received.getMonth() + 1 !== Number(refMonth)
-   )
-}
 /**
  * Checks if a date is in the past compared to today.
  */
@@ -55,7 +44,6 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
       const isCard = commitment.type === 'Cartão'
       const isOverdue = !isPaid && checkIfOverdue(commitment.dueDate)
       const variant = isPaid ? 'success' : isOverdue ? 'danger' : 'warning'
-      const outOfReference = isPaidOutOfReference(commitment)
 
       return (
          <ListItemLayout
@@ -91,12 +79,6 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
                      <span className={`text-green-700 dark:text-green-300 ${!isPaid ? 'invisible select-none' : ''}`}>
                         {isPaid ? `Pago em ${commitment.paymentDate}` : 'Aguardando'}
                      </span>
-
-                     {outOfReference && (
-                        <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
-                           Pago fora do mês de referência
-                        </span>
-                     )}
                   </div>
                }
                right={
@@ -110,11 +92,6 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
                      >
                         {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Em aberto'}
                      </span>
-                     {outOfReference && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 font-medium">
-                           Fora do mês
-                        </span>
-                     )}
                   </div>
                }
             />
@@ -126,7 +103,6 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
       const isPaid = !!commitment.paymentDate
       const isOverdue = !isPaid && checkIfOverdue(commitment.dueDate)
       const variant = isPaid ? 'success' : isOverdue ? 'danger' : 'default'
-      const outOfReference = isPaidOutOfReference(commitment)
 
       return (
          <ListItemRowDesktop
@@ -145,12 +121,6 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
                <span className={isPaid ? 'text-green-700 dark:text-green-300' : isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'}>
                   {isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`}
                </span>
-
-               {outOfReference && (
-                  <div className="mt-1 text-xs text-amber-600 dark:text-amber-400">
-                     Pago fora do mês de referência
-                  </div>
-               )}
             </ListColMuted>
 
             <ListColValue>

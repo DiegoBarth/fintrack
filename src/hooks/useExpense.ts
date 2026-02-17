@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listExpenses, createExpense, updateExpense, deleteExpense } from '@/api/endpoints/expense'
 import { useApiError } from '@/hooks/useApiError'
-import { getMonthAndYear, getMonthAndYearFromReference } from '@/utils/formatters'
+import { getMonthAndYear } from '@/utils/formatters'
 import {
    updateCacheAfterCreateExpense,
    updateCacheAfterEditExpense,
@@ -27,7 +27,7 @@ export function useExpense(month: string, year: string) {
          ? allExpenses
          : allExpenses.filter(expense => {
             const { month: refMonth } =
-               getMonthAndYearFromReference(expense.paymentDate)
+               getMonthAndYear(expense.paymentDate)
 
             return String(refMonth) === String(month)
          })

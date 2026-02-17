@@ -14,7 +14,7 @@ import {
    updateCacheAfterDeleteCommitment
 } from '@/services/commitmentCacheService'
 
-import { getMonthAndYear, getMonthAndYearFromReference } from '@/utils/formatters'
+import { getMonthAndYearFromReference } from '@/utils/formatters'
 import type { Commitment } from '@/types/Commitment'
 
 export function useCommitment(month: string, year: string) {
@@ -35,7 +35,7 @@ export function useCommitment(month: string, year: string) {
          ? allCommitments
          : allCommitments.filter(commitment => {
             const { month: refMonth } =
-               getMonthAndYear(commitment.dueDate)
+               getMonthAndYearFromReference(commitment.referenceMonth)
 
             return String(refMonth) === String(month)
          })
@@ -44,7 +44,6 @@ export function useCommitment(month: string, year: string) {
 
    const createMutation = useMutation({
       mutationFn: createCommitment,
-
       onSuccess: (newCommitments: Commitment[]) => {
          newCommitments.forEach(commitment => {
             const { year: yearCommitment } = getMonthAndYearFromReference(commitment.referenceMonth)
@@ -62,7 +61,6 @@ export function useCommitment(month: string, year: string) {
 
    const createCardMutation = useMutation({
       mutationFn: createCard,
-
       onSuccess: (newCommitments: Commitment[]) => {
          newCommitments.forEach(commitment => {
             const { year: yearCommitment } = getMonthAndYearFromReference(commitment.referenceMonth)
@@ -79,7 +77,6 @@ export function useCommitment(month: string, year: string) {
 
    const updateMutation = useMutation({
       mutationFn: updateCommitment,
-
       onSuccess: (updatedCommitments: Commitment[]) => {
          updatedCommitments.forEach(updatedCommitment => {
             const oldCommitment = queryClient

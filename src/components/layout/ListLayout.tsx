@@ -17,7 +17,7 @@ export function ListLayout<T>({
    keyExtractor,
    renderMobileItem,
    renderDesktopItem,
-   mobileClassName = 'space-y-2 sm:hidden',
+   mobileClassName = 'space-y-3 sm:hidden',
    desktopClassName = 'hidden sm:grid grid-cols-12 gap-3',
 }: ListLayoutProps<T>) {
    if (itens.length === 0) {

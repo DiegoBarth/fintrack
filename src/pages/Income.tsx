@@ -4,10 +4,12 @@ import { IncomeList } from '@/components/incomes/IncomeList'
 import { AddIncomeModal } from '@/components/incomes/AddIncomeModal'
 import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
 import { SkeletonList } from '@/components/ui/SkeletonList'
+import { Button } from '@/components/ui/Button'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Income } from '@/types/Income'
 import { useIncome } from '@/hooks/useIncome'
 import { Layout } from '@/components/layout/Layout'
+import { Plus } from 'lucide-react'
 
 export function Income() {
    const { month, year } = usePeriod()
@@ -26,22 +28,21 @@ export function Income() {
       )
    }
 
-   return (
-      <Layout title="Receitas" onBack={handleBack}>
-         <div className="flex justify-end mb-4 border-b dark:border-gray-700 pb-4">
-            <button
-               onClick={() => setModalOpen(true)}
-               className="rounded-full px-5 py-2 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-               style={{ backgroundColor: 'rgb(59, 130, 246)' }}
-            >
-               + Nova receita
-            </button>
-         </div>
+   const headerSlot = (
+      <Button size="sm" className="rounded-full shadow-sm" onClick={() => setModalOpen(true)}>
+         <Plus className="size-4" />
+         Nova receita
+      </Button>
+   )
 
-         <IncomeList
-            incomes={incomes}
-            onSelect={setIncomeSelected}
-         />
+   return (
+      <Layout title="Receitas" onBack={handleBack} headerSlot={headerSlot}>
+         <div className="pt-1">
+            <IncomeList
+               incomes={incomes}
+               onSelect={setIncomeSelected}
+            />
+         </div>
 
          <AddIncomeModal
             isOpen={modalIsOpen}

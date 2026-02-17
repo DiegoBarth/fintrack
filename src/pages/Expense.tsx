@@ -4,10 +4,12 @@ import { ExpenseList } from '@/components/expenses/ExpenseList'
 import { AddExpenseModal } from '@/components/expenses/AddExpenseModal'
 import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'
 import { SkeletonList } from '@/components/ui/SkeletonList'
+import { Button } from '@/components/ui/Button'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Expense } from '@/types/Expense'
 import { useExpense } from '@/hooks/useExpense'
 import { Layout } from '@/components/layout/Layout'
+import { Plus } from 'lucide-react'
 
 export function Expense() {
    const { month, year } = usePeriod()
@@ -26,22 +28,26 @@ export function Expense() {
       )
    }
 
-   return (
-      <Layout title="Gastos" onBack={handleBack}>
-         <div className="flex justify-end mb-4 border-b dark:border-gray-700 pb-4">
-            <button
-               onClick={() => setModalOpen(true)}
-               className="rounded-full px-5 py-2 text-white font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-               style={{ backgroundColor: 'rgb(239, 68, 68)' }}
-            >
-               + Novo Gasto
-            </button>
-         </div>
+   const headerSlot = (
+      <Button
+         size="sm"
+         variant="destructive"
+         className="rounded-full shadow-sm"
+         onClick={() => setModalOpen(true)}
+      >
+         <Plus className="size-4" />
+         Novo Gasto
+      </Button>
+   )
 
-         <ExpenseList
-            expenses={expenses}
-            onSelect={setExpenseSelected}
-         />
+   return (
+      <Layout title="Gastos" onBack={handleBack} headerSlot={headerSlot}>
+         <div className="pt-1">
+            <ExpenseList
+               expenses={expenses}
+               onSelect={setExpenseSelected}
+            />
+         </div>
 
          <AddExpenseModal
             isOpen={modalIsOpen}

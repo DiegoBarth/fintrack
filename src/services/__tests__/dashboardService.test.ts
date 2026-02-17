@@ -147,6 +147,230 @@ describe('dashboardService - Commitments', () => {
 
          expect(result.monthlyBalance[0].balance).toBe(10000) // 8000 + 2000
       })
+
+      describe('card (cartão) – statement (fatura) and limit', () => {
+         const dashboardWithCard: Dashboard = {
+            ...baseDashboard,
+            cardsSummary: [
+               {
+                  cardName: 'Bradesco',
+                  image: 'bradesco.png',
+                  totalLimit: 30000,
+                  availableLimit: 28500,
+                  usedPercentage: 5,
+                  statementTotal: 1500
+               }
+            ]
+         }
+
+         it('no payment → paid, same value: fatura unchanged, frees limit by amount paid', () => {
+            const oldCommitment: Commitment = {
+               rowIndex: 1,
+               description: 'Parcela',
+               category: 'Casa',
+               type: 'Cartão',
+               amount: 1500,
+               dueDate: '2026-01-15',
+               card: 'Bradesco',
+               installment: 1,
+               totalInstallments: 10
+            }
+
+            const result = updateDashboardAfterEditCommitment(
+               dashboardWithCard,
+               oldCommitment,
+               1500,
+               '2026-01-15',
+               0
+            )
+
+            expect(result.cardsSummary[0].statementTotal).toBe(1500)
+            expect(result.cardsSummary[0].availableLimit).toBe(30000)
+         })
+
+         it('no payment → paid, value increased: fatura adjusts by difference, frees limit by amount paid (old value)', () => {
+            const oldCommitment: Commitment = {
+               rowIndex: 1,
+               description: 'Parcela',
+               category: 'Casa',
+               type: 'Cartão',
+               amount: 500,
+               dueDate: '2026-01-15',
+               card: 'Bradesco',
+               installment: 1,
+               totalInstallments: 11
+            }
+
+            const dashboardWithCard11x: Dashboard = {
+               ...baseDashboard,
+               cardsSummary: [
+                  {
+                     cardName: 'Bradesco',
+                     image: 'bradesco.png',
+                     totalLimit: 32870,
+                     availableLimit: 27370,
+                     usedPercentage: 17,
+                     statementTotal: 500
+                  }
+               ]
+            }
+
+            const result = updateDashboardAfterEditCommitment(
+               dashboardWithCard11x,
+               oldCommitment,
+               5000,
+               '2026-01-15',
+               0
+            )
+
+            expect(result.cardsSummary[0].statementTotal).toBe(5000)
+            expect(result.cardsSummary[0].availableLimit).toBe(27870)
+         })
+
+         it('no payment → paid, value decreased: fatura adjusts by difference, frees limit by amount paid (old value)', () => {
+            const oldCommitment: Commitment = {
+               rowIndex: 1,
+               description: 'Parcela',
+               category: 'Casa',
+               type: 'Cartão',
+               amount: 1500,
+               dueDate: '2026-01-15',
+               card: 'Bradesco',
+               installment: 1,
+               totalInstallments: 10
+            }
+
+            const result = updateDashboardAfterEditCommitment(
+               dashboardWithCard,
+               oldCommitment,
+               1000,
+               '2026-01-15',
+               0
+            )
+
+            expect(result.cardsSummary[0].statementTotal).toBe(1000)
+            expect(result.cardsSummary[0].availableLimit).toBe(30000)
+         })
+
+         it('had payment → no payment: fatura unchanged (difference 0), uses limit again by that amount', () => {
+            const dashboardPaid = {
+               ...baseDashboard,
+               cardsSummary: [
+                  {
+                     cardName: 'Bradesco',
+                     image: 'bradesco.png',
+                     totalLimit: 30000,
+                     availableLimit: 30000,
+                     usedPercentage: 0,
+                     statementTotal: 0
+                  }
+               ]
+            }
+
+            const oldCommitment: Commitment = {
+               rowIndex: 1,
+               description: 'Parcela',
+               category: 'Casa',
+               type: 'Cartão',
+               amount: 1500,
+               dueDate: '2026-01-15',
+               card: 'Bradesco',
+               paymentDate: '2026-01-15',
+               installment: 1,
+               totalInstallments: 10
+            }
+
+            const result = updateDashboardAfterEditCommitment(
+               dashboardPaid,
+               oldCommitment,
+               1500,
+               undefined,
+               0
+            )
+
+            expect(result.cardsSummary[0].statementTotal).toBe(0)
+            expect(result.cardsSummary[0].availableLimit).toBe(28500)
+         })
+
+         it('both unpaid, value changed (one parcel 500→5000): fatura +4500, limit -4500 (one parcel only)', () => {
+            const dashboard11x = {
+               ...baseDashboard,
+               cardsSummary: [
+                  {
+                     cardName: 'Bradesco',
+                     image: 'bradesco.png',
+                     totalLimit: 32870,
+                     availableLimit: 27370,
+                     usedPercentage: 17,
+                     statementTotal: 5500
+                  }
+               ]
+            }
+
+            const oldCommitment: Commitment = {
+               rowIndex: 1,
+               description: 'Parcela',
+               category: 'Casa',
+               type: 'Cartão',
+               amount: 500,
+               dueDate: '2026-01-15',
+               card: 'Bradesco',
+               installment: 1,
+               totalInstallments: 11
+            }
+
+            const result = updateDashboardAfterEditCommitment(
+               dashboard11x,
+               oldCommitment,
+               5000,
+               undefined,
+               0
+            )
+
+            expect(result.cardsSummary[0].statementTotal).toBe(10000)
+            expect(result.cardsSummary[0].availableLimit).toBe(22870)
+         })
+
+         it('had payment, still paid, value changed: fatura adjusts by difference, limit unchanged', () => {
+            const dashboardOnePaid = {
+               ...baseDashboard,
+               cardsSummary: [
+                  {
+                     cardName: 'Bradesco',
+                     image: 'bradesco.png',
+                     totalLimit: 32870,
+                     availableLimit: 27870,
+                     usedPercentage: 15,
+                     statementTotal: 5500
+                  }
+               ]
+            }
+
+            const oldCommitment: Commitment = {
+               rowIndex: 1,
+               description: 'Parcela',
+               category: 'Casa',
+               type: 'Cartão',
+               amount: 5000,
+               dueDate: '2026-01-15',
+               card: 'Bradesco',
+               paymentDate: '2026-01-15',
+               installment: 1,
+               totalInstallments: 11
+            }
+
+            const result = updateDashboardAfterEditCommitment(
+               dashboardOnePaid,
+               oldCommitment,
+               500,
+               '2026-01-15',
+               0
+            )
+
+            expect(result.cardsSummary[0].statementTotal).toBe(1000)
+            expect(result.cardsSummary[0].availableLimit).toBe(27870)
+         })
+      })
    })
 
    describe('updateDashboardAfterDeleteCommitment', () => {

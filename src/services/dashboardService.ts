@@ -85,27 +85,32 @@ export function updateDashboardAfterEditCommitment(
    updatedDashboard = updateMonthlyBalance(updatedDashboard, monthIndex, balanceAdjustment)
    updatedDashboard = updateCategory(updatedDashboard, oldCommitment.category, difference)
 
-   // Update card if it's a card purchase
+   // Update card if it's a card purchase (fatura = statementTotal, limite = availableLimit)
    if (oldCommitment.type === 'Cartão' && oldCommitment.card) {
-      let limitAdjustment = 0
+      // Statement (fatura): sempre ajusta pelo diferencial de valor (novo − antigo), independente de ter/tinha/deixou de ter data de pagamento.
+      const statementAdjustment = difference
 
-      // Adjust limit based on payment status
+      // Limit: paying an installment frees that amount; unpaying uses it again. Value-only changes adjust by total purchase difference.
+      let limitAdjustment: number
       if (hadPaymentDate && !hasPaymentDate) {
-         limitAdjustment = -oldValueNum
+         // Was paid, now unpaid: that amount goes back to using limit
+         limitAdjustment = -newValueNum
       } else if (!hadPaymentDate && hasPaymentDate) {
+         // Was unpaid, now paid: free the amount we paid (the value that was on the statement)
          limitAdjustment = oldValueNum
       } else if (hadPaymentDate && hasPaymentDate) {
-         limitAdjustment = difference
-      } else if (!hadPaymentDate && !hasPaymentDate) {
-         const totalDifference = newValueNum - oldValueNum
-         limitAdjustment = -totalDifference
+         // Both paid, value changed: fatura já estava paga, limite não muda
+         limitAdjustment = 0
+      } else {
+         // Both unpaid, value changed: editamos uma parcela, o total da compra muda só por essa parcela (não × totalInstallments)
+         limitAdjustment = -difference
       }
 
       updatedDashboard = updateCard(
          updatedDashboard,
          oldCommitment.card,
-         difference, // statement adjustment
-         limitAdjustment // limit adjustment
+         statementAdjustment,
+         limitAdjustment
       )
    }
 

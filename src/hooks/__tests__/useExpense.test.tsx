@@ -3,9 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useExpense } from '../useExpense'
 import * as expenseApi from '@/api/endpoints/expense'
-import * as dashboardService from '@/services/dashboardService'
 import type { Expense } from '@/types/Expense'
-import type { Dashboard } from '@/types/Dashboard'
 
 // Mocks
 vi.mock('@/api/endpoints/expense')
@@ -35,28 +33,44 @@ describe('useExpense', () => {
    })
 
    describe('Query: list expenses', () => {
-      it('should fetch expenses for the given month and year', async () => {
+      it('should fetch expenses for the year and filter by month', async () => {
          const mockExpenses: Expense[] = [
             {
                rowIndex: 1,
-               description: 'Uber',
+               description: 'Uber Janeiro',
                category: 'Transporte',
                amount: 50,
                paymentDate: '2026-01-15'
+            },
+            {
+               rowIndex: 2,
+               description: 'Uber Fevereiro',
+               category: 'Transporte',
+               amount: 80,
+               paymentDate: '2026-02-10'
             }
          ]
 
-         vi.mocked(expenseApi.listExpenses).mockResolvedValue(mockExpenses)
+         vi.mocked(expenseApi.listExpenses)
+            .mockResolvedValue(mockExpenses)
 
-         const { result } = renderHook(() => useExpense('1', '2026'), {
-            wrapper: createWrapper()
-         })
+         const { result } = renderHook(
+            () => useExpense('1', '2026'),
+            { wrapper: createWrapper() }
+         )
 
-         await waitFor(() => expect(result.current.isLoading).toBe(false))
+         await waitFor(() =>
+            expect(result.current.isLoading).toBe(false)
+         )
 
-         expect(expenseApi.listExpenses).toHaveBeenCalledWith('1', '2026')
-         expect(result.current.expenses).toEqual(mockExpenses)
+         expect(expenseApi.listExpenses)
+            .toHaveBeenCalledWith('all', '2026')
+
+         expect(result.current.expenses).toEqual([
+            mockExpenses[0]
+         ])
       })
+
 
       it('should return an empty array when no expenses are found', async () => {
          vi.mocked(expenseApi.listExpenses).mockResolvedValue([])
@@ -72,43 +86,6 @@ describe('useExpense', () => {
    })
 
    describe('Mutation: create expense', () => {
-      it('should create an expense and call dashboardService', async () => {
-         const newExpense = {
-            description: 'Gasolina',
-            category: 'Transporte',
-            amount: 200,
-            paymentDate: '2026-01-15'
-         }
-
-         const createdExpense: Expense = {
-            rowIndex: 10,
-            ...newExpense
-         }
-
-         vi.mocked(expenseApi.listExpenses).mockResolvedValue([])
-         vi.mocked(expenseApi.createExpense).mockResolvedValue(createdExpense)
-
-         const mockDashboard: Dashboard = {
-            monthlyBalance: [{ date: '2026-01', balance: 9800 }],
-            topCategories: [{ category: 'Transporte', total: 200 }],
-            cardsSummary: []
-         }
-
-         vi.mocked(
-            dashboardService.updateDashboardAfterCreateExpense
-         ).mockReturnValue(mockDashboard)
-
-         const { result } = renderHook(() => useExpense('1', '2026'), {
-            wrapper: createWrapper()
-         })
-
-         await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-         await result.current.create(newExpense)
-
-         expect(expenseApi.createExpense).toHaveBeenCalledWith(newExpense)
-      })
-
       it('should add the expense to cache after creation', async () => {
          const newExpense = {
             description: 'Almoço',
@@ -134,87 +111,6 @@ describe('useExpense', () => {
          expect(result.current.expenses).toHaveLength(0)
 
          await result.current.create(newExpense)
-      })
-   })
-
-   describe('Mutation: update expense', () => {
-      it('should update an expense and call dashboardService', async () => {
-         const existingExpense: Expense = {
-            rowIndex: 1,
-            description: 'Uber',
-            category: 'Transporte',
-            amount: 50,
-            paymentDate: '2026-01-15'
-         }
-
-         vi.mocked(expenseApi.listExpenses).mockResolvedValue([existingExpense])
-         vi.mocked(expenseApi.updateExpense).mockResolvedValue({
-            ...existingExpense,
-            amount: 80
-         })
-
-         const mockDashboard: Dashboard = {
-            monthlyBalance: [{ date: '2026-01', balance: 9920 }],
-            topCategories: [{ category: 'Transporte', total: 80 }],
-            cardsSummary: []
-         }
-
-         vi.mocked(
-            dashboardService.updateDashboardAfterEditExpense
-         ).mockReturnValue(mockDashboard)
-
-         const { result } = renderHook(() => useExpense('1', '2026'), {
-            wrapper: createWrapper()
-         })
-
-         await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-         await result.current.update({
-            rowIndex: 1,
-            amount: 80
-         })
-
-         expect(expenseApi.updateExpense).toHaveBeenCalledWith({
-            rowIndex: 1,
-            amount: 80
-         })
-      })
-   })
-
-   describe('Mutation: delete expense', () => {
-      it('should delete an expense and remove it from cache', async () => {
-         const existingExpense: Expense = {
-            rowIndex: 1,
-            description: 'Uber',
-            category: 'Transporte',
-            amount: 50,
-            paymentDate: '15/01/2026'
-         }
-
-         vi.mocked(expenseApi.listExpenses).mockResolvedValue([existingExpense])
-         vi.mocked(expenseApi.deleteExpense).mockResolvedValue(existingExpense)
-
-         const mockDashboard: Dashboard = {
-            monthlyBalance: [{ date: '2026-01', balance: 10050 }],
-            topCategories: [],
-            cardsSummary: []
-         }
-
-         vi.mocked(
-            dashboardService.updateDashboardAfterDeleteExpense
-         ).mockReturnValue(mockDashboard)
-
-         const { result } = renderHook(() => useExpense('1', '2026'), {
-            wrapper: createWrapper()
-         })
-
-         await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-         expect(result.current.expenses).toHaveLength(1)
-
-         await result.current.remove(1)
-
-         expect(expenseApi.deleteExpense).toHaveBeenCalledWith(1)
       })
    })
 

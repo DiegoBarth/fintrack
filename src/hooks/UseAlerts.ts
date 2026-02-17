@@ -19,7 +19,7 @@ function resetTime(d: Date) {
  */
 export function useAlerts() {
    const { year } = usePeriod();
-   const { alertCommitments } = useCommitment('all', String(year), 'alerts')
+   const { alertCommitments } = useCommitment('all', String(year))
 
    return useMemo(() => {
       const today = resetTime(new Date());

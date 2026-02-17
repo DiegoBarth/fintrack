@@ -108,11 +108,10 @@ export function PeriodProvider({ children }: { children: ReactNode }) {
    const { summary, isLoading } = useSummary(month, String(year))
    const { incomes } = useIncome(month, String(year))
    const { expenses } = useExpense(month, String(year))
-   const { commitments } = useCommitment(month, String(year))
-
    // Note: alertCommitments fetches 'all' months but filters by year
+   const { commitments, alertCommitments } = useCommitment(month, String(year))
+
    // This allows alerts to appear even when viewing other months
-   const { alertCommitments } = useCommitment('all', String(year), 'alerts')
    const { dashboard } = useDashboard(month, String(year))
 
    // ===== Period Persistence =====

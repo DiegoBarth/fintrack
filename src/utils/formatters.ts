@@ -153,6 +153,14 @@ export function getMonthAndYear(ISODataOrBR: string) {
    return { month: String(Number(month)), year };
 }
 
+export function getMonthAndYearFromReference(referenceMonth: string) {
+   const [year, month] = referenceMonth.split('-')
+   return {
+      month: String(Number(month)),
+      year
+   }
+}
+
 /**
  * Parses a date string in "yyyy-MM-dd" format into a local Date object.
  *

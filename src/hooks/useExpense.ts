@@ -1,72 +1,86 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { listExpenses, createExpense, updateExpense, deleteExpense } from '@/api/endpoints/expense'
 import { useApiError } from '@/hooks/useApiError'
-import { getMonthAndYear } from '@/utils/formatters'
-import { updateCacheAfterCreateExpense, updateCacheAfterEditExpense, updateCacheAfterDeleteExpense } from '@/services/expenseCacheService'
+import { getMonthAndYearFromReference } from '@/utils/formatters'
+import {
+   updateCacheAfterCreateExpense,
+   updateCacheAfterEditExpense,
+   updateCacheAfterDeleteExpense
+} from '@/services/expenseCacheService'
 import type { Expense } from '@/types/Expense'
 
 export function useExpense(month: string, year: string) {
    const queryClient = useQueryClient()
    const { handleError } = useApiError()
-   const queryKey = ['expenses', month, year]
 
-   const { data: expenses = [], isLoading, isError } = useQuery({
+   const queryKey = ['expenses', year]
+
+   const { data: allExpenses = [], isLoading, isError } = useQuery({
       queryKey,
-      queryFn: () => listExpenses(month, String(year)),
+      queryFn: () => listExpenses('all', String(year)),
       staleTime: Infinity,
       retry: 1
    })
 
+   const expenses =
+      month === 'all'
+         ? allExpenses
+         : allExpenses.filter(expense => {
+            const { month: refMonth } =
+               getMonthAndYearFromReference(expense.paymentDate)
+
+            return String(refMonth) === String(month)
+         })
+
    const createMutation = useMutation({
-      mutationFn: (newExpense: Omit<Expense, 'rowIndex'>) => createExpense(newExpense),
+      mutationFn: (newExpense: Omit<Expense, 'rowIndex'>) =>
+         createExpense(newExpense),
       onSuccess: (newExpense: Expense) => {
-         let { month: regisMonth, year: regisYear } = getMonthAndYear(newExpense.paymentDate)
-
-         if (month == 'all') {
-            regisMonth = month;
-         }
-
-         updateCacheAfterCreateExpense(queryClient, newExpense, regisMonth, regisYear)
+         updateCacheAfterCreateExpense(
+            queryClient,
+            newExpense,
+            year
+         )
       },
-      onError: (error) => {
-         handleError(error)
-      }
+      onError: handleError
    })
 
    const updateMutation = useMutation({
-      mutationFn: (data: { rowIndex: number, amount: number }) => updateExpense(data),
+      mutationFn: (data: { rowIndex: number; amount: number }) =>
+         updateExpense(data),
       onSuccess: (updatedExpense: Expense) => {
-         let { month: regisMonth, year: regisYear } = getMonthAndYear(updatedExpense.paymentDate)
-
-         if (month == 'all') {
-            regisMonth = month;
-         }
-
          const oldExpense = queryClient
-            .getQueryData<Expense[]>(['expenses', regisMonth, regisYear])
-            ?.find(r => r.rowIndex === updatedExpense.rowIndex)
+            .getQueryData<Expense[]>(['expenses', year])
+            ?.find(e => e.rowIndex === updatedExpense.rowIndex)
 
          if (oldExpense) {
-            updateCacheAfterEditExpense(queryClient, oldExpense, Number(updatedExpense.amount), month, year)
+            updateCacheAfterEditExpense(
+               queryClient,
+               oldExpense,
+               updatedExpense,
+               year
+            )
          }
       },
-      onError: (error) => {
-         handleError(error)
-      }
+      onError: handleError
    })
 
    const removeMutation = useMutation({
       mutationFn: (rowIndex: number) => deleteExpense(rowIndex),
       onSuccess: (_data, rowIndex) => {
-         const deletedExpense = expenses.find(g => g.rowIndex === rowIndex)
+         const deletedExpense = allExpenses.find(
+            e => e.rowIndex === rowIndex
+         )
 
          if (deletedExpense) {
-            updateCacheAfterDeleteExpense(queryClient, deletedExpense, month, year)
+            updateCacheAfterDeleteExpense(
+               queryClient,
+               deletedExpense,
+               year
+            )
          }
       },
-      onError: (error) => {
-         handleError(error)
-      }
+      onError: handleError
    })
 
    return {
@@ -76,7 +90,8 @@ export function useExpense(month: string, year: string) {
       create: createMutation.mutateAsync,
       update: updateMutation.mutateAsync,
       remove: removeMutation.mutateAsync,
-      isSaving: createMutation.isPending || updateMutation.isPending,
+      isSaving:
+         createMutation.isPending || updateMutation.isPending,
       isDeleting: removeMutation.isPending
    }
 }

@@ -4,18 +4,16 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useCommitment } from '../useCommitment'
 import * as commitmentApi from '@/api/endpoints/commitment'
 import type { Commitment } from '@/types/Commitment'
-import type { FullSummary } from '@/types/FullSummary'
 
 // Mocks
 vi.mock('@/api/endpoints/commitment')
-vi.mock('@/services/dashboardService')
 vi.mock('@/hooks/useApiError', () => ({
    useApiError: () => ({
       handleError: vi.fn()
    })
 }))
 
-describe('useCommitment - additional tests', () => {
+describe('useCommitment - updated architecture', () => {
    let queryClient: QueryClient
 
    beforeEach(() => {
@@ -30,108 +28,49 @@ describe('useCommitment - additional tests', () => {
 
    const createWrapper = () => {
       return ({ children }: { children: React.ReactNode }) => (
-         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+         <QueryClientProvider client={queryClient}>
+            {children}
+         </QueryClientProvider>
       )
    }
 
-   it('should load alert commitments for the year', async () => {
-      const alertCommitments: Commitment[] = [
+   // ================================
+   // LOAD
+   // ================================
+   it('should load commitments for the year', async () => {
+      const commitments: Commitment[] = [
          {
             rowIndex: 1,
-            description: 'Aluguel pendente',
+            description: 'Aluguel',
             category: 'Casa',
             type: 'Fixo',
             amount: 2000,
             dueDate: '2026-01-10'
-         },
-         {
-            rowIndex: 2,
-            description: 'Internet pendente',
-            category: 'Casa',
-            type: 'Fixo',
-            amount: 100,
-            dueDate: '2026-02-10'
          }
       ]
 
-      vi.mocked(commitmentApi.listCommitments).mockResolvedValue(alertCommitments)
+      vi.mocked(commitmentApi.listCommitments)
+         .mockResolvedValue(commitments)
 
       const { result } = renderHook(
-         () => useCommitment('1', '2026', 'alerts'),
+         () => useCommitment('all', '2026'),
          { wrapper: createWrapper() }
       )
 
       await waitFor(() => {
-         expect(result.current.alertCommitments).toEqual(alertCommitments)
+         expect(result.current.commitments).toEqual(commitments)
       })
 
-      expect(commitmentApi.listCommitments).toHaveBeenCalledWith('all', '2026')
+      // Agora deve buscar apenas por ano
+      expect(commitmentApi.listCommitments)
+         .toHaveBeenCalledWith('all', '2026')
    })
 
-   it('should update commitment amount and recalculate summary', async () => {
-      const existingCommitment: Commitment = {
-         rowIndex: 1,
-         description: 'Aluguel',
-         category: 'Casa',
-         type: 'Fixo',
-         amount: 2000,
-         dueDate: '10/01/2026'
-      }
-
-      const mockSummary: FullSummary = {
-         totalIncomes: 5000,
-         totalCommitments: 2000,
-         totalExpenses: 500,
-         totalReceivedAmount: 5000,
-         totalPaidCommitments: 0,
-         totalReceivedInMonth: 5000,
-         totalPaidCommitmentsInMonth: 0,
-         totalPaidExpenses: 0,
-         totalPaidExpensesInMonth: 0,
-         availableYears: [2026]
-      }
-
-      vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-      vi.mocked(commitmentApi.updateCommitment).mockResolvedValue([
-         {
-            ...existingCommitment,
-            amount: 2500,
-            paymentDate: '10/01/2026'
-         }
-      ])
-
-      const { result } = renderHook(() => useCommitment('1', '2026'), {
-         wrapper: createWrapper()
-      })
-
-      await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-      // Pre-populate summary in cache
-      queryClient.setQueryData<FullSummary>(
-         ['summary', '1', '2026'],
-         mockSummary
-      )
-
-      // Update commitment value
-      await result.current.update({
-         rowIndex: 1,
-         amount: 2500,
-         paymentDate: '10/01/2026'
-      })
-
-      await waitFor(() => {
-         const updatedSummary = queryClient.getQueryData<FullSummary>([
-            'summary',
-            '1',
-            '2026'
-         ])
-         // Total paid increases by 2500 due to payment marking
-         expect(updatedSummary?.totalPaidCommitments).toBe(2500)
-      })
-   })
-
-   it('should create card commitment', async () => {
-      const newCardExpense: Omit<Commitment, 'rowIndex'> = {
+   // ================================
+   // CREATE CARD
+   // ================================
+   it('should create card commitment and invalidate aggregates', async () => {
+      const newCard: Omit<Commitment, 'rowIndex'> = {
          type: 'Cartão',
          description: 'Fatura Nubank',
          category: 'Alimentação',
@@ -142,27 +81,53 @@ describe('useCommitment - additional tests', () => {
          totalInstallments: 1
       }
 
-      const cardCreated: Commitment = {
+      const created: Commitment = {
          rowIndex: 10,
-         ...newCardExpense
+         ...newCard
       }
 
-      vi.mocked(commitmentApi.listCommitments).mockResolvedValue([])
-      vi.mocked(commitmentApi.createCard).mockResolvedValue([cardCreated])
+      vi.mocked(commitmentApi.listCommitments)
+         .mockResolvedValue([])
 
-      const { result } = renderHook(() => useCommitment('1', '2026'), {
-         wrapper: createWrapper()
+      vi.mocked(commitmentApi.createCard)
+         .mockResolvedValue([created])
+
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+
+      const { result } = renderHook(
+         () => useCommitment('all', '2026'),
+         { wrapper: createWrapper() }
+      )
+
+      await waitFor(() =>
+         expect(result.current.isLoading).toBe(false)
+      )
+
+      await result.current.createCard(newCard)
+
+      expect(commitmentApi.createCard)
+         .toHaveBeenCalled()
+
+      expect(vi.mocked(commitmentApi.createCard).mock.calls[0][0])
+         .toEqual(newCard)
+
+
+      expect(invalidateSpy).toHaveBeenCalledWith({
+         queryKey: ['summary'],
+         exact: false
       })
 
-      await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-      await result.current.createCard(newCardExpense)
-
-      expect(commitmentApi.createCard).toHaveBeenCalledWith(newCardExpense)
+      expect(invalidateSpy).toHaveBeenCalledWith({
+         queryKey: ['dashboard'],
+         exact: false
+      })
    })
 
-   it('should delete unpaid commitment and update totalCommitments in summary', async () => {
-      const existingCommitment: Commitment = {
+   // ================================
+   // DELETE
+   // ================================
+   it('should delete commitment and invalidate aggregates', async () => {
+      const existing: Commitment = {
          rowIndex: 1,
          description: 'Aluguel',
          category: 'Casa',
@@ -171,44 +136,36 @@ describe('useCommitment - additional tests', () => {
          dueDate: '2026-01-10'
       }
 
-      const mockSummary: FullSummary = {
-         totalIncomes: 5000,
-         totalCommitments: 2000,
-         totalExpenses: 500,
-         totalReceivedAmount: 5000,
-         totalPaidCommitments: 0,
-         totalReceivedInMonth: 5000,
-         totalPaidCommitmentsInMonth: 0,
-         totalPaidExpenses: 0,
-         totalPaidExpensesInMonth: 0,
-         availableYears: [2026]
-      }
+      vi.mocked(commitmentApi.listCommitments)
+         .mockResolvedValue([existing])
 
-      vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existingCommitment])
-      vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue([existingCommitment])
+      vi.mocked(commitmentApi.deleteCommitment)
+         .mockResolvedValue([existing])
 
-      const { result } = renderHook(() => useCommitment('1', '2026'), {
-         wrapper: createWrapper()
-      })
+      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
 
-      await waitFor(() => expect(result.current.isLoading).toBe(false))
+      const { result } = renderHook(
+         () => useCommitment('all', '2026'),
+         { wrapper: createWrapper() }
+      )
 
-      // Pre-populate summary in cache
-      queryClient.setQueryData<FullSummary>(
-         ['summary', '1', '2026'],
-         mockSummary
+      await waitFor(() =>
+         expect(result.current.isLoading).toBe(false)
       )
 
       await result.current.remove(1)
 
-      await waitFor(() => {
-         const updatedSummary = queryClient.getQueryData<FullSummary>([
-            'summary',
-            '1',
-            '2026'
-         ])
-         expect(updatedSummary?.totalCommitments).toBe(0) // 2000 - 2000
-         expect(updatedSummary?.totalPaidCommitments).toBe(0) // Was not paid
+      expect(commitmentApi.deleteCommitment)
+         .toHaveBeenCalledWith(1)
+
+      expect(invalidateSpy).toHaveBeenCalledWith({
+         queryKey: ['summary'],
+         exact: false
+      })
+
+      expect(invalidateSpy).toHaveBeenCalledWith({
+         queryKey: ['dashboard'],
+         exact: false
       })
    })
 })

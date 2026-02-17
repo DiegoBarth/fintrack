@@ -7,6 +7,7 @@ import { useIncome } from '@/hooks/useIncome'
 import { useValidation } from '@/hooks/useValidation'
 import { CreateIncomeSchema } from '@/schemas/income.schema'
 import { DateField } from '@/components/ui/DateField'
+import { MonthField } from '@/components/ui/MonthField'
 import { useToast } from '@/contexts/toast';
 import type { Income } from '@/types/Income'
 
@@ -20,6 +21,7 @@ const defaultValues: Partial<Income & { months?: number }> = {
    amount: '',
    expectedDate: '',
    receivedDate: '',
+   referenceMonth: '',
    months: 1
 }
 
@@ -43,12 +45,34 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
       }
    }, [isOpen, reset])
 
+   useEffect(() => {
+      if (!isOpen) return;
+
+      const now = new Date();
+
+      const resolvedMonth =
+         month === 'all'
+            ? now.getMonth() + 1
+            : Number(month);
+
+      const resolvedYear =
+         month === 'all'
+            ? now.getFullYear()
+            : year;
+
+      setValue(
+         'referenceMonth',
+         `${resolvedYear}-${String(resolvedMonth).padStart(2, '0')}`
+      );
+   }, [isOpen, month, year, setValue]);
+
    const handleSave = async (values: Income & { months?: number }) => {
       const data = validate(CreateIncomeSchema, {
          description: values.description,
          amount: currencyToNumber(String(values.amount)),
          expectedDate: values.expectedDate,
          receivedDate: !values.receivedDate ? undefined : values.receivedDate,
+         referenceMonth: values.referenceMonth,
          months: values.months
       });
 
@@ -134,6 +158,23 @@ export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
                      }}
                   />
                </div>
+            </div>
+
+            {/* Reference Month Field */}
+            <div>
+               <label className="block text-xs font-medium text-muted-foreground mb-1">
+                  Mês de Referência *
+               </label>
+               <Controller
+                  control={control}
+                  name="referenceMonth"
+                  render={({ field }) => (
+                     <MonthField
+                        value={field.value}
+                        onChange={field.onChange}
+                     />
+                  )}
+               />
             </div>
 
             {/* Expected Date Field */}

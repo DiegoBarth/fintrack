@@ -2,7 +2,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Tests-200%2B%20passing-success)](./src/test)
+[![Tests](https://img.shields.io/badge/Tests-190%2B%20passing-success)](./src/test)
 [![Coverage](https://img.shields.io/badge/Coverage-~87%25-success)](./coverage)
 [![Quality](https://img.shields.io/badge/Code%20Quality-9.7%2F10-brightgreen)](#-project-quality)
 
@@ -12,7 +12,7 @@ Modern **production-level** personal financial control web system, built with Re
 
 This project achieved a **9.7/10 code quality score**, implementing:
 
-- 🧪 **200+ Automated Tests** with ~87% coverage.
+- 🧪 **190+ Automated Tests** with ~87% coverage.
 - ♿ **WCAG 2.1 Accessibility** complete (ARIA, focus trap, keyboard navigation).
 - ⚡ **Optimized Performance** (React.memo, useMemo, useCallback).
 - 🔒 **Robust Security** (CSRF protection, rate limiting, timeout).
@@ -34,7 +34,7 @@ This project achieved a **9.7/10 code quality score**, implementing:
 - 🛡️ **Robust Validation** - Centralized Zod schemas with type inference.
 - 🔄 **Global Error Handling** - ErrorBoundary + centralized useApiError.
 - ♿ **Total Accessibility** - WCAG 2.1 Level AA (keyboard navigation, ARIA, focus management).
-- 🧪 **Automated Testing** - 200+ tests (utils, hooks, components, API).
+- 🧪 **Automated Testing** - 190+ tests (utils, hooks, components, API).
 - 🔒 **Security** - CSRF tokens, rate limiting, input validation.
 
 ## 📚 Standards Documentation
@@ -184,9 +184,8 @@ function App() {
 **Query Keys Convention:**
 ```tsx
 // Formact: ['entity', 'optional_filter', 'period']
-['incomes', month, year]
-['expenses', month, year]
-['commitments', 'alerts', year]`
+['incomes', year]
+['expenses', year]
 ```
 
 ### Context API
@@ -241,7 +240,7 @@ npm run format            # Format code
 ### Current Coverage: ~87%
 
 ```
-✅ 200+ tests in 16 files
+✅ 190+ tests in 16 files
 
 File                      | % Stmts | % Branch | % Funcs | % Lines
 --------------------------|---------|----------|---------|--------
@@ -369,10 +368,20 @@ export function useExpense(month: string, year: string) {
    const { handleError } = useApiError();
 
    const { data } = useQuery({ 
-      queryKey: ['expenses', month, year],
-      queryFn: () => listExpenses(month, year),
+      queryKey: ['expenses', year],
+      queryFn: () => listExpenses('all', year),
       onError: handleError // Centralized!
    });
+
+   const expenses =
+      month === 'all'
+         ? data
+         : data.filter(expense => {
+            const { month: refMonth } =
+               getMonthAndYearFromReference(expense.paymentDate)
+
+            return String(refMonth) === String(month)
+         })
    
    const mutation = useMutation({ 
       mutationFn: createExpense,

@@ -6,6 +6,7 @@ import { sanitizeText } from '@/utils/sanitizers'
 export function createIncome(payload: {
    expectedDate: string;
    receivedDate?: string | null;
+   referenceMonth: string;
    description: string;
    amount: number | string;
 }) {

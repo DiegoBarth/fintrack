@@ -2,7 +2,7 @@ import { memo, useCallback } from 'react'
 import { ListLayout } from '@/components/layout/ListLayout'
 import { ListItemLayout } from '@/components/layout/ListItemLayout'
 import type { Income } from '@/types/Income'
-import { numberToCurrency } from '@/utils/formatters'
+import { dateBRToISO, numberToCurrency } from '@/utils/formatters'
 import { ListItemHeaderMobile } from '@/components/layout/ListItemHeaderMobile'
 import { ListItemFooterMobile } from '@/components/layout/ListItemFooterMobile'
 import { ListColDescription } from '@/components/layout/ListColDescription'
@@ -15,15 +15,26 @@ interface Props {
    onSelect: (income: Income) => void
 }
 
+function isReceivedOutOfReference(income: Income) {
+   if (!income.receivedDate || !income.referenceMonth) return false
+
+   const received = new Date(dateBRToISO(income.receivedDate))
+   const [refYear, refMonth] = income.referenceMonth.split('-')
+
+   return (
+      received.getFullYear() !== Number(refYear) ||
+      received.getMonth() + 1 !== Number(refMonth)
+   )
+}
+
 /**
  * Income list with performance optimizations.
- * * Applied Optimizations:
- * - React.memo: Prevents re-renders when props remain unchanged.
- * - useCallback: Memoizes mobile/desktop render functions.
  */
 export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props) {
+
    const renderMobileItem = useCallback((income: Income) => {
       const received = !!income.receivedDate
+      const outOfReference = isReceivedOutOfReference(income)
 
       return (
          <ListItemLayout
@@ -38,7 +49,7 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
 
             <ListItemFooterMobile
                left={
-                  <div className="flex flex-col text-xs min-h-[32px] justify-center">
+                  <div className="flex flex-col text-xs min-h-[32px] justify-center gap-1">
                      {income.expectedDate && (
                         <span className="text-blue-700 dark:text-blue-300">
                            Previsto para {income.expectedDate}
@@ -52,10 +63,16 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
                      ) : (
                         <span className="invisible select-none">Espaçador</span>
                      )}
+
+                     {outOfReference && (
+                        <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">
+                           Pago fora do mês de referência
+                        </span>
+                     )}
                   </div>
                }
                right={
-                  <div className="flex items-center h-full">
+                  <div className="flex flex-col items-end gap-1">
                      <span
                         className={
                            received
@@ -65,6 +82,12 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
                      >
                         {received ? 'Recebido' : 'Em aberto'}
                      </span>
+
+                     {outOfReference && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 font-medium">
+                           Fora do mês
+                        </span>
+                     )}
                   </div>
                }
             />
@@ -74,6 +97,8 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
 
    const renderDesktopItem = useCallback((income: Income) => {
       const received = !!income.receivedDate
+      const outOfReference = isReceivedOutOfReference(income)
+
       const dateText = received
          ? `Recebido em ${income.receivedDate}`
          : `Previsto para ${income.expectedDate}`
@@ -88,21 +113,42 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
             </ListColDescription>
 
             <ListColMuted span={4}>
-               <span className={received ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}>{dateText}</span>
+               <span className={received ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}>
+                  {dateText}
+               </span>
+
+               {outOfReference && (
+                  <div className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                     Pago fora do mês de referência
+                  </div>
+               )}
             </ListColMuted>
 
             <ListColValue>
                {numberToCurrency(income.amount)}
             </ListColValue>
 
-            <div className="col-span-2 text-right">
-               <span className={received ? 'text-green-600 dark:text-green-400 font-semibold' : 'text-blue-600 dark:text-blue-400 font-semibold'}>
+            <div className="col-span-2 text-right flex justify-end items-center gap-2">
+               <span
+                  className={
+                     received
+                        ? 'text-green-600 dark:text-green-400 font-semibold'
+                        : 'text-blue-600 dark:text-blue-400 font-semibold'
+                  }
+               >
                   {received ? 'Recebido' : 'Em aberto'}
                </span>
+
+               {outOfReference && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 font-medium">
+                     Fora do mês
+                  </span>
+               )}
             </div>
          </ListItemRowDesktop>
       )
    }, [onSelect])
+
    return (
       <ListLayout
          itens={incomes}

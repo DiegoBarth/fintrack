@@ -10,6 +10,10 @@ export const CreateIncomeSchema = z.object({
 
    months: z.number().int().positive().optional().default(1),
 
+   referenceMonth: z
+      .string()
+      .regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'Mês de referência inválido'),
+
    expectedDate: z.coerce.date({
       message: "A Data prevista é obrigatória"
    }),

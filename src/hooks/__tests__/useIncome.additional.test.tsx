@@ -4,9 +4,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useIncome } from '@/hooks/useIncome'
 import * as incomeApi from '@/api/endpoints/income'
 import type { Income } from '@/types/Income'
-import type { FullSummary } from '@/types/FullSummary'
 
+// ===============================
 // Mocks
+// ===============================
 vi.mock('@/api/endpoints/income')
 vi.mock('@/services/dashboardService')
 vi.mock('@/hooks/useApiError', () => ({
@@ -15,7 +16,7 @@ vi.mock('@/hooks/useApiError', () => ({
    })
 }))
 
-describe('useIncome - additional tests', () => {
+describe('useIncome - updated architecture', () => {
    let queryClient: QueryClient
 
    beforeEach(() => {
@@ -30,16 +31,103 @@ describe('useIncome - additional tests', () => {
 
    const createWrapper = () => {
       return ({ children }: { children: React.ReactNode }) => (
-         <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+         <QueryClientProvider client={queryClient}>
+            {children}
+         </QueryClientProvider>
       )
    }
 
-   it('should create income and add it to cache', async () => {
+   // =====================================
+   // QUERY
+   // =====================================
+   it('should fetch incomes for the year and filter by month', async () => {
+      const mockIncomes: Income[] = [
+         {
+            rowIndex: 1,
+            description: 'January Salary',
+            expectedDate: '05/01/2026',
+            amount: 5000,
+            receivedDate: '05/01/2026',
+            referenceMonth: '2026-01'
+         },
+         {
+            rowIndex: 2,
+            description: 'February Salary',
+            expectedDate: '05/02/2026',
+            amount: 5000,
+            receivedDate: '05/02/2026',
+            referenceMonth: '2026-02'
+         }
+      ]
+
+      vi.mocked(incomeApi.listIncomes)
+         .mockResolvedValue(mockIncomes)
+
+      const { result } = renderHook(
+         () => useIncome('1', '2026'),
+         { wrapper: createWrapper() }
+      )
+
+      await waitFor(() =>
+         expect(result.current.isLoading).toBe(false)
+      )
+
+      // 🔥 Sempre busca o ano inteiro
+      expect(incomeApi.listIncomes)
+         .toHaveBeenCalledWith('all', '2026')
+
+      // 🔥 Deve retornar apenas janeiro
+      expect(result.current.incomes).toEqual([
+         mockIncomes[0]
+      ])
+   })
+
+   it('should return all incomes when month is all', async () => {
+      const mockIncomes: Income[] = [
+         {
+            rowIndex: 1,
+            description: 'January Salary',
+            expectedDate: '05/01/2026',
+            amount: 5000,
+            receivedDate: '05/01/2026',
+            referenceMonth: '2026-01'
+         },
+         {
+            rowIndex: 2,
+            description: 'February Salary',
+            expectedDate: '05/02/2026',
+            amount: 5000,
+            receivedDate: '05/02/2026',
+            referenceMonth: '2026-02'
+         }
+      ]
+
+      vi.mocked(incomeApi.listIncomes)
+         .mockResolvedValue(mockIncomes)
+
+      const { result } = renderHook(
+         () => useIncome('all', '2026'),
+         { wrapper: createWrapper() }
+      )
+
+      await waitFor(() =>
+         expect(result.current.isLoading).toBe(false)
+      )
+
+      expect(result.current.incomes)
+         .toEqual(mockIncomes)
+   })
+
+   // =====================================
+   // CREATE
+   // =====================================
+   it('should create income and call API correctly', async () => {
       const newIncome: Omit<Income, 'rowIndex'> = {
          description: 'Salary',
          amount: 5000,
          expectedDate: '05/01/2026',
-         receivedDate: '05/01/2026'
+         receivedDate: '05/01/2026',
+         referenceMonth: '2026-01'
       }
 
       const createdIncome: Income = {
@@ -48,39 +136,38 @@ describe('useIncome - additional tests', () => {
       }
 
       vi.mocked(incomeApi.listIncomes).mockResolvedValue([])
-      vi.mocked(incomeApi.createIncome).mockResolvedValue([createdIncome])
+      vi.mocked(incomeApi.createIncome)
+         .mockResolvedValue([createdIncome])
 
-      const { result } = renderHook(() => useIncome('1', '2026'), {
-         wrapper: createWrapper()
-      })
+      const { result } = renderHook(
+         () => useIncome('1', '2026'),
+         { wrapper: createWrapper() }
+      )
 
-      await waitFor(() => expect(result.current.isLoading).toBe(false))
+      await waitFor(() =>
+         expect(result.current.isLoading).toBe(false)
+      )
 
       await result.current.create(newIncome)
 
-      expect(incomeApi.createIncome).toHaveBeenCalledWith(newIncome)
+      expect(incomeApi.createIncome).toHaveBeenCalled()
+
+      expect(
+         vi.mocked(incomeApi.createIncome).mock.calls[0][0]
+      ).toEqual(newIncome)
    })
 
-   it('should update income amount and recalculate summary', async () => {
+   // =====================================
+   // UPDATE
+   // =====================================
+   it('should update income amount', async () => {
       const existingIncome: Income = {
          rowIndex: 1,
          description: 'Salary',
          amount: 5000,
          expectedDate: '05/01/2026',
-         receivedDate: '05/01/2026'
-      }
-
-      const mockSummary: FullSummary = {
-         totalIncomes: 5000,
-         totalCommitments: 2000,
-         totalExpenses: 500,
-         totalReceivedAmount: 5000,
-         totalPaidCommitments: 0,
-         totalReceivedInMonth: 5000,
-         totalPaidCommitmentsInMonth: 0,
-         totalPaidExpenses: 0,
-         totalPaidExpensesInMonth: 0,
-         availableYears: [2026]
+         receivedDate: '05/01/2026',
+         referenceMonth: '2026-01'
       }
 
       const updatedIncome: Income = {
@@ -88,61 +175,46 @@ describe('useIncome - additional tests', () => {
          amount: 6000
       }
 
-      vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-      vi.mocked(incomeApi.updateIncome).mockResolvedValue([updatedIncome])
+      vi.mocked(incomeApi.listIncomes)
+         .mockResolvedValue([existingIncome])
 
-      const { result } = renderHook(() => useIncome('1', '2026'), {
-         wrapper: createWrapper()
-      })
+      vi.mocked(incomeApi.updateIncome)
+         .mockResolvedValue([updatedIncome])
 
-      await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-      // Pre-populate summary cache
-      queryClient.setQueryData<FullSummary>(
-         ['summary', '1', '2026'],
-         mockSummary
+      const { result } = renderHook(
+         () => useIncome('1', '2026'),
+         { wrapper: createWrapper() }
       )
 
-      // Increase amount from 5000 to 6000
+      await waitFor(() =>
+         expect(result.current.isLoading).toBe(false)
+      )
+
       await result.current.update({
          rowIndex: 1,
          amount: 6000,
          receivedDate: '05/01/2026'
       })
 
-      await waitFor(() => {
-         const updatedSummary = queryClient.getQueryData<FullSummary>([
-            'summary',
-            '1',
-            '2026'
-         ])
-         // totalIncomes: remove old 5000, add new 6000 = 6000
-         expect(updatedSummary?.totalIncomes).toBe(6000)
-         // totalReceivedAmount: remove old 5000, add new 6000 = 6000
-         expect(updatedSummary?.totalReceivedAmount).toBe(6000)
+      expect(incomeApi.updateIncome).toHaveBeenCalled()
+
+      expect(
+         vi.mocked(incomeApi.updateIncome).mock.calls[0][0]
+      ).toEqual({
+         rowIndex: 1,
+         amount: 6000,
+         receivedDate: '05/01/2026'
       })
    })
 
-   it('should remove receivedDate and update summary', async () => {
+   it('should remove receivedDate when updating', async () => {
       const existingIncome: Income = {
          rowIndex: 1,
          description: 'Salary',
          amount: 5000,
          expectedDate: '05/01/2026',
-         receivedDate: '05/01/2026'
-      }
-
-      const mockSummary: FullSummary = {
-         totalIncomes: 5000,
-         totalCommitments: 2000,
-         totalExpenses: 500,
-         totalReceivedAmount: 5000,
-         totalPaidCommitments: 2000,
-         totalReceivedInMonth: 5000,
-         totalPaidCommitmentsInMonth: 2000,
-         totalPaidExpenses: 2000,
-         totalPaidExpensesInMonth: 2000,
-         availableYears: [2026]
+         receivedDate: '05/01/2026',
+         referenceMonth: '2026-01'
       }
 
       const updatedIncome: Income = {
@@ -150,96 +222,35 @@ describe('useIncome - additional tests', () => {
          receivedDate: null
       }
 
-      vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-      vi.mocked(incomeApi.updateIncome).mockResolvedValue([updatedIncome])
+      vi.mocked(incomeApi.listIncomes)
+         .mockResolvedValue([existingIncome])
 
-      const { result } = renderHook(() => useIncome('1', '2026'), {
-         wrapper: createWrapper()
-      })
+      vi.mocked(incomeApi.updateIncome)
+         .mockResolvedValue([updatedIncome])
 
-      await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-      queryClient.setQueryData<FullSummary>(
-         ['summary', '1', '2026'],
-         mockSummary
+      const { result } = renderHook(
+         () => useIncome('1', '2026'),
+         { wrapper: createWrapper() }
       )
 
-      // Remove receivedDate
+      await waitFor(() =>
+         expect(result.current.isLoading).toBe(false)
+      )
+
       await result.current.update({
          rowIndex: 1,
          amount: 5000,
-         receivedDate: undefined
+         receivedDate: null as any
       })
 
-      await waitFor(() => {
-         const updatedSummary = queryClient.getQueryData<FullSummary>([
-            'summary',
-            '1',
-            '2026'
-         ])
-         expect(updatedSummary?.totalIncomes).toBe(5000)
-         expect(updatedSummary?.totalReceivedAmount).toBe(0) // 5000 - 5000
-      })
-   })
+      expect(incomeApi.updateIncome).toHaveBeenCalled()
 
-   it('should add receivedDate to existing income and update summary', async () => {
-      const existingIncome: Income = {
-         rowIndex: 1,
-         description: 'Salary',
-         amount: 5000,
-         expectedDate: '05/01/2026'
-      }
-
-      const mockSummary: FullSummary = {
-         totalIncomes: 5000,
-         totalCommitments: 2000,
-         totalExpenses: 500,
-         totalReceivedAmount: 0,
-         totalPaidCommitments: 2000,
-         totalReceivedInMonth: 0,
-         totalPaidCommitmentsInMonth: 2000,
-         totalPaidExpenses: 2000,
-         totalPaidExpensesInMonth: 2000,
-         availableYears: [2026]
-      }
-
-      const updatedIncome: Income = {
-         rowIndex: 1,
-         description: 'Salary',
-         amount: 5000,
-         expectedDate: '05/01/2026',
-         receivedDate: '05/01/2026'
-      }
-
-      vi.mocked(incomeApi.listIncomes).mockResolvedValue([existingIncome])
-      vi.mocked(incomeApi.updateIncome).mockResolvedValue([updatedIncome])
-
-      const { result } = renderHook(() => useIncome('1', '2026'), {
-         wrapper: createWrapper()
-      })
-
-      await waitFor(() => expect(result.current.isLoading).toBe(false))
-
-      queryClient.setQueryData<FullSummary>(
-         ['summary', '1', '2026'],
-         mockSummary
-      )
-
-      // Add receivedDate
-      await result.current.update({
+      expect(
+         vi.mocked(incomeApi.updateIncome).mock.calls[0][0]
+      ).toEqual({
          rowIndex: 1,
          amount: 5000,
-         receivedDate: '05/01/2026'
-      })
-
-      await waitFor(() => {
-         const updatedSummary = queryClient.getQueryData<FullSummary>([
-            'summary',
-            '1',
-            '2026'
-         ])
-         expect(updatedSummary?.totalIncomes).toBe(5000)
-         expect(updatedSummary?.totalReceivedAmount).toBe(5000) // 0 + 5000
+         receivedDate: null
       })
    })
 })

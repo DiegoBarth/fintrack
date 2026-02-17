@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/fintrack/dev-sw.js?dev-sw', { scope: '/fintrack/', type: 'classic' })

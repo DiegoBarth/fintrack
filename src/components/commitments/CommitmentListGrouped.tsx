@@ -1,8 +1,19 @@
 import { memo, useMemo } from 'react'
 import type { Commitment } from '@/types/Commitment'
 import { CommitmentList } from '@/components/commitments/CommitmentList'
-import { numberToCurrency } from '@/utils/formatters'
+import { numberToCurrency, dateBRToISO } from '@/utils/formatters'
 import { CARDS } from '@/config/constants'
+
+function sortCardItems(items: Commitment[]): Commitment[] {
+   return [...items].sort((a, b) => {
+      const dateA = new Date(dateBRToISO(a.dueDate)).getTime()
+      const dateB = new Date(dateBRToISO(b.dueDate)).getTime()
+      if (dateA !== dateB) return dateA - dateB
+      const installmentsA = a.totalInstallments ?? 1
+      const installmentsB = b.totalInstallments ?? 1
+      return installmentsB - installmentsA
+   })
+}
 
 interface Props {
    commitments: Commitment[]
@@ -63,10 +74,10 @@ export const CommitmentListGrouped = memo(function CommitmentListGrouped({
 
          for (const card of CARDS) {
             const cardItems = byCard[card]
-            if (cardItems?.length) result.push({ type: 'Cartão', card, items: cardItems })
+            if (cardItems?.length) result.push({ type: 'Cartão', card, items: sortCardItems(cardItems) })
          }
          if (byCard['Outros']?.length) {
-            result.push({ type: 'Cartão', card: 'Outros', items: byCard['Outros'] })
+            result.push({ type: 'Cartão', card: 'Outros', items: sortCardItems(byCard['Outros']) })
          }
       }
 

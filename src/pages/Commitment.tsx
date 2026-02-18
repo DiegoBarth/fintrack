@@ -12,6 +12,9 @@ import { usePeriod } from '@/contexts/PeriodContext';
 import type { Commitment } from '@/types/Commitment';
 import { useCommitment } from '@/hooks/useCommitment';
 import { Layout } from '@/components/layout/Layout';
+import { numberToCurrency } from '@/utils/formatters';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Plus } from 'lucide-react';
 
 export function Commitment() {
@@ -54,6 +57,16 @@ export function Commitment() {
 
    const statementAllPaid = unpaidFiltered.length === 0
 
+   const headerSubtitle = useMemo(() => {
+      const raw =
+         month === 'all'
+            ? String(year)
+            : format(new Date(Number(year), Number(month) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })
+      const monthLabel = month === 'all' ? raw : raw.charAt(0).toUpperCase() + raw.slice(1)
+      const total = filteredCommitments.reduce((sum, c) => sum + Number(c.amount), 0)
+      return `${monthLabel} • Total: ${numberToCurrency(total)}`
+   }, [month, year, filteredCommitments])
+
    const handlePayStatement = useCallback(async () => {
       if (unpaidFiltered.length === 0) return
       const paymentDate = new Date().toISOString().slice(0, 10)
@@ -78,20 +91,9 @@ export function Commitment() {
       )
    }
 
-   const headerSlot = (
-      <Button
-         size="sm"
-         className="rounded-full bg-amber-500 hover:bg-amber-600 text-white border-0 shadow-sm"
-         onClick={() => setModalOpen(true)}
-      >
-         <Plus className="size-4" />
-         Novo Compromisso
-      </Button>
-   )
-
    return (
-      <Layout title="Compromissos" onBack={handleBack} headerSlot={headerSlot}>
-         <div className="space-y-4">
+      <Layout title="Compromissos" onBack={handleBack} subtitle={headerSubtitle} headerVariant="commitment">
+         <div className="space-y-4 pb-20">
             <div className="space-y-3 pb-3 border-b border-border">
                <CommitmentTypeFilter
                   value={typeFilter}
@@ -121,6 +123,15 @@ export function Commitment() {
                showStatementInGroupHeaders={!cardFilter}
             />
          </div>
+
+         <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-amber-600 text-white shadow-lg transition-all hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            aria-label="Novo compromisso"
+         >
+            <Plus className="h-7 w-7" />
+         </button>
 
          <AddCommitmentModal
             isOpen={modalIsOpen}

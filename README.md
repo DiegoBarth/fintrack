@@ -10,8 +10,6 @@ Modern **production-level** personal financial control web system, built with Re
 
 ## ✨ Project Highlights
 
-This project achieved a **9.7/10 code quality score**, implementing:
-
 - 🧪 **217+ Automated Tests** with ~97% coverage.
 - ♿ **WCAG 2.1 Accessibility** complete (ARIA, focus trap, keyboard navigation).
 - ⚡ **Optimized Performance** (React.memo, useMemo, useCallback).

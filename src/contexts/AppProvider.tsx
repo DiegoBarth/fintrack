@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PeriodProvider } from '@/contexts/PeriodContext';
 import { QUERY_STALE_TIME_MS } from '@/config/constants';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -34,7 +33,6 @@ export function AppProvider({ children, client }: AppProviderProps) {
                {children}
             </PeriodProvider>
          </ThemeProvider>
-         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
    );
 }

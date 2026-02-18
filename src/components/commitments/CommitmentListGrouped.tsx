@@ -86,10 +86,9 @@ export const CommitmentListGrouped = memo(function CommitmentListGrouped({
       <div className="space-y-6">
          {groups.map((group) => {
             const isCardGroup = group.type === 'Cartão' && group.card
-            const totalStatement =
-               showStatementInGroupHeaders && isCardGroup
-                  ? group.items.reduce((sum, c) => sum + Number(c.amount), 0)
-                  : 0
+            const totalStatement = showStatementInGroupHeaders
+               ? group.items.reduce((sum, c) => sum + Number(c.amount), 0)
+               : 0
 
             return (
                <section
@@ -103,7 +102,7 @@ export const CommitmentListGrouped = memo(function CommitmentListGrouped({
                      <span>
                         {group.card ? `${group.type} • ${group.card}` : group.type}
                      </span>
-                     {showStatementInGroupHeaders && isCardGroup && (
+                     {showStatementInGroupHeaders && totalStatement > 0 && (
                         <span className="font-bold text-foreground text-base">
                            {numberToCurrency(totalStatement)}
                         </span>

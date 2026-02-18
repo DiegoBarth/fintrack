@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IncomeList } from '@/components/incomes/IncomeList'
 import { AddIncomeModal } from '@/components/incomes/AddIncomeModal'
 import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
 import { SkeletonList } from '@/components/ui/SkeletonList'
-import { Button } from '@/components/ui/Button'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Income } from '@/types/Income'
 import { useIncome } from '@/hooks/useIncome'
 import { Layout } from '@/components/layout/Layout'
+import { numberToCurrency } from '@/utils/formatters'
+import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 import { Plus } from 'lucide-react'
 
 export function Income() {
@@ -20,6 +22,16 @@ export function Income() {
    const [incomeSelected, setIncomeSelected] = useState<Income | null>(null)
    const [modalIsOpen, setModalOpen] = useState(false)
 
+   const headerSubtitle = useMemo(() => {
+      const raw =
+         month === 'all'
+            ? String(year)
+            : format(new Date(Number(year), Number(month) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })
+      const monthLabel = month === 'all' ? raw : raw.charAt(0).toUpperCase() + raw.slice(1)
+      const total = incomes.reduce((sum, i) => sum + Number(i.amount), 0)
+      return `${monthLabel} • Total: ${numberToCurrency(total)}`
+   }, [month, year, incomes])
+
    if (isLoading) {
       return (
          <Layout title="Receitas" onBack={handleBack}>
@@ -28,21 +40,23 @@ export function Income() {
       )
    }
 
-   const headerSlot = (
-      <Button size="sm" className="rounded-full shadow-sm" onClick={() => setModalOpen(true)}>
-         <Plus className="size-4" />
-         Nova receita
-      </Button>
-   )
-
    return (
-      <Layout title="Receitas" onBack={handleBack} headerSlot={headerSlot}>
-         <div className="pt-1">
+      <Layout title="Receitas" onBack={handleBack} subtitle={headerSubtitle} headerVariant="income">
+         <div className="pt-1 pb-20">
             <IncomeList
                incomes={incomes}
                onSelect={setIncomeSelected}
             />
          </div>
+
+         <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-lg transition-all hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            aria-label="Nova receita"
+         >
+            <Plus className="h-7 w-7" />
+         </button>
 
          <AddIncomeModal
             isOpen={modalIsOpen}

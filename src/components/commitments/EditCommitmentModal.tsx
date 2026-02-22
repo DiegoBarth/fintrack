@@ -9,6 +9,7 @@ import {
    dateBRToISO
 } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/ModalBase'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { ScopeChoiceModal } from '@/components/ScopeChoiceModal'
 import { useCommitment } from '@/hooks/useCommitment'
 import { DateField } from '@/components/ui/DateField'
@@ -36,6 +37,7 @@ export function EditCommitmentModal({
    const [paymentDate, setPaymentDate] = useState('')
    const [scopeModal, setScopeModal] = useState<'edit' | 'delete' | null>(null)
    const [pendingAction, setPendingAction] = useState<'update' | 'delete' | null>(null)
+   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
 
    useEffect(() => {
       if (commitment) {
@@ -84,6 +86,10 @@ export function EditCommitmentModal({
 
    const handleDelete = async () => {
       if (!commitment) return;
+      if (commitment.type === 'Variável') {
+         setIsConfirmDeleteOpen(true);
+         return;
+      }
       if (shouldAskScope(commitment)) {
          setPendingAction('delete');
          setScopeModal('delete');
@@ -172,6 +178,15 @@ export function EditCommitmentModal({
                </div>
             </div>
          </BaseModal>
+         <ConfirmModal
+            isOpen={isConfirmDeleteOpen}
+            onClose={() => setIsConfirmDeleteOpen(false)}
+            title="Excluir compromisso"
+            message="Tem certeza que deseja excluir este compromisso? Essa ação não poderá ser desfeita."
+            confirmLabel="Excluir"
+            onConfirm={() => doDelete('single')}
+            loading={isDeleting}
+         />
          <ScopeChoiceModal
             isOpen={!!scopeModal}
             isDelete={scopeModal === 'delete'}

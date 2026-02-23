@@ -6,64 +6,40 @@ export default defineConfig({
     plugins: [
         react(),
         VitePWA({
-            registerType: 'autoUpdate',
-            includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+            registerType: 'prompt',
+            scope: '/fintrack/',
             manifest: {
                 name: 'Fintrack',
-                short_name: 'Finanças',
+                short_name: 'Fintrack',
                 description: 'Aplicativo de controle financeiro pessoal',
                 theme_color: '#1e293b',
                 background_color: '#0f172a',
                 display: 'standalone',
-                orientation: 'portrait',
-                scope: '/fintrack/',
                 start_url: '/fintrack/',
+                scope: '/fintrack/',
                 icons: [
-                    {
-                        src: 'pwa-192x192.png',
-                        sizes: '192x192',
-                        type: 'image/png'
-                    },
-                    {
-                        src: 'pwa-512x512.png',
-                        sizes: '512x512',
-                        type: 'image/png'
-                    },
-                    {
-                        src: 'pwa-512x512.png',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'any maskable'
-                    }
-                ]
+                    { src: '/fintrack/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+                ],
             },
             workbox: {
                 globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-                runtimeCaching: [
-                    {
-                        urlPattern: /^https:\/\/script\.google\.com\/.*/i,
-                        handler: 'NetworkFirst',
-                        options: {
-                            cacheName: 'google-scripts-cache',
-                            expiration: {
-                                maxEntries: 10,
-                                maxAgeSeconds: 60 * 60 * 24 * 7
-                            },
-                            cacheableResponse: {
-                                statuses: [0, 200]
-                            }
-                        }
-                    }
-                ],
+                navigateFallback: '/fintrack/index.html',
             },
-            devOptions: {
-                enabled: false
-            }
-        })
+        }),
     ],
     base: '/fintrack/',
     build: {
-        outDir: 'docs'
+        outDir: 'docs',
+        rollupOptions: {
+            output: {
+                manualChunks: (id) => {
+                    if (id.includes('node_modules/react'))
+                        return 'vendor-react';
+                    if (id.includes('node_modules/@tanstack/react-query'))
+                        return 'react-query';
+                },
+            },
+        },
     },
     resolve: {
         alias: {

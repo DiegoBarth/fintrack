@@ -15,7 +15,7 @@ interface CommitmentModalProps {
  * A specialized modal to list multiple commitments, 
  * typically used for "Pending Tasks" or "Upcoming Bills" views.
  */
-export function CommitmentModal({
+export default function CommitmentModal({
    isOpen,
    onClose,
    title,

@@ -23,7 +23,7 @@ interface EditCommitmentModalProps {
    onConfirm: (rowIndex: number) => void
 }
 
-export function EditCommitmentModal({
+export default function EditCommitmentModal({
    isOpen,
    commitment,
    onClose,

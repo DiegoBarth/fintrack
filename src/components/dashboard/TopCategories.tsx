@@ -54,7 +54,7 @@ interface TopCategoriesProps {
  * - useMemo: Memoizes the maximum value (avoids accessing categories[0] in every iteration).
  * - Recalculates only when the categories array changes.
  */
-export function TopCategories({ categories }: TopCategoriesProps) {
+export default function TopCategories({ categories }: TopCategoriesProps) {
    // Memoizes the maximum value (used for calculating bar percentages)
    // Recalculates only when categories change
    const maxAmount = useMemo(

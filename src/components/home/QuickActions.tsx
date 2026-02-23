@@ -1,46 +1,43 @@
 import { Link } from "react-router-dom"
 import { Plus, Minus, Calendar, BarChart3 } from "lucide-react"
+import React from "react"
 
-/**
- * Component providing quick navigation buttons for the main features of the app.
- * Optimized for touch targets and visual clarity on the Home screen.
- */
-export function QuickActions() {
-   const actions = [
-      {
-         icon: Plus,
-         label: "Receitas",
-         href: "/incomes",
-         color: "text-emerald-400 dark:text-emerald-400",
-         bg: "bg-emerald-50",
-         hover: "hover:bg-emerald-100",
-      },
-      {
-         icon: Minus,
-         label: "Gastos",
-         href: "/expenses",
-         color: "text-rose-400 dark:text-rose-400",
-         bg: "bg-rose-50",
-         hover: "hover:bg-rose-100",
-      },
-      {
-         icon: Calendar,
-         label: "Compromissos",
-         href: "/commitments",
-         color: "text-amber-400 dark:text-amber-400",
-         bg: "bg-amber-50",
-         hover: "hover:bg-amber-100",
-      },
-      {
-         icon: BarChart3,
-         label: "Dashboard",
-         href: "/dashboard",
-         color: "text-blue-400 dark:text-blue-400",
-         bg: "bg-blue-50",
-         hover: "hover:bg-blue-100",
-      },
-   ]
+const actions = [
+   {
+      icon: Plus,
+      label: "Receitas",
+      href: "/incomes",
+      color: "text-emerald-400 dark:text-emerald-400",
+      bg: "bg-emerald-50",
+      hover: "hover:bg-emerald-100",
+   },
+   {
+      icon: Minus,
+      label: "Gastos",
+      href: "/expenses",
+      color: "text-rose-400 dark:text-rose-400",
+      bg: "bg-rose-50",
+      hover: "hover:bg-rose-100",
+   },
+   {
+      icon: Calendar,
+      label: "Compromissos",
+      href: "/commitments",
+      color: "text-amber-400 dark:text-amber-400",
+      bg: "bg-amber-50",
+      hover: "hover:bg-amber-100",
+   },
+   {
+      icon: BarChart3,
+      label: "Dashboard",
+      href: "/dashboard",
+      color: "text-blue-400 dark:text-blue-400",
+      bg: "bg-blue-50",
+      hover: "hover:bg-blue-100",
+   },
+]
 
+export default React.memo(function QuickActions() {
    return (
       <div className="py-4 px-6 bg-white dark:bg-gray-800 rounded-lg">
          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Ações rápidas</h3>
@@ -56,7 +53,7 @@ export function QuickActions() {
                         flex flex-col items-center gap-2 p-3 rounded-xl
                         ${action.hover}
                         hover:scale-105 active:scale-95
-                        transition-all duration-200
+                        transition-transform duration-200
                         group
                      `}
                   >
@@ -72,10 +69,10 @@ export function QuickActions() {
                      </div>
                      <span className={`
                         text-xs text-gray-600 dark:text-gray-300
-                        group-hover:text-gray-600 dark:group-hover:text-gray-700
-                        text-center group-hover:font-medium
-                        transition-all`}
-                     >
+                        text-center
+                        group-hover:font-medium
+                        transition-colors duration-200
+                     `}>
                         {action.label}
                      </span>
                   </Link>
@@ -84,4 +81,4 @@ export function QuickActions() {
          </div>
       </div>
    )
-}
+})

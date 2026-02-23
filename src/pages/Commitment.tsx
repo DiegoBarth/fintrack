@@ -4,7 +4,7 @@ import { CommitmentListGrouped } from '@/components/commitments/CommitmentListGr
 import { CommitmentTypeFilter, type CommitmentTypeFilterValue } from '@/components/commitments/CommitmentTypeFilter'
 import { CommitmentCardFilter } from '@/components/commitments/CommitmentCardFilter'
 import { CommitmentCardStatement } from '@/components/commitments/CommitmentCardStatement'
-import { EditCommitmentModal } from '@/components/commitments/EditCommitmentModal'
+import EditCommitmentModal from '@/components/commitments/EditCommitmentModal'
 import { AddCommitmentModal } from '@/components/commitments/AddCommitmentModal'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import { Button } from '@/components/ui/Button';
@@ -17,7 +17,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Plus } from 'lucide-react';
 
-export function Commitment() {
+export default function Commitment() {
    const { month, year } = usePeriod()
    const { commitments, isLoading, payCardStatement } = useCommitment(month, String(year))
    const [commitmentSelected, setCommitmentSelected] = useState<Commitment | null>(null)

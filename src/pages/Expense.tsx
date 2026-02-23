@@ -13,7 +13,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { Plus } from 'lucide-react'
 
-export function Expense() {
+export default function Expense() {
    const { month, year } = usePeriod()
    const { expenses, isLoading } = useExpense(month, String(year))
    const navigate = useNavigate()

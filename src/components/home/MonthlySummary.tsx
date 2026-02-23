@@ -5,15 +5,11 @@ import { SummaryCard } from "@/components/home/SummaryCard"
 
 /**
  * Monthly summary component with optimized calculations.
- * * Applied Optimizations:
- * - useMemo: Memoizes balance calculations to avoid recalculation on every render.
- * - Only recalculates when the summary data changes (prevents updates on every Context change).
+ * Now loaded lazily from Home.tsx to improve LCP.
  */
-export function MonthlySummary() {
+export default function MonthlySummary() {
    const { summary, isLoading } = usePeriod();
 
-   // Memoizes totals extracted from the summary
-   // Recalculates only if summary changes (avoids unnecessary re-calculation)
    const totals = useMemo(() => ({
       totalIncomes: summary?.totalIncomes ?? 0,
       totalExpenses: summary?.totalExpenses ?? 0,
@@ -23,9 +19,6 @@ export function MonthlySummary() {
       totalPaidCommitments: summary?.totalPaidCommitments ?? 0
    }), [summary])
 
-
-   // Memoizes balance calculations (mathematical operations)
-   // Recalculates only when totals change
    const balances = useMemo(() => ({
       monthFinalBalance: totals.totalIncomes - totals.totalExpenses - totals.totalCommitments,
       currentBalance: totals.totalReceivedAmount - totals.totalPaidExpenses - totals.totalPaidCommitments

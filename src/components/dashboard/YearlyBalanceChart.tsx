@@ -9,7 +9,7 @@ interface YearlyBalanceProps {
    data: MonthlyBalanceHistory[]
 }
 
-export function YearlyBalanceChart({ data }: YearlyBalanceProps) {
+export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
    const { summary } = usePeriod();
    const { theme } = useTheme();
 

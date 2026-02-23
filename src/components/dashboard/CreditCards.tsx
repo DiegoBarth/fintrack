@@ -9,7 +9,7 @@ interface Props {
    cards: CreditCardSummary[]
 }
 
-export function CreditCards({ cards }: Props) {
+export default function CreditCards({ cards }: Props) {
    const [active, setActive] = useState(0)
    const [startX, setStartX] = useState<number | null>(null)
    const [isDragging, setIsDragging] = useState(false)

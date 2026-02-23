@@ -1,38 +1,19 @@
-import type { ReactNode } from 'react';
-import { useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { PeriodProvider } from '@/contexts/PeriodContext';
-import { QUERY_STALE_TIME_MS } from '@/config/constants';
-import { ThemeProvider } from '@/contexts/ThemeContext';
-
-export function createQueryClient() {
-   return new QueryClient({
-      defaultOptions: {
-         queries: {
-            staleTime: QUERY_STALE_TIME_MS,
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false
-         }
-      }
-   });
-}
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "./ThemeContext";
+import { PeriodProvider } from "./PeriodContext";
+import type { ReactNode } from "react";
 
 interface AppProviderProps {
-   children: ReactNode;
-   client?: QueryClient;
+  children: ReactNode;
+  client: any;
 }
 
-export function AppProvider({ children, client }: AppProviderProps) {
-   const [internalClient] = useState(createQueryClient);
-   const queryClient = client ?? internalClient;
-
-   return (
-      <QueryClientProvider client={queryClient}>
-         <ThemeProvider>
-            <PeriodProvider>
-               {children}
-            </PeriodProvider>
-         </ThemeProvider>
-      </QueryClientProvider>
-   );
+export default function AppProvider({ children, client }: AppProviderProps) {
+  return (
+    <QueryClientProvider client={client}>
+      <ThemeProvider>
+        <PeriodProvider>{children}</PeriodProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
 }

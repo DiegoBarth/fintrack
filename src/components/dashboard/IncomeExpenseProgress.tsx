@@ -6,7 +6,7 @@ interface Props {
    summary: FullSummary | null
 }
 
-export function IncomeExpenseProgress({ summary }: Props) {
+export default function IncomeExpenseProgress({ summary }: Props) {
    if (!summary) return null
 
    // Percentage of received incomes

@@ -1,7 +1,11 @@
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
+/** Interval to check for service worker updates (1 hour). */
+const SW_UPDATE_INTERVAL_MS = 60 * 60 * 1000
+
 /**
  * Registers the PWA service worker and shows a banner when a new version is available.
+ * Note: the prompt only appears in production build; in dev the SW is usually not active.
  */
 export default function PWAUpdatePrompt() {
   const {
@@ -9,7 +13,14 @@ export default function PWAUpdatePrompt() {
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(registration) {
-      console.log('SW registered:', registration?.scope)
+      if (import.meta.env.DEV) {
+        console.log('SW registered (dev):', registration?.scope)
+        return
+      }
+      // Periodic check so the "new version" prompt can appear without user refreshing.
+      if (registration) {
+        setInterval(() => registration.update(), SW_UPDATE_INTERVAL_MS)
+      }
     },
     onRegisterError(error) {
       console.warn('SW registration error:', error)

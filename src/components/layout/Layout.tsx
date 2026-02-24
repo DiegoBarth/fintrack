@@ -75,11 +75,10 @@ export function Layout({
               ) : null}
 
               <h1
-                className={
-                  hasColoredHeader
-                    ? 'text-2xl font-bold text-gray-900 dark:text-white'
-                    : 'text-2xl font-bold text-gray-900 dark:text-gray-100'
-                }
+                className={`text-4xl md:text-4xl font-bold ${hasColoredHeader
+                  ? 'font-bold text-gray-900 dark:text-white'
+                  : 'font-bold text-gray-900 dark:text-gray-100'}
+                `}
               >
                 {title}
               </h1>

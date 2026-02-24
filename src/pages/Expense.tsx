@@ -34,7 +34,7 @@ export default function Expense() {
 
    if (isLoading) {
       return (
-         <Layout title="Gastos" onBack={handleBack}>
+         <Layout title="Gastos" onBack={handleBack} headerVariant="expense">
             <SkeletonList />
          </Layout>
       )

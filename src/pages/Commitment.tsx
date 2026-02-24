@@ -85,7 +85,7 @@ export default function Commitment() {
 
    if (isLoading) {
       return (
-         <Layout title="Compromissos" onBack={handleBack}>
+         <Layout title="Compromissos" onBack={handleBack} headerVariant="commitment">
             <SkeletonList />
          </Layout>
       )

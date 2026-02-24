@@ -1,0 +1,1 @@
+import{r as e,w as t}from"./react-query-B5bzpzJa.js";import{t as n}from"./PeriodContext-BJpVKQA4.js";import"./formatters-DVAU20Gu.js";import{t as r}from"./ThemeContext-lq8nZZTH.js";var i=t();function a({children:t,client:a}){return(0,i.jsx)(e,{client:a,children:(0,i.jsx)(r,{children:(0,i.jsx)(n,{children:t})})})}export{a as default};

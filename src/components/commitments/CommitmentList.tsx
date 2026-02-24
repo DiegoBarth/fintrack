@@ -72,11 +72,11 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
             <ListItemFooterMobile
                left={
                   <div className="flex flex-col text-xs mt-1">
-                     <span className={isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'}>
+                     <span className={isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-400'}>
                         Vence em {commitment.dueDate}
                      </span>
 
-                     <span className={`text-green-700 dark:text-green-300 ${!isPaid ? 'invisible select-none' : ''}`}>
+                     <span className={`text-green-700 dark:text-green-400 ${!isPaid ? 'invisible select-none' : ''}`}>
                         {isPaid ? `Pago em ${commitment.paymentDate}` : 'Aguardando'}
                      </span>
                   </div>
@@ -85,9 +85,9 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
                   <div className="flex flex-col items-end gap-1">
                      <span
                         className={`font-medium text-sm
-                           ${isPaid && 'text-green-600 dark:text-green-400'}
+                           ${isPaid && 'text-green-700 dark:text-green-400'}
                            ${isOverdue && 'text-red-600 dark:text-red-400'}
-                           ${!isPaid && !isOverdue && 'text-amber-600 dark:text-amber-400'}
+                           ${!isPaid && !isOverdue && 'text-amber-700 dark:text-amber-400'}
                         `}
                      >
                         {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Em aberto'}
@@ -118,7 +118,7 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
             </ListColMuted>
 
             <ListColMuted span={2}>
-               <span className={isPaid ? 'text-green-700 dark:text-green-300' : isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'}>
+               <span className={isPaid ? 'text-green-700 dark:text-green-400' : isOverdue ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-400'}>
                   {isPaid ? `Pago em ${commitment.paymentDate}` : `Vence em ${commitment.dueDate}`}
                </span>
             </ListColMuted>
@@ -130,9 +130,9 @@ export const CommitmentList = memo(function CommitmentList({ commitments, onSele
             <ListColStatus>
                <span
                   className={`font-semibold
-                     ${isPaid && 'text-green-600 dark:text-green-400'}
+                     ${isPaid && 'text-green-700 dark:text-green-400'}
                      ${isOverdue && 'text-red-600 dark:text-red-400'}
-                     ${!isPaid && !isOverdue && 'text-amber-600 dark:text-amber-400'}
+                     ${!isPaid && !isOverdue && 'text-amber-700 dark:text-amber-400'}
                   `}
                >
                   {isPaid ? 'Pago' : isOverdue ? 'Vencido' : 'Aberto'}

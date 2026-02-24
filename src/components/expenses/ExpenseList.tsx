@@ -40,9 +40,9 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
          />
 
          <ListItemFooterMobile
-            left={<span className="text-green-700 dark:text-green-300">Pago em {expense.paymentDate} • {expense.category}</span>}
+            left={<span className="text-green-700 dark:text-green-400">Pago em {expense.paymentDate} • {expense.category}</span>}
             right={
-               <span className="text-green-600 font-medium">
+               <span className="text-green-700 dark:text-green-400 font-medium">
                   Pago
                </span>
             }
@@ -63,7 +63,7 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
          </ListColMuted>
 
          <ListColMuted span={2}>
-            <span className="text-green-700 dark:text-green-300">Pago em {expense.paymentDate}</span>
+            <span className="text-green-700 dark:text-green-400">Pago em {expense.paymentDate}</span>
          </ListColMuted>
 
          <ListColValue>
@@ -73,7 +73,7 @@ export const ExpenseList = memo(function ExpenseList({ expenses, onSelect }: Pro
          </ListColValue>
 
          <ListColStatus>
-            <span className="text-green-600 dark:text-green-400 font-semibold">
+            <span className="text-green-700 dark:text-green-400 font-semibold">
                Pago
             </span>
          </ListColStatus>

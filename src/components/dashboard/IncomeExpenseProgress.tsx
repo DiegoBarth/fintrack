@@ -44,13 +44,13 @@ export default function IncomeExpenseProgress({ summary }: Props) {
                <div className="mb-2 flex justify-between items-baseline">
                   <span className="font-medium text-gray-900 dark:text-gray-100">Receitas</span>
                   <div className="flex items-center gap-2">
-                     <span className="text-sm text-muted-foreground dark:text-gray-400">
+                     <span className="text-sm text-muted-foreground dark:text-gray-300">
                         {numberToCurrency(summary.totalReceivedInMonth)} /{' '}
                         {numberToCurrency(summary.totalIncomes)}
                      </span>
                      <span className={`text-xs font-semibold ${incomePercentage > 100 ? 'text-red-600 dark:text-red-400' :
-                        incomePercentage > 80 ? 'text-emerald-600 dark:text-emerald-400' :
-                           'text-amber-600 dark:text-amber-400'
+                        incomePercentage > 80 ? 'text-emerald-700 dark:text-emerald-400' :
+                           'text-amber-700 dark:text-amber-400'
                         }`}>
                         {incomePercentage.toFixed(1)}%
                      </span>
@@ -64,7 +64,7 @@ export default function IncomeExpenseProgress({ summary }: Props) {
                      className={`h-3 rounded-full ${IncomesColor} transition-colors`}
                   />
                </div>
-               <p className="mt-1 text-[10px] text-muted-foreground text-right">
+               <p className="mt-1 text-xs text-muted-foreground text-right">
                   {incomePercentage.toFixed(1)}% do esperado
                </p>
             </div>
@@ -74,7 +74,7 @@ export default function IncomeExpenseProgress({ summary }: Props) {
                <div className="mb-2 flex justify-between items-baseline">
                   <span className="font-medium text-gray-900 dark:text-gray-100">Despesas</span>
                   <div className="flex items-center gap-2">
-                     <span className="text-sm text-muted-foreground dark:text-gray-400">
+                     <span className="text-sm text-muted-foreground dark:text-gray-300">
                         {numberToCurrency(
                            summary.totalPaidExpensesInMonth + summary.totalPaidCommitmentsInMonth
                         )}{' '}
@@ -84,7 +84,7 @@ export default function IncomeExpenseProgress({ summary }: Props) {
                         )}
                      </span>
                      <span className={`text-xs font-semibold ${expensePercentage > 100 ? 'text-red-600 dark:text-red-400' :
-                        expensePercentage > 80 ? 'text-amber-600 dark:text-amber-400' :
+                        expensePercentage > 80 ? 'text-amber-700 dark:text-amber-400' :
                            'text-red-600 dark:text-red-400'
                         }`}>
                         {expensePercentage.toFixed(1)}%
@@ -99,7 +99,7 @@ export default function IncomeExpenseProgress({ summary }: Props) {
                      className={`h-3 rounded-full ${ExpensesColor} transition-colors`}
                   />
                </div>
-               <p className="mt-1 text-[10px] text-muted-foreground text-right">
+               <p className="mt-1 text-xs text-muted-foreground text-right">
                   {expensePercentage.toFixed(1)}% do limite planejado
                </p>
             </div>

@@ -30,7 +30,7 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                   {payload[0].payload.month}
                </p>
-               <p className={`text-lg font-bold ${isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+               <p className={`text-lg font-bold ${isPositive ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>
                   {numberToCurrency(value)}
                </p>
                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
@@ -198,19 +198,19 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
          <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
             <div className="text-center">
                <p className="text-xs text-gray-500 dark:text-gray-400">Maior</p>
-               <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+               <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
                   {numberToCurrency(Math.max(...data.map(d => d.balance)))}
                </p>
             </div>
             <div className="text-center">
                <p className="text-xs text-gray-500 dark:text-gray-400">Menor</p>
-               <p className="text-sm font-bold text-red-600 dark:text-red-400">
+               <p className="text-sm font-bold text-red-700 dark:text-red-400">
                   {numberToCurrency(Math.min(...data.map(d => d.balance)))}
                </p>
             </div>
             <div className="text-center">
                <p className="text-xs text-gray-500 dark:text-gray-400">Atual</p>
-               <p className={`text-sm font-bold ${currentBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+               <p className={`text-sm font-bold ${currentBalance >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>
                   {numberToCurrency(currentBalance)}
                </p>
             </div>

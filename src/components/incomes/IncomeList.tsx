@@ -57,8 +57,8 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
                      <span
                         className={
                            received
-                              ? 'text-green-600 dark:text-green-400 font-medium'
-                              : 'text-blue-600 dark:text-blue-400 font-medium'
+                              ? 'text-green-700 dark:text-green-400 font-medium'
+                              : 'text-blue-700 dark:text-blue-400 font-medium'
                         }
                      >
                         {received ? 'Recebido' : 'Em aberto'}
@@ -99,8 +99,8 @@ export const IncomeList = memo(function IncomeList({ incomes, onSelect }: Props)
                <span
                   className={
                      received
-                        ? 'text-green-600 dark:text-green-400 font-semibold'
-                        : 'text-blue-600 dark:text-blue-400 font-semibold'
+                        ? 'text-green-700 dark:text-green-400 font-semibold'
+                        : 'text-blue-700 dark:text-blue-400 font-semibold'
                   }
                >
                   {received ? 'Recebido' : 'Em aberto'}

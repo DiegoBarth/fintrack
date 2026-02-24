@@ -68,21 +68,21 @@ export default function TopCategories({ categories }: TopCategoriesProps) {
       const percentage = (value / max) * 100
       if (percentage > 70) return {
          bar: 'bg-red-500 dark:bg-red-600',
-         text: 'text-red-600 dark:text-red-400',
+         text: 'text-red-700 dark:text-red-400',
          bg: 'bg-red-100 dark:bg-red-900/30',
          icon: 'text-red-500'
       }
 
       if (percentage > 40) return {
          bar: 'bg-orange-500 dark:bg-orange-600',
-         text: 'text-orange-600 dark:text-orange-400',
+         text: 'text-orange-700 dark:text-orange-400',
          bg: 'bg-orange-100 dark:bg-orange-900/30',
          icon: 'text-orange-500'
       }
 
       if (percentage > 20) return {
          bar: 'bg-amber-500 dark:bg-amber-600',
-         text: 'text-amber-600 dark:text-amber-400',
+         text: 'text-amber-700 dark:text-amber-400',
          bg: 'bg-amber-100 dark:bg-amber-900/30',
          icon: 'text-amber-500'
       }

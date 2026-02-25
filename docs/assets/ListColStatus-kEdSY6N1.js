@@ -1,0 +1,1 @@
+import{w as e}from"./react-query-Bs2h8zdQ.js";var t=e();function n({children:e}){return(0,t.jsx)(`div`,{className:`col-span-1 text-sm font-medium text-right`,children:e})}export{n as t};

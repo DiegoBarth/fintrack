@@ -13,7 +13,7 @@ interface EditExpenseModalProps {
    onClose: () => void
 }
 
-export function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalProps) {
+export default function EditExpenseModal({ isOpen, expense, onClose }: EditExpenseModalProps) {
    const { month, year } = usePeriod()
    const { update, remove, isSaving, isDeleting } = useExpense(month, String(year))
    const [isConfirmOpen, setIsConfirmOpen] = useState(false)

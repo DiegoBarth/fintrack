@@ -21,7 +21,7 @@ interface EditIncomeModalProps {
    onClose: () => void
 }
 
-export function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProps) {
+export default function EditIncomeModal({ isOpen, income, onClose }: EditIncomeModalProps) {
    const { month, year } = usePeriod()
    const { update, remove, isSaving, isDeleting } = useIncome(month, String(year))
    const toast = useToast();

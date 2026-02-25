@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react'
+import { useEffect, useState, useRef, lazy, Suspense } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 import { useDashboard } from '@/hooks/useDashboard'
 import { usePeriod } from '@/contexts/PeriodContext'
@@ -18,6 +19,25 @@ export default function Dashboard() {
   const { month, year, summary } = usePeriod();
   const { dashboard, isLoading } = useDashboard(month, String(year))
 
+  const chartRef = useRef<HTMLDivElement | null>(null)
+  const [chartVisible, setChartVisible] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setChartVisible(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    if (chartRef.current) observer.observe(chartRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
   const navigate = useNavigate()
   const handleBack = () => navigate('/')
 
@@ -25,35 +45,44 @@ export default function Dashboard() {
     <Layout title="Dashboard" onBack={handleBack} headerVariant="dashboard" containerClassName="max-w-7xl">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Suspense fallback={<IncomeExpenseSkeleton />}>
-            {isLoading
-              ? <IncomeExpenseSkeleton />
-              : <IncomeExpenseProgress summary={summary} />}
-          </Suspense>
+          {isLoading ? (
+            <IncomeExpenseSkeleton />
+          ) : (
+            <Suspense fallback={<IncomeExpenseSkeleton />}>
+              <IncomeExpenseProgress summary={summary} />
+            </Suspense>
+          )}
+
         </div>
 
         <div className="lg:col-span-3">
-          <Suspense fallback={<CreditCardsSkeleton />}>
-            {isLoading
-              ? <CreditCardsSkeleton />
-              : <CreditCards cards={dashboard.cardsSummary} />}
-          </Suspense>
+          {isLoading ? (
+            <CreditCardsSkeleton />
+          ) : (
+            <Suspense fallback={<CreditCardsSkeleton />}>
+              <CreditCards cards={dashboard.cardsSummary} />
+            </Suspense>
+          )}
         </div>
 
         <div className="lg:row-span-2">
-          <Suspense fallback={<TopCategoriesSkeleton />}>
-            {isLoading
-              ? <TopCategoriesSkeleton />
-              : <TopCategories categories={dashboard.topCategories} />}
-          </Suspense>
+          {isLoading ? (
+            <TopCategoriesSkeleton />
+          ) : (
+            <Suspense fallback={<TopCategoriesSkeleton />}>
+              <TopCategories categories={dashboard.topCategories} />
+            </Suspense>
+          )}
         </div>
 
-        <div className="lg:col-span-2">
-          <Suspense fallback={<YearlyBalanceSkeleton />}>
-            {isLoading
-              ? <YearlyBalanceSkeleton />
-              : <YearlyBalanceChart data={dashboard.monthlyBalance} />}
-          </Suspense>
+        <div ref={chartRef} className="lg:col-span-2">
+          {isLoading || !chartVisible ? (
+            <YearlyBalanceSkeleton />
+          ) : (
+            <Suspense fallback={<YearlyBalanceSkeleton />}>
+              <YearlyBalanceChart data={dashboard.monthlyBalance} />
+            </Suspense>
+          )}
         </div>
       </div>
     </Layout>

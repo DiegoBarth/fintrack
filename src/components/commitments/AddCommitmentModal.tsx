@@ -33,7 +33,7 @@ const defaultValues: Partial<Commitment> = {
    referenceMonth: ''
 }
 
-export function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
+export default function AddCommitmentModal({ isOpen, onClose }: AddCommitmentModalProps) {
    const { month, year } = usePeriod()
    const { create, createCard, isSaving } = useCommitment(month, String(year))
    const toast = useToast();

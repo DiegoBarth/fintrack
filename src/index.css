@@ -3,185 +3,199 @@
 @tailwind utilities;
 
 .custom-calendar {
-   --rdp-accent-color: #60A5FA;
+  --rdp-accent-color: #60A5FA;
 }
 
 @layer base {
-   :root {
-      --background: 0 0% 100%;
-      --foreground: 222.2 84% 4.9%;
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
-      --popover: 0 0% 100%;
-      --popover-foreground: 222.2 84% 4.9%;
-      --primary: 222.2 47.4% 11.2%;
-      --primary-foreground: 210 40% 98%;
-      --secondary: 210 40% 96.1%;
-      --secondary-foreground: 222.2 47.4% 11.2%;
-      --muted: 210 40% 96.1%;
-      --muted-foreground: 215.4 16.3% 46.9%;
-      --accent: 210 40% 96.1%;
-      --accent-foreground: 222.2 47.4% 11.2%;
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 214.3 31.8% 91.4%;
-      --input: 214.3 31.8% 91.4%;
-      --ring: 222.2 84% 4.9%;
-      --chart-1: 12 76% 61%;
-      --chart-2: 173 58% 39%;
-      --chart-3: 197 37% 24%;
-      --chart-4: 43 74% 66%;
-      --chart-5: 27 87% 67%;
-      --radius: 0.5rem
-   }
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem
+  }
 
-   .dark {
-      --background: 222.2 84% 4.9%;
-      --foreground: 210 40% 98%;
-      --card: 222.2 84% 4.9%;
-      --card-foreground: 210 40% 98%;
-      --popover: 222.2 84% 4.9%;
-      --popover-foreground: 210 40% 98%;
-      --primary: 210 40% 98%;
-      --primary-foreground: 222.2 47.4% 11.2%;
-      --secondary: 217.2 32.6% 17.5%;
-      --secondary-foreground: 210 40% 98%;
-      --muted: 217.2 32.6% 17.5%;
-      --muted-foreground: 215 20.2% 65.1%;
-      --accent: 217.2 32.6% 17.5%;
-      --accent-foreground: 210 40% 98%;
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: 210 40% 98%;
-      --border: 217.2 32.6% 17.5%;
-      --input: 217.2 32.6% 17.5%;
-      --ring: 212.7 26.8% 83.9%;
-      --chart-1: 220 70% 50%;
-      --chart-2: 160 60% 45%;
-      --chart-3: 30 80% 55%;
-      --chart-4: 280 65% 60%;
-      --chart-5: 340 75% 55%
-   }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%
+  }
 }
 
 @layer base {
-   * {
-      @apply border-border;
-   }
+  * {
+    @apply border-border;
+  }
 
-   body {
-      @apply bg-background text-foreground;
-   }
+  body {
+    @apply bg-background text-foreground;
+  }
 
-   input:focus,
-   textarea:focus,
-   select:focus {
-      @apply outline-none;
-      --tw-ring-color: theme(colors.gray.300);
-      @apply ring-2 border-gray-300;
-   }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    @apply outline-none;
+    --tw-ring-color: theme(colors.gray.300);
+    @apply ring-2 border-gray-300;
+  }
 
-   .dark input:focus,
-   .dark textarea:focus,
-   .dark select:focus {
-      --tw-ring-color: theme(colors.gray.500);
-      @apply ring-2 border-gray-500;
-   }
+  .dark input:focus,
+  .dark textarea:focus,
+  .dark select:focus {
+    --tw-ring-color: theme(colors.gray.500);
+    @apply ring-2 border-gray-500;
+  }
 }
 
 @keyframes slideIn {
-   from {
-      transform: translateX(400px);
-      opacity: 0;
-   }
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
 
-   to {
-      transform: translateX(0);
-      opacity: 1;
-   }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes slideOut {
-   from {
-      transform: translateX(0);
-      opacity: 1;
-   }
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
 
-   to {
-      transform: translateX(400px);
-      opacity: 0;
-   }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
 }
 
 @keyframes swipeArrowIn {
-   from {
-      opacity: 0;
-      transform: translate(var(--swipe-x, 0), var(--swipe-y, 0));
-   }
-   to {
-      opacity: 0.8;
-      transform: translate(0, 0);
-   }
+  from {
+    opacity: 0;
+    transform: translate(var(--swipe-x, 0), var(--swipe-y, 0));
+  }
+
+  to {
+    opacity: 0.8;
+    transform: translate(0, 0);
+  }
 }
 
 @keyframes summaryCardIn {
-   from {
-      opacity: 0;
-      transform: translateY(8px);
-   }
-   to {
-      opacity: 1;
-      transform: translateY(0);
-   }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-summary-card {
-   animation: summaryCardIn 0.25s ease-out forwards;
+  animation: summaryCardIn 0.25s ease-out forwards;
 }
 
 .custom-scrollbar {
-   scrollbar-width: thin;
-   scrollbar-color: #a3a3a3 #f3f4f6;
+  scrollbar-width: thin;
+  scrollbar-color: #a3a3a3 #f3f4f6;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-   width: 8px;
-   background: #f3f4f6;
-   border-radius: 8px;
+  width: 8px;
+  background: #f3f4f6;
+  border-radius: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-   background: #a3a3a3;
-   border-radius: 8px;
+  background: #a3a3a3;
+  border-radius: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-   background: #737373;
+  background: #737373;
 }
 
 .custom-scrollbar::-webkit-scrollbar-corner {
-   background: transparent;
+  background: transparent;
 }
 
 /* Dark mode */
 .dark .custom-scrollbar {
-   scrollbar-color: #d1d5db #374151;
+  scrollbar-color: #d1d5db #374151;
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar {
-   background: #18181b;
+  background: #18181b;
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-   background: #52525b;
+  background: #52525b;
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-   background: #a1a1aa;
+  background: #a1a1aa;
 }
 
 button:focus,
 [role="gridcell"] button:focus {
-   outline: none !important;
-   box-shadow: 0 0 0 2px #a1a1aa !important;
-   border-color: #a1a1aa !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px #a1a1aa !important;
+  border-color: #a1a1aa !important;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

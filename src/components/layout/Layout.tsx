@@ -59,7 +59,7 @@ export function Layout({
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className={`mx-auto ${containerClassName} px-4 ${hasColoredHeader ? 'pt-0 pb-6' : 'py-6'}`}>
         <header
-          className={`h-[150px]
+          className={`${headerVariant ? 'h-[150px]' : ''}
             ${hasColoredHeader
               ? `mb-6 space-y-4 -mx-4 -mt-4 px-4 pt-6 pb-5 rounded-b-2xl ${headerBg} shadow-md`
               : 'mb-6 space-y-4'}

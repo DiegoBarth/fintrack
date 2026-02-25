@@ -29,7 +29,7 @@ const defaultValues: Partial<Income & { months?: number }> = {
  * Modal for creating a new income record.
  * Uses TanStack Query for state management and cache updates.
  */
-export function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
+export default function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps) {
    const { month, year } = usePeriod()
    const { create, isSaving } = useIncome(month, String(year))
    const toast = useToast();

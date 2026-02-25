@@ -24,7 +24,7 @@ const defaultValues: Partial<Expense> = {
    amount: ''
 }
 
-export function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
+export default function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
    const { month, year } = usePeriod()
    const { create, isSaving } = useExpense(month, String(year))
    const toast = useToast();

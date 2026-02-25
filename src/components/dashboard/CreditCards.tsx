@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { CreditCardSummary } from '@/types/Dashboard'
 import { numberToCurrency } from '@/utils/formatters'
@@ -71,11 +70,11 @@ export default function CreditCards({ cards }: Props) {
   }
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
-      className="relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none"
+    <section
+      className="
+        relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none
+        animate-[fadeUp_.4s_ease-out_forwards]
+      "
     >
       <div className="flex items-center justify-between mb-4 px-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cartões</h2>
@@ -169,13 +168,13 @@ export default function CreditCards({ cards }: Props) {
           >
             <span
               className={`block h-2 rounded-full transition-all duration-300 ${i === active
-                  ? 'w-6 bg-blue-600 dark:bg-blue-500'
-                  : 'w-2 bg-gray-300 dark:bg-gray-600'
+                ? 'w-6 bg-blue-600 dark:bg-blue-500'
+                : 'w-2 bg-gray-300 dark:bg-gray-600'
                 }`}
             />
           </button>
         ))}
       </div>
-    </motion.section>
+    </section>
   )
 }

@@ -23,7 +23,7 @@ export function SummaryCard({
   return (
     <div className="summary-card">
       <div
-        className="flex items-center justify-between rounded-xl bg-white dark:bg-gray-800 p-4 md:p-5
+        className="h-[78px] flex items-center justify-between rounded-xl bg-white dark:bg-gray-800 p-4 md:p-5
                shadow-sm transition-shadow hover:shadow-lg border border-gray-100 dark:border-gray-700"
         style={{ borderLeft: `5px solid ${color}` }}
       >

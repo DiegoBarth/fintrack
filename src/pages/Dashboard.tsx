@@ -44,7 +44,7 @@ export default function Dashboard() {
   return (
     <Layout title="Dashboard" onBack={handleBack} headerVariant="dashboard" containerClassName="max-w-7xl">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           {isLoading ? (
             <IncomeExpenseSkeleton />
           ) : (

@@ -44,22 +44,21 @@ export function CreditCardsSkeleton() {
           className="
             pointer-events-none
             absolute left-1/2
-            translate-x-[100px] sm:translate-x-[220px] lg:translate-x-[260px]
+            lg:translate-y-[18%]
+            translate-x-[100px] sm:translate-x-[220px] lg:translate-x-[18%]
             w-[75%] sm:w-80
             rounded-xl
             p-4
             shadow-2xl
             bg-white dark:bg-zinc-900
             opacity-50
-            scale-75
+            scale-75 lg:scale-90
             z-10
           "
         >
           <Skeleton className="mb-3 h-44 sm:h-44 w-full rounded-lg" />
           <Skeleton className="h-5 w-32 mb-2" />
         </div>
-
-
 
       </div>
 

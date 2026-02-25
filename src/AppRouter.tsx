@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { SwipeLayout } from '@/components/layout/SwipeLayout';
 import { Layout } from '@/components/layout/Layout';
-import { SkeletonList } from '@/components/ui/SkeletonList';
-import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
+import { IncomeSkeleton } from '@/components/incomes/IncomeSkeleton';
+import { ExpenseSkeleton } from '@/components/expenses/ExpenseSkeleton';
+import { CommitmentSkeleton } from '@/components/commitments/CommitmentSkeleton';
 import { HomeFallback } from '@/components/home/HomeFallback';
 
 import { lazy, Suspense } from 'react';
@@ -17,7 +18,7 @@ function IncomeFallback() {
   const navigate = useNavigate();
   return (
     <Layout title="Receitas" onBack={() => navigate('/')} headerVariant="income">
-      <SkeletonList />
+      <IncomeSkeleton />
     </Layout>
   );
 }
@@ -26,7 +27,7 @@ function ExpenseFallback() {
   const navigate = useNavigate();
   return (
     <Layout title="Gastos" onBack={() => navigate('/')} headerVariant="expense">
-      <SkeletonList />
+      <ExpenseSkeleton />
     </Layout>
   );
 }
@@ -35,16 +36,7 @@ function CommitmentFallback() {
   const navigate = useNavigate();
   return (
     <Layout title="Compromissos" onBack={() => navigate('/')} headerVariant="commitment">
-      <SkeletonList />
-    </Layout>
-  );
-}
-
-function DashboardFallback() {
-  const navigate = useNavigate();
-  return (
-    <Layout title="Dashboard" onBack={() => navigate('/')} containerClassName="max-w-7xl">
-      <DashboardSkeleton />
+      <CommitmentSkeleton />
     </Layout>
   );
 }
@@ -70,7 +62,7 @@ export default function AppRouter({ onLogout }: AppRouterProps) {
           <Suspense fallback={<CommitmentFallback />}><Commitment /></Suspense>
         } />
         <Route path="/dashboard" element={
-          <Suspense fallback={<DashboardFallback />}><Dashboard /></Suspense>
+          <Suspense fallback={null}><Dashboard /></Suspense>
         } />
       </Route>
 

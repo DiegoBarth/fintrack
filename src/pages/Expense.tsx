@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ExpenseList } from '@/components/expenses/ExpenseList'
 import { AddExpenseModal } from '@/components/expenses/AddExpenseModal'
 import { EditExpenseModal } from '@/components/expenses/EditExpenseModal'
-import { SkeletonList } from '@/components/ui/SkeletonList'
+import { ExpenseSkeleton } from '@/components/expenses/ExpenseSkeleton'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Expense } from '@/types/Expense'
 import { useExpense } from '@/hooks/useExpense'
@@ -35,7 +35,7 @@ export default function Expense() {
    if (isLoading) {
       return (
          <Layout title="Gastos" onBack={handleBack} headerVariant="expense">
-            <SkeletonList />
+            <ExpenseSkeleton />
          </Layout>
       )
    }

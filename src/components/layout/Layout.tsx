@@ -3,7 +3,7 @@ import { type ReactNode, useState, useEffect } from 'react'
 import { PeriodFilters } from '@/components/home/PeriodFilters'
 import { usePeriod } from '@/contexts/PeriodContext'
 
-export type HeaderVariant = 'income' | 'expense' | 'commitment'
+export type HeaderVariant = 'income' | 'expense' | 'commitment' | 'dashboard'
 
 /** Gradientes: light mode = tons pastel que combinam com fundo claro; dark mode = mais saturados com transparência. */
 const HEADER_GRADIENTS: Record<HeaderVariant, string> = {
@@ -12,7 +12,9 @@ const HEADER_GRADIENTS: Record<HeaderVariant, string> = {
   expense:
     'bg-gradient-to-bl from-red-100 to-red-300/90 dark:from-red-400/80 dark:to-red-700/88',
   commitment:
-    'bg-gradient-to-bl from-amber-100 to-amber-300/90 dark:from-amber-400/80 dark:to-amber-600/88'
+    'bg-gradient-to-bl from-amber-100 to-amber-300/90 dark:from-amber-400/80 dark:to-amber-600/88',
+  dashboard:
+  'bg-gradient-to-b from-zinc-50 to-indigo-100/80 dark:from-zinc-900 dark:to-indigo-950/40 border-b border-zinc-200 dark:border-zinc-800'
 }
 
 interface LayoutProps {
@@ -57,11 +59,11 @@ export function Layout({
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className={`mx-auto ${containerClassName} px-4 ${hasColoredHeader ? 'pt-0 pb-6' : 'py-6'}`}>
         <header
-          className={
-            hasColoredHeader
+          className={`h-[150px]
+            ${hasColoredHeader
               ? `mb-6 space-y-4 -mx-4 -mt-4 px-4 pt-6 pb-5 rounded-b-2xl ${headerBg} shadow-md`
-              : 'mb-6 space-y-4'
-          }
+              : 'mb-6 space-y-4'}
+          `}
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-col gap-2">

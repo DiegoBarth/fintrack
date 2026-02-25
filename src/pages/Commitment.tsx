@@ -6,8 +6,7 @@ import { CommitmentCardFilter } from '@/components/commitments/CommitmentCardFil
 import { CommitmentCardStatement } from '@/components/commitments/CommitmentCardStatement'
 import EditCommitmentModal from '@/components/commitments/EditCommitmentModal'
 import { AddCommitmentModal } from '@/components/commitments/AddCommitmentModal'
-import { SkeletonList } from '@/components/ui/SkeletonList'
-import { Button } from '@/components/ui/Button';
+import { CommitmentSkeleton } from '@/components/commitments/CommitmentSkeleton'
 import { usePeriod } from '@/contexts/PeriodContext';
 import type { Commitment } from '@/types/Commitment';
 import { useCommitment } from '@/hooks/useCommitment';
@@ -86,7 +85,7 @@ export default function Commitment() {
    if (isLoading) {
       return (
          <Layout title="Compromissos" onBack={handleBack} headerVariant="commitment">
-            <SkeletonList />
+            <CommitmentSkeleton />
          </Layout>
       )
    }

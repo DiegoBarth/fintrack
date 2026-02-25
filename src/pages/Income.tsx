@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { IncomeList } from '@/components/incomes/IncomeList'
 import { AddIncomeModal } from '@/components/incomes/AddIncomeModal'
 import { EditIncomeModal } from '@/components/incomes/EditIncomeModal'
-import { SkeletonList } from '@/components/ui/SkeletonList'
+import { IncomeSkeleton } from '@/components/incomes/IncomeSkeleton'
 import { usePeriod } from '@/contexts/PeriodContext'
 import type { Income } from '@/types/Income'
 import { useIncome } from '@/hooks/useIncome'
@@ -35,7 +35,7 @@ export default function Income() {
    if (isLoading) {
       return (
          <Layout title="Receitas" onBack={handleBack} headerVariant="income">
-            <SkeletonList />
+            <IncomeSkeleton />
          </Layout>
       )
    }

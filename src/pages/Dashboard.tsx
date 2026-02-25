@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton'
 import { useDashboard } from '@/hooks/useDashboard'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { Layout } from '@/components/layout/Layout'
@@ -10,6 +9,11 @@ const IncomeExpenseProgress = lazy(() => import('@/components/dashboard/IncomeEx
 const YearlyBalanceChart = lazy(() => import('@/components/dashboard/YearlyBalanceChart'))
 const TopCategories = lazy(() => import('@/components/dashboard/TopCategories'))
 
+import { IncomeExpenseSkeleton } from '@/components/dashboard/skeletons/IncomeExpenseSkeleton'
+import { TopCategoriesSkeleton } from '@/components/dashboard/skeletons/TopCategoriesSkeleton'
+import { CreditCardsSkeleton } from '@/components/dashboard/skeletons/CreditCardsSkeleton'
+import { YearlyBalanceSkeleton } from '@/components/dashboard/skeletons/YearlyBalanceSkeleton'
+
 export default function Dashboard() {
   const { month, year, summary } = usePeriod();
   const { dashboard, isLoading } = useDashboard(month, String(year))
@@ -17,41 +21,41 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const handleBack = () => navigate('/')
 
-  if (isLoading) {
-    return (
-      <Layout title="Dashboard" onBack={handleBack} containerClassName="max-w-7xl">
-        <DashboardSkeleton />
-      </Layout>
-    )
-  }
-
   return (
-    <Layout title="Dashboard" onBack={handleBack} containerClassName="max-w-7xl">
+    <Layout title="Dashboard" onBack={handleBack} headerVariant="dashboard" containerClassName="max-w-7xl">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="order-1 lg:order-none lg:col-span-2 lg:row-start-1">
-          <Suspense fallback={<DashboardSkeleton />}>
-            <IncomeExpenseProgress summary={summary} />
+        <div className="lg:col-span-2">
+          <Suspense fallback={<IncomeExpenseSkeleton />}>
+            {isLoading
+              ? <IncomeExpenseSkeleton />
+              : <IncomeExpenseProgress summary={summary} />}
           </Suspense>
         </div>
 
-        <div className="order-4 lg:order-none lg:row-span-2 lg:row-start-1 h-full">
-          <Suspense fallback={<DashboardSkeleton />}>
-            <TopCategories categories={dashboard.topCategories} />
+        <div className="lg:col-span-3">
+          <Suspense fallback={<CreditCardsSkeleton />}>
+            {isLoading
+              ? <CreditCardsSkeleton />
+              : <CreditCards cards={dashboard.cardsSummary} />}
           </Suspense>
         </div>
 
-        <div className="order-2 lg:order-none lg:col-span-3 lg:row-start-3">
-          <Suspense fallback={<DashboardSkeleton />}>
-            <CreditCards cards={dashboard.cardsSummary} />
+        <div className="lg:row-span-2">
+          <Suspense fallback={<TopCategoriesSkeleton />}>
+            {isLoading
+              ? <TopCategoriesSkeleton />
+              : <TopCategories categories={dashboard.topCategories} />}
           </Suspense>
         </div>
 
-        <div className="order-3 lg:order-none lg:col-span-2 lg:row-start-2 h-full">
-          <Suspense fallback={<DashboardSkeleton />}>
-            <YearlyBalanceChart data={dashboard.monthlyBalance} />
+        <div className="lg:col-span-2">
+          <Suspense fallback={<YearlyBalanceSkeleton />}>
+            {isLoading
+              ? <YearlyBalanceSkeleton />
+              : <YearlyBalanceChart data={dashboard.monthlyBalance} />}
           </Suspense>
         </div>
       </div>
     </Layout>
-  )
+  );
 }

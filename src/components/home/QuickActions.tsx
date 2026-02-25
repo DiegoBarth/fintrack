@@ -39,7 +39,7 @@ const actions = [
 
 export default React.memo(function QuickActions() {
    return (
-      <div className="py-4 px-6 bg-white dark:bg-gray-800 rounded-lg">
+      <div className="py-4 px-6 bg-white dark:bg-gray-800 rounded-lg ">
          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Ações rápidas</h3>
 
          <div className="grid grid-cols-4 gap-4">
@@ -54,6 +54,7 @@ export default React.memo(function QuickActions() {
                         ${action.hover}
                         hover:scale-105 active:scale-95
                         transition-transform duration-200
+                        focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500
                         group
                      `}
                   >

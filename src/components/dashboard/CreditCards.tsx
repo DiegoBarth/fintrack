@@ -70,12 +70,7 @@ export default function CreditCards({ cards }: Props) {
   }
 
   return (
-    <section
-      className="
-        relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none
-        animate-[fadeUp_.4s_ease-out_forwards]
-      "
-    >
+    <section className="relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none">
       <div className="flex items-center justify-between mb-4 px-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Cartões</h2>
         <div className="flex items-center gap-2">

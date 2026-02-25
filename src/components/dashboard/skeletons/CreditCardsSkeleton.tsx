@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 
 export function CreditCardsSkeleton() {
   return (
-    <section className="relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none">
+    <section className="relative mt-2 h-[420px] sm:h-[460px] overflow-hidden select-none animate-[fadeUp_.4s_ease-out_forwards]">
 
       <div className="flex items-center justify-between mb-4 px-4">
         <Skeleton className="h-6 w-28" />

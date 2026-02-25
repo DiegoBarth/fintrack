@@ -2,7 +2,9 @@ import { Skeleton } from '@/components/ui/Skeleton'
 
 export function IncomeExpenseSkeleton() {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm p-6 space-y-6 h-[254px]">
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800
+      p-6 shadow-sm p-6 space-y-6 h-[254px] animate-[fadeUp_.4s_ease-out_forwards]"
+    >
       <Skeleton className="h-5 w-44" />
 
       <div className="space-y-4 flex flex-col justify-between h-40">

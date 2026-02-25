@@ -100,8 +100,7 @@ export default function TopCategories({ categories }: TopCategoriesProps) {
         rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm h-full flex flex-col
         opacity-0 translate-y-4
         animate-[fadeUp_.4s_ease-out_forwards]
-      "
-    >
+      ">
       <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
         Top Categories
       </h2>
@@ -112,12 +111,7 @@ export default function TopCategories({ categories }: TopCategoriesProps) {
           const styles = getStyles(item.total, maxAmount)
 
           return (
-            <section
-              className="
-                flex items-center gap-3
-                animate-[fadeUp_.4s_ease-out_forwards]
-              "
-            >
+            <section className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${styles.bg}`}>
                 <IconComponent className={`w-4 h-4 ${styles.icon}`} />
               </div>
@@ -132,9 +126,7 @@ export default function TopCategories({ categories }: TopCategoriesProps) {
                   </span>
                 </div>
                 <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700">
-                  <section
-                    className={`animate-[fadeUp_.4s_ease-out_forwards] h-2 rounded-full ${styles.bar}`}
-                  />
+                  <section className={`h-2 rounded-full ${styles.bar}`} />
                 </div>
               </div>
             </section>

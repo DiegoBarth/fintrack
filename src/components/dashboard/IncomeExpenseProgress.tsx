@@ -28,12 +28,7 @@ export default function IncomeExpenseProgress({ summary }: Props) {
   const ExpensesColor = expensePercentage > 100 ? 'bg-red-600' : expensePercentage > 80 ? 'bg-amber-500' : 'bg-red-500'
 
   return (
-    <section
-      className="
-        rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm
-        animate-[fadeUp_.4s_ease-out_forwards]
-      "
-    >
+    <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
       <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
         Progresso do período
       </h2>
@@ -57,12 +52,7 @@ export default function IncomeExpenseProgress({ summary }: Props) {
             </div>
           </div>
           <div className="h-3 rounded-full bg-gray-200 dark:bg-gray-700">
-            <section
-              className={`
-                h-3 rounded-full ${IncomesColor} transition-colors
-                animate-[fadeUp_.4s_ease-out_forwards]
-              `}
-            />
+            <section className={`h-3 rounded-full ${IncomesColor} transition-colors`}/>
           </div>
           <p className="mt-1 text-xs text-muted-foreground text-right">
             {incomePercentage.toFixed(1)}% do esperado
@@ -92,9 +82,7 @@ export default function IncomeExpenseProgress({ summary }: Props) {
             </div>
           </div>
           <div className="h-3 rounded-full bg-gray-200 dark:bg-gray-700">
-            <section
-              className={`h-3 rounded-full ${ExpensesColor} transition-colors animate-[fadeUp_.4s_ease-out_forwards]`}
-            />
+            <section className={`h-3 rounded-full ${ExpensesColor} transition-colors`}/>
           </div>
           <p className="mt-1 text-xs text-muted-foreground text-right">
             {expensePercentage.toFixed(1)}% do limite planejado

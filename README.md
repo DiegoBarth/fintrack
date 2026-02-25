@@ -323,7 +323,6 @@ const timeoutId = setTimeout(() => controller.abort(), 30000)
 
 ### UI & Styling
 - **Tailwind CSS 3.4** - Utility-first CSS
-- **Framer Motion 12** - Fluid animations
 - **Lucide React** - Modern icons
 
 ### Testing

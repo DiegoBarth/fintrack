@@ -60,7 +60,6 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
     <section
       className="
         rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 md:p-6 shadow-sm h-full flex flex-col
-        animate-[fadeUp_.4s_ease-out_forwards]
       "
     >
       <div className="flex items-center justify-between mb-3">

@@ -56,7 +56,7 @@ export default defineConfig({
         start_url: '/fintrack/',
         scope: '/fintrack/',
         icons: [
-          { src: '/fintrack/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: '/fintrack/logo.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
         ],
       },
       workbox: {

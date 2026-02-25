@@ -2,7 +2,10 @@ import { Skeleton } from '@/components/ui/Skeleton'
 
 export function TopCategoriesSkeleton() {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm h-full flex flex-col">
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800
+        p-6 shadow-sm h-full flex flex-col animate-[fadeUp_.4s_ease-out_forwards]
+      "
+    >
       <Skeleton className="h-7 w-40 mb-6" />
 
       <div className="space-y-4 flex-1">

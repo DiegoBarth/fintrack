@@ -52,7 +52,10 @@ export default function IncomeExpenseProgress({ summary }: Props) {
             </div>
           </div>
           <div className="h-3 rounded-full bg-gray-200 dark:bg-gray-700">
-            <section className={`h-3 rounded-full ${IncomesColor} transition-colors`}/>
+            <section
+              className={`h-3 rounded-full ${IncomesColor} transition-all`}
+              style={{ width: `${Math.min(incomePercentage, 100)}%` }}
+            />
           </div>
           <p className="mt-1 text-xs text-muted-foreground text-right">
             {incomePercentage.toFixed(1)}% do esperado
@@ -82,7 +85,10 @@ export default function IncomeExpenseProgress({ summary }: Props) {
             </div>
           </div>
           <div className="h-3 rounded-full bg-gray-200 dark:bg-gray-700">
-            <section className={`h-3 rounded-full ${ExpensesColor} transition-colors`}/>
+            <section
+              className={`h-3 rounded-full ${ExpensesColor} transition-all`}
+              style={{ width: `${Math.min(expensePercentage, 100)}%` }}
+            />
           </div>
           <p className="mt-1 text-xs text-muted-foreground text-right">
             {expensePercentage.toFixed(1)}% do limite planejado

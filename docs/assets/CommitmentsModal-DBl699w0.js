@@ -1,0 +1,19 @@
+import{T as e,w as t}from"./react-query-B5bzpzJa.js";import{t as n}from"./calendar-DB7hpG5P.js";import{t as r}from"./x-B-rujbE9.js";import{S as i,p as a}from"./index--IbD_1Ym.js";var o=a(`circle-check-big`,[[`path`,{d:`M21.801 10A10 10 0 1 1 17 3.335`,key:`yps3ct`}],[`path`,{d:`m9 11 3 3L22 4`,key:`1pflzl`}]]),s=e(),c=t();function l({isOpen:e,onClose:t,title:a,items:l,onSelect:u}){let[d,f]=(0,s.useState)([]);return(0,s.useEffect)(()=>{e&&f(l)},[e,l]),e?(0,c.jsxs)(`div`,{className:`fixed inset-0 z-[60] flex justify-center items-end md:items-center p-0 md:p-4`,children:[(0,c.jsx)(`div`,{className:`absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200`,onClick:t}),(0,c.jsxs)(`div`,{className:`\r
+            relative w-full md:w-[450px] max-h-[85vh]\r
+            bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl\r
+            shadow-2xl flex flex-col overflow-hidden\r
+            animate-in slide-in-from-bottom-10 duration-300\r
+         `,children:[(0,c.jsx)(`div`,{className:`md:hidden flex justify-center pt-3 pb-1`,children:(0,c.jsx)(`div`,{className:`w-12 h-1.5 bg-gray-200 rounded-full`})}),(0,c.jsxs)(`div`,{className:`flex items-center justify-between p-5 border-b`,children:[(0,c.jsxs)(`div`,{children:[(0,c.jsx)(`h2`,{className:`text-lg font-semibold dark:text-gray-100`,children:a}),(0,c.jsxs)(`p`,{className:`text-[11px] text-muted-foreground uppercase tracking-wider font-semibold`,children:[d.length,` `,d.length===1?`item pendente`:`itens pendentes`]})]}),(0,c.jsx)(`button`,{onClick:t,className:`p-2 rounded-full hover:bg-muted transition-colors text-muted-foreground`,children:(0,c.jsx)(r,{size:20})})]}),(0,c.jsx)(`div`,{className:`overflow-y-auto p-4 md:max-h-[400px] `,children:d.length>0?(0,c.jsx)(`ul`,{className:`space-y-3 `,children:d.map(e=>(0,c.jsxs)(`li`,{className:`\r
+                              group flex items-center justify-between\r
+                              rounded-xl border p-4 \r
+                              bg-white dark:bg-gray-900\r
+                              border-gray-100 dark:border-gray-700\r
+                              hover:border-primary/30 dark:hover:border-primary/40\r
+                              hover:shadow-md \r
+                              cursor-pointer transition-all duration-200`,onClick:()=>u(e),children:[(0,c.jsxs)(`div`,{className:`flex-1 min-w-0 `,children:[(0,c.jsx)(`div`,{className:`font-medium dark:text-gray-100`,children:e.description}),(0,c.jsxs)(`div`,{className:`flex items-center gap-1 text-xs text-muted-foreground dark:text-gray-400`,children:[(0,c.jsx)(n,{size:12,className:`shrink-0`}),(0,c.jsxs)(`span`,{children:[`Vence em `,e.dueDate]})]})]}),(0,c.jsxs)(`div`,{className:`flex flex-col items-end gap-1`,children:[(0,c.jsx)(`span`,{className:`font-bold text-orange-600`,children:i(e.amount)}),(0,c.jsx)(`span`,{className:`text-[10px] font-bold text-muted-foreground opacity-60 uppercase`,children:`Pendente`})]})]},e.rowIndex))}):(0,c.jsxs)(`div`,{className:`flex flex-col items-center justify-center py-12 px-6 text-center`,children:[(0,c.jsx)(`div`,{className:`bg-green-100 text-green-600 p-4 rounded-full mb-4`,children:(0,c.jsx)(o,{size:32})}),(0,c.jsx)(`h3`,{className:`text-lg font-bold text-foreground`,children:`Tudo em dia!`}),(0,c.jsx)(`div`,{className:`text-center text-sm text-muted-foreground dark:text-gray-400 py-6`,children:`Você não tem compromissos pendentes para este filtro. 🎉`})]})}),(0,c.jsx)(`div`,{className:`p-4 bg-muted/30 border-t mt-auto`,children:(0,c.jsx)(`button`,{onClick:t,className:`\r
+                     w-full py-3 \r
+                     bg-white dark:bg-gray-900\r
+                     border border-gray-200 dark:border-gray-700\r
+                     rounded-xl font-bold text-sm\r
+                     hover:bg-gray-50 dark:hover:bg-gray-800\r
+                     transition-colors shadow-sm`,children:`Fechar`})})]})]}):null}export{l as default};

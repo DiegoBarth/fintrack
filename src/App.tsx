@@ -8,8 +8,8 @@ import { QueryClient } from '@tanstack/react-query';
 import { QUERY_STALE_TIME_MS } from '@/config/constants';
 import PWAUpdatePrompt from "./components/PWAUpdatePrompt";
 
-const AppProvider = lazy(() => import("@/contexts/AppProvider"));
-const AppRouter = lazy(() => import("@/AppRouter"));
+import AppProvider from "@/contexts/AppProvider";
+import AppRouter from "@/AppRouter";
 
 function createQueryClient() {
   return new QueryClient({
@@ -98,17 +98,7 @@ function App() {
   return (
     <ErrorBoundary>
       <AppProvider client={queryClient}>
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center min-h-screen bg-slate-50">
-              <div className="animate-pulse text-sm text-slate-400">
-                Carregando…
-              </div>
-            </div>
-          }
-        >
-          <AppRouter onLogout={handleLogout} />
-        </Suspense>
+        <AppRouter onLogout={handleLogout} />
         <PWAUpdatePrompt />
       </AppProvider>
     </ErrorBoundary>

@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+import { type ReactNode, useState, useEffect } from 'react'
 
 import { PeriodFilters } from '@/components/home/PeriodFilters'
 import { usePeriod } from '@/contexts/PeriodContext'
@@ -43,6 +43,12 @@ export function Layout({
   contentClassName = '',
 }: LayoutProps) {
   const { month, setMonth, year, setYear, isLoading } = usePeriod()
+  const [showFilters, setShowFilters] = useState(false)
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShowFilters(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
 
   const hasColoredHeader = !!headerVariant
   const headerBg = headerVariant ? HEADER_GRADIENTS[headerVariant] : ''
@@ -111,13 +117,17 @@ export function Layout({
           </div>
 
           {showPeriodoFilters ? (
-            <PeriodFilters
-              month={month}
-              year={year}
-              onMonthChange={setMonth}
-              onYearChange={setYear}
-              isLoading={isLoading}
-            />
+            showFilters ? (
+              <PeriodFilters
+                month={month}
+                year={year}
+                onMonthChange={setMonth}
+                onYearChange={setYear}
+                isLoading={isLoading}
+              />
+            ) : (
+              <div className="h-9 w-48 rounded-full bg-gray-200/50 dark:bg-gray-700/50" aria-hidden />
+            )
           ) : null}
         </header>
 

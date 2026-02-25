@@ -12,7 +12,7 @@ import {
 import { BaseModal } from '@/components/ui/ModalBase'
 import { ScopeChoiceModal } from '@/components/ScopeChoiceModal'
 import { DateField } from '@/components/ui/DateField'
-import { format } from "date-fns"
+import { format } from 'date-fns/format'
 import { useToast } from '@/contexts/toast';
 
 interface EditIncomeModalProps {

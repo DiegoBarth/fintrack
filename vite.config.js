@@ -2,9 +2,42 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from "path";
+/** Torna os CSS não bloqueantes: carrega com media="print" e troca para "all" no onload. */
+function nonBlockingCss() {
+    return {
+        name: 'non-blocking-css',
+        transformIndexHtml(html) {
+            return html.replace(/<link rel="stylesheet"([^>]*?)>/gi, (fullTag) => {
+                if (fullTag.includes('media='))
+                    return fullTag;
+                return fullTag.replace(/>\s*$/, ' media="print" onload="this.media=\'all\'">');
+            });
+        },
+    };
+}
+/** Script no final do body para o primeiro paint (shell) acontecer antes do JS. */
+function scriptAtBodyEnd() {
+    return {
+        name: 'script-at-body-end',
+        transformIndexHtml(html) {
+            const scriptRegex = /<script type="module"([^>]*?)><\/script>\s*/g;
+            const scripts = [];
+            let newHtml = html.replace(scriptRegex, (match) => {
+                scripts.push(match.trim());
+                return '';
+            });
+            if (scripts.length) {
+                newHtml = newHtml.replace('</body>', `${scripts.join('\n  ')}\n</body>`);
+            }
+            return newHtml;
+        },
+    };
+}
 export default defineConfig({
     plugins: [
         react(),
+        nonBlockingCss(),
+        scriptAtBodyEnd(),
         VitePWA({
             registerType: 'prompt',
             scope: '/fintrack/',

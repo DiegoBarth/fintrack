@@ -13,7 +13,7 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { ScopeChoiceModal } from '@/components/ScopeChoiceModal'
 import { useCommitment } from '@/hooks/useCommitment'
 import { DateField } from '@/components/ui/DateField'
-import { format } from "date-fns"
+import { format } from 'date-fns/format'
 import { useToast } from '@/contexts/toast';
 
 interface EditCommitmentModalProps {

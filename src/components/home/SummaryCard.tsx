@@ -1,6 +1,5 @@
 import { numberToCurrency } from "@/utils/formatters"
 import { Skeleton } from "@/components/ui/Skeleton"
-import { motion, number } from "framer-motion"
 
 interface SummaryCardProps {
   title: string
@@ -22,13 +21,10 @@ export function SummaryCard({
   icon
 }: SummaryCardProps) {
   return (
-    <motion.div
-      initial={false}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <div className="summary-card">
       <div
         className="flex items-center justify-between rounded-xl bg-white dark:bg-gray-800 p-4 md:p-5
-               shadow-sm transition-all hover:shadow-lg border border-gray-100 dark:border-gray-700"
+               shadow-sm transition-shadow hover:shadow-lg border border-gray-100 dark:border-gray-700"
         style={{ borderLeft: `5px solid ${color}` }}
       >
         <div className="flex items-center gap-3 md:gap-4">
@@ -52,6 +48,6 @@ export function SummaryCard({
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }

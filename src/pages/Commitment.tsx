@@ -13,8 +13,8 @@ import type { Commitment } from '@/types/Commitment';
 import { useCommitment } from '@/hooks/useCommitment';
 import { Layout } from '@/components/layout/Layout';
 import { numberToCurrency } from '@/utils/formatters';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { format } from 'date-fns/format';
+import { ptBR } from 'date-fns/locale/pt-BR';
 import { Plus } from 'lucide-react';
 
 export default function Commitment() {

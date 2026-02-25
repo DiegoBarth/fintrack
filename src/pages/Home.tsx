@@ -12,6 +12,7 @@ interface Props {
 }
 
 export default function Home({ onLogout }: Props) {
+
    return (
       <Layout
          title="Home"

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react"
 import { createPortal } from "react-dom"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
+import { format } from 'date-fns/format'
+import { ptBR } from 'date-fns/locale/pt-BR'
 
 export function MonthField({
    value,

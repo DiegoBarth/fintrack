@@ -9,8 +9,8 @@ import type { Income } from '@/types/Income'
 import { useIncome } from '@/hooks/useIncome'
 import { Layout } from '@/components/layout/Layout'
 import { numberToCurrency } from '@/utils/formatters'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { format } from 'date-fns/format'
+import { ptBR } from 'date-fns/locale/pt-BR'
 import { Plus } from 'lucide-react'
 
 export default function Income() {

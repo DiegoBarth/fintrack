@@ -1,11 +1,12 @@
 import { QueryClient } from '@tanstack/react-query'
 import type { Expense } from '@/types/Expense'
+import { expensesQueryKey } from './expenseQuery'
 import { dateBRToISO } from '@/utils/formatters'
 import { invalidateSummaryAndDashboardCache } from '@/services/queryInvalidationService'
 
 export function updateCacheAfterCreateExpense(queryClient: QueryClient, newExpense: Expense, year: string) {
    queryClient.setQueryData<Expense[]>(
-      ['expenses', year],
+      expensesQueryKey(year),
       old => {
          const updated = old ? [...old, newExpense] : [newExpense]
 
@@ -27,7 +28,7 @@ export function updateCacheAfterCreateExpense(queryClient: QueryClient, newExpen
 
 export function updateCacheAfterEditExpense(queryClient: QueryClient, oldExpense: Expense, updatedExpense: Expense, year: string) {
    queryClient.setQueryData<Expense[]>(
-      ['expenses', year],
+      expensesQueryKey(year),
       old =>
          old?.map(e =>
             e.rowIndex === oldExpense.rowIndex
@@ -43,7 +44,7 @@ export function updateCacheAfterDeleteExpense(queryClient: QueryClient, deletedE
    const deletedRowIndex = deletedExpense.rowIndex
 
    queryClient.setQueryData<Expense[]>(
-      ['expenses', year],
+      expensesQueryKey(year),
       old => {
          if (!old) return []
 

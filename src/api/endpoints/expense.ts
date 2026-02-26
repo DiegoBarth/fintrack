@@ -20,10 +20,9 @@ export function createExpense(payload: {
    });
 }
 
-export function listExpenses(month: string, year: string) {
+export function listExpenses(year: string) {
    return apiGet<Expense[]>({
       action: 'listExpenses',
-      month,
       year
    });
 }

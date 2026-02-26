@@ -1,15 +1,14 @@
 import { ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/Button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { usePeriod } from "@/contexts/PeriodContext"
 import { Skeleton } from "@/components/ui/Skeleton"
+import { useSummary } from "@/hooks/useSummary"
 
 interface PeriodFiltersProps {
    month: string
    year: number
    onMonthChange: (month: string) => void
    onYearChange: (year: number) => void
-   isLoading: boolean
 }
 
 /**
@@ -40,10 +39,9 @@ export function PeriodFilters({
    month,
    year,
    onMonthChange,
-   onYearChange,
-   isLoading
+   onYearChange
 }: PeriodFiltersProps) {
-   const { summary } = usePeriod();
+   const { summary, isLoading } = useSummary(month, String(year));
 
    const years = summary?.availableYears
       ?.slice()

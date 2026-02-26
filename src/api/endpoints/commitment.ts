@@ -3,10 +3,9 @@ import type { Commitment } from '@/types/Commitment';
 import { formatDateBR } from '@/utils/formatters';
 import { sanitizeText } from '@/utils/sanitizers'
 
-export function listCommitments(month: string, year: string) {
+export function listCommitments(year: string) {
    return apiGet<Commitment[]>({
       action: 'listCommitments',
-      month,
       year
    });
 }

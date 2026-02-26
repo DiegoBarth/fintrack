@@ -1,6 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Area, ComposedChart } from 'recharts'
 import { numberToCurrency } from '@/utils/formatters'
 import { usePeriod } from '@/contexts/PeriodContext'
+import { useSummary } from '@/hooks/useSummary'
 import type { MonthlyBalanceHistory } from '@/types/Dashboard'
 import { useTheme } from '@/contexts/ThemeContext'
 
@@ -9,7 +10,8 @@ interface YearlyBalanceProps {
 }
 
 export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
-  const { summary } = usePeriod();
+  const { month, year } = usePeriod();
+  const { summary } = useSummary(month, String(year));
   const { theme } = useTheme();
 
   const tickColor = theme === 'dark' ? '#9ca3af' : '#64748b';

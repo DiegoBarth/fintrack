@@ -1,150 +1,133 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { listIncomes, createIncome, updateIncome, deleteIncome } from '@/api/endpoints/income'
+import { createIncome, updateIncome, deleteIncome } from '@/api/endpoints/income'
 import { useApiError } from '@/hooks/useApiError'
-import {
-   updateCacheAfterCreateIncome,
-   updateCacheAfterEditIncome,
-   updateCacheAfterDeleteIncome
-} from '@/services/incomeCacheService'
+import { getIncomesQueryOptions } from '@/services/incomeQuery'
+import { updateCacheAfterCreateIncome, updateCacheAfterEditIncome, updateCacheAfterDeleteIncome } from '@/services/incomeCacheService'
 import { dateBRToISO, parseLocalDate, getMonthAndYearFromReference } from '@/utils/formatters'
 import type { Income } from '@/types/Income'
 
 export function useIncome(month: string, year: string) {
-   const queryClient = useQueryClient()
-   const { handleError } = useApiError()
+  const queryClient = useQueryClient()
+  const { handleError } = useApiError()
 
-   const queryKey = ['incomes', year]
+  const { data: allIncomes = [], isLoading, isError } =  useQuery(getIncomesQueryOptions(year))
 
-   const { data: allIncomes = [], isLoading, isError } = useQuery({
-      queryKey,
-      queryFn: () => listIncomes('all', String(year)),
-      staleTime: Infinity,
-      retry: 1
-   })
+  const incomes = month === 'all'
+    ? allIncomes
+    : allIncomes.filter(income => {
+      const { month: refMonth } = getMonthAndYearFromReference(income.referenceMonth)
 
-   const incomes =
-      month === 'all'
-         ? allIncomes
-         : allIncomes.filter(income => {
-            const { month: refMonth } =
-               getMonthAndYearFromReference(income.referenceMonth)
+      return String(refMonth) === String(month)
+    })
 
-            return String(refMonth) === String(month)
-         })
+  const createMutation = useMutation({
+    mutationFn: (newIncome: Omit<Income, 'rowIndex'>) =>
+      createIncome(newIncome),
+    onSuccess: (newIncomes: Income[]) => {
+      newIncomes.forEach(income => {
+        const { year: yearIncome } = getMonthAndYearFromReference(income.referenceMonth)
 
-   const createMutation = useMutation({
-      mutationFn: (newIncome: Omit<Income, 'rowIndex'>) =>
-         createIncome(newIncome),
-      onSuccess: (newIncomes: Income[]) => {
-         newIncomes.forEach(income => {
-            const { year: yearIncome } = getMonthAndYearFromReference(income.referenceMonth)
+        updateCacheAfterCreateIncome(
+          queryClient,
+          income,
+          yearIncome
+        )
+      })
+    },
+    onError: handleError
+  })
 
-            updateCacheAfterCreateIncome(
-               queryClient,
-               income,
-               yearIncome
+  const updateMutation = useMutation({
+    mutationFn: (data: {
+      rowIndex: number
+      amount: number
+      receivedDate?: string | null
+      scope?: 'single' | 'future'
+    }) => updateIncome(data),
+    onSuccess: (updatedIncomes: Income[]) => {
+      updatedIncomes.forEach(updatedIncome => {
+        const { year: yearIncome } = getMonthAndYearFromReference(updatedIncome.referenceMonth)
+
+        const oldIncome = queryClient.getQueryData<Income[]>(['incomes', yearIncome])?.find(r => r.rowIndex === updatedIncome.rowIndex)
+
+        if (!oldIncome) return
+
+        updateCacheAfterEditIncome(
+          queryClient,
+          oldIncome,
+          updatedIncome,
+          yearIncome
+        )
+      })
+    },
+    onError: handleError
+  })
+
+  const removeMutation = useMutation({
+    mutationFn: (
+      args: number | { rowIndex: number; scope?: 'single' | 'future' }
+    ) => {
+      if (typeof args === 'number') {
+        return deleteIncome(args)
+      }
+
+      return deleteIncome(
+        args.rowIndex,
+        args.scope
+      )
+    },
+    onSuccess: (_data, args) => {
+      const rowIndex =  typeof args === 'number' ? args : args.rowIndex
+      const scope = typeof args === 'number' ? 'single' : args.scope
+
+      const baseIncome = allIncomes.find(
+        r => r.rowIndex === rowIndex
+      )
+
+      if (!baseIncome) return
+
+      const incomesToDelete =
+        scope === 'future'
+          ? (() => {
+            const baseDate = new Date(
+              parseLocalDate(dateBRToISO(baseIncome.expectedDate))
             )
-         })
-      },
-      onError: handleError
-   })
-
-   const updateMutation = useMutation({
-      mutationFn: (data: {
-         rowIndex: number
-         amount: number
-         receivedDate?: string | null
-         scope?: 'single' | 'future'
-      }) => updateIncome(data),
-      onSuccess: (updatedIncomes: Income[]) => {
-         updatedIncomes.forEach(updatedIncome => {
-            const { year: yearIncome } = getMonthAndYearFromReference(updatedIncome.referenceMonth)
-
-            const oldIncome = queryClient
-               .getQueryData<Income[]>(['incomes', yearIncome])
-               ?.find(r => r.rowIndex === updatedIncome.rowIndex)
-
-            if (!oldIncome) return
-
-            updateCacheAfterEditIncome(
-               queryClient,
-               oldIncome,
-               updatedIncome,
-               yearIncome
+            return allIncomes.filter(r =>
+              r.description === baseIncome.description &&
+              new Date(
+                parseLocalDate(dateBRToISO(r.expectedDate))
+              ) >= baseDate
             )
-         })
-      },
-      onError: handleError
-   })
+          })()
+          : [baseIncome]
 
-   const removeMutation = useMutation({
-      mutationFn: (
-         args: number | { rowIndex: number; scope?: 'single' | 'future' }
-      ) => {
-         if (typeof args === 'number') {
-            return deleteIncome(args)
-         }
+      const byYear = new Map<string, Income[]>()
+      incomesToDelete.forEach(income => {
+        const { year: yearIncome } = getMonthAndYearFromReference(income.referenceMonth)
+        const list = byYear.get(yearIncome) ?? []
+        list.push(income)
+        byYear.set(yearIncome, list)
+      })
+      byYear.forEach((incomesForYear, yearIncome) => {
+        updateCacheAfterDeleteIncome(
+          queryClient,
+          incomesForYear,
+          yearIncome
+        )
+      })
+    },
 
-         return deleteIncome(
-            args.rowIndex,
-            args.scope
-         )
-      },
-      onSuccess: (_data, args) => {
-         const rowIndex =
-            typeof args === 'number' ? args : args.rowIndex
+    onError: handleError
+  })
 
-         const scope =
-            typeof args === 'number' ? 'single' : args.scope
-
-         const baseIncome = allIncomes.find(
-            r => r.rowIndex === rowIndex
-         )
-
-         if (!baseIncome) return
-
-         const incomesToDelete =
-            scope === 'future'
-               ? (() => {
-                    const baseDate = new Date(
-                       parseLocalDate(dateBRToISO(baseIncome.expectedDate))
-                    )
-                    return allIncomes.filter(r =>
-                       r.description === baseIncome.description &&
-                       new Date(
-                          parseLocalDate(dateBRToISO(r.expectedDate))
-                       ) >= baseDate
-                    )
-                 })()
-               : [baseIncome]
-
-         const byYear = new Map<string, Income[]>()
-         incomesToDelete.forEach(income => {
-            const { year: yearIncome } = getMonthAndYearFromReference(income.referenceMonth)
-            const list = byYear.get(yearIncome) ?? []
-            list.push(income)
-            byYear.set(yearIncome, list)
-         })
-         byYear.forEach((incomesForYear, yearIncome) => {
-            updateCacheAfterDeleteIncome(
-               queryClient,
-               incomesForYear,
-               yearIncome
-            )
-         })
-      },
-
-      onError: handleError
-   })
-
-   return {
-      incomes,
-      isLoading,
-      isError,
-      create: createMutation.mutateAsync,
-      update: updateMutation.mutateAsync,
-      remove: removeMutation.mutateAsync,
-      isSaving: createMutation.isPending || updateMutation.isPending,
-      isDeleting: removeMutation.isPending
-   }
+  return {
+    incomes,
+    isLoading,
+    isError,
+    create: createMutation.mutateAsync,
+    update: updateMutation.mutateAsync,
+    remove: removeMutation.mutateAsync,
+    isSaving: createMutation.isPending || updateMutation.isPending,
+    isDeleting: removeMutation.isPending
+  }
 }

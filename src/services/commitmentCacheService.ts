@@ -1,11 +1,12 @@
 import { QueryClient } from '@tanstack/react-query'
 import type { Commitment } from '@/types/Commitment'
+import { commitmentsQueryKey } from './commitmentQuery'
 import { dateBRToISO } from '@/utils/formatters'
 import { invalidateSummaryAndDashboardCache } from '@/services/queryInvalidationService'
 
 export function updateCacheAfterCreateCommitment(queryClient: QueryClient, newCommitment: Commitment, year: string) {
    queryClient.setQueryData<Commitment[]>(
-      ['commitments', year],
+      commitmentsQueryKey(year),
       old => {
          const updated = old ? [...old, newCommitment] : [newCommitment]
 
@@ -27,7 +28,7 @@ export function updateCacheAfterCreateCommitment(queryClient: QueryClient, newCo
 
 export function updateCacheAfterEditCommitment(queryClient: QueryClient, oldCommitment: Commitment, newData: Partial<Commitment>, year: string) {
    queryClient.setQueryData<Commitment[]>(
-      ['commitments', year],
+      commitmentsQueryKey(year),
       old =>
          old?.map(c =>
             c.rowIndex === oldCommitment.rowIndex
@@ -41,7 +42,7 @@ export function updateCacheAfterEditCommitment(queryClient: QueryClient, oldComm
 
 export function updateCacheAfterDeleteCommitment(queryClient: QueryClient, deletedCommitments: Commitment[], year: string) {
    queryClient.setQueryData<Commitment[]>(
-      ['commitments', year],
+      commitmentsQueryKey(year),
       old => {
          if (!old) return []
 

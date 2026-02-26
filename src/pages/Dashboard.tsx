@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDashboard } from '@/hooks/useDashboard'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { Layout } from '@/components/layout/Layout'
+import { useSummary } from '@/hooks/useSummary'
 
 const CreditCards = lazy(() => import('@/components/dashboard/CreditCards'))
 const IncomeExpenseProgress = lazy(() => import('@/components/dashboard/IncomeExpenseProgress'))
@@ -16,7 +17,8 @@ import { CreditCardsSkeleton } from '@/components/dashboard/skeletons/CreditCard
 import { YearlyBalanceSkeleton } from '@/components/dashboard/skeletons/YearlyBalanceSkeleton'
 
 export default function Dashboard() {
-  const { month, year, summary } = usePeriod();
+  const { month, year } = usePeriod();
+  const { summary } = useSummary(month, String(year));
   const { dashboard, isLoading } = useDashboard(month, String(year))
 
   const chartRef = useRef<HTMLDivElement | null>(null)

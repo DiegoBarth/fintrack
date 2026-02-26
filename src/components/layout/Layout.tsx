@@ -44,7 +44,7 @@ export function Layout({
   containerClassName = 'max-w-5xl',
   contentClassName = '',
 }: LayoutProps) {
-  const { month, setMonth, year, setYear, isLoading } = usePeriod()
+  const { month, setMonth, year, setYear } = usePeriod()
   const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
@@ -125,7 +125,6 @@ export function Layout({
                 year={year}
                 onMonthChange={setMonth}
                 onYearChange={setYear}
-                isLoading={isLoading}
               />
             ) : (
               <div className="h-9 w-48 rounded-full bg-gray-200/50 dark:bg-gray-700/50" aria-hidden />

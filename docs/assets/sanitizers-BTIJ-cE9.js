@@ -1,0 +1,1 @@
+function e(e){return e.trim().replace(/\s+/g,` `).replace(/[\u0000-\u001F\u007F]/g,``)}export{e as t};

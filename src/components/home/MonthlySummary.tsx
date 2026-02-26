@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Plus, Minus, Calendar, Wallet, TrendingUp } from "lucide-react"
 import { usePeriod } from '@/contexts/PeriodContext';
+import { useSummary } from '@/hooks/useSummary';
 import { useTheme } from '@/contexts/ThemeContext';
 import { SummaryCard } from "@/components/home/SummaryCard"
 
@@ -9,7 +10,8 @@ import { SummaryCard } from "@/components/home/SummaryCard"
  * Now loaded lazily from Home.tsx to improve LCP.
  */
 export default function MonthlySummary() {
-  const { summary, isLoading } = usePeriod();
+  const { month, year } = usePeriod();
+  const { summary, isLoading } = useSummary(month, String(year));
   const { theme } = useTheme();
 
   const totals = useMemo(() => ({

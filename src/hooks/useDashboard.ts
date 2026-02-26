@@ -1,17 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { listDashboardData } from '@/api/endpoints/dashboard';
-import type { MonthlyBalanceHistory, CategorySummary, CreditCardSummary } from '@/types/Dashboard';
+import { getDashboardQueryOptions } from '@/services/dashboardQuery';
 
 export function useDashboard(month: string, year: string) {
-   const { data: dashboard, isLoading, isError } = useQuery<{
-      monthlyBalance: MonthlyBalanceHistory[];
-      topCategories: CategorySummary[];
-      cardsSummary: CreditCardSummary[];
-   }>({
-      queryKey: ['dashboard', month, year],
-      queryFn: () => listDashboardData(month, String(year)),
-      staleTime: Infinity
-   });
+   const { data: dashboard, isLoading, isError } = useQuery(getDashboardQueryOptions(month, year));
 
    return {
       dashboard: dashboard ?? { monthlyBalance: [], topCategories: [], cardsSummary: [] },

@@ -9,7 +9,7 @@ import {
    formatCurrency,
    parseLocalDate
 } from '@/utils/formatters'
-import { BaseModal } from '@/components/ui/ModalBase'
+import { BaseModal } from '@/components/ui/BaseModal'
 import { ScopeChoiceModal } from '@/components/ScopeChoiceModal'
 import { DateField } from '@/components/ui/DateField'
 import { format } from 'date-fns/format'

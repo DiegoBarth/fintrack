@@ -1,4 +1,4 @@
-import { BaseModal } from '@/components/ui/ModalBase';
+import { BaseModal } from '@/components/ui/BaseModal';
 
 interface ScopeChoiceModalProps {
   isOpen: boolean;

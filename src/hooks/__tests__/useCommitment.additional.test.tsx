@@ -8,167 +8,153 @@ import type { Commitment } from '@/types/Commitment'
 // Mocks
 vi.mock('@/api/endpoints/commitment')
 vi.mock('@/hooks/useApiError', () => ({
-   useApiError: () => ({
-      handleError: vi.fn()
-   })
+  useApiError: () => ({
+    handleError: vi.fn()
+  })
 }))
 
 describe('useCommitment - updated architecture', () => {
-   let queryClient: QueryClient
+  let queryClient: QueryClient
 
-   beforeEach(() => {
-      vi.clearAllMocks()
-      queryClient = new QueryClient({
-         defaultOptions: {
-            queries: { retry: false },
-            mutations: { retry: false }
-         }
-      })
-   })
-
-   const createWrapper = () => {
-      return ({ children }: { children: React.ReactNode }) => (
-         <QueryClientProvider client={queryClient}>
-            {children}
-         </QueryClientProvider>
-      )
-   }
-
-   // ================================
-   // LOAD
-   // ================================
-   it('should load commitments for the year', async () => {
-      const commitments: Commitment[] = [
-         {
-            rowIndex: 1,
-            description: 'Aluguel',
-            category: 'Casa',
-            type: 'Fixo',
-            amount: 2000,
-            dueDate: '2026-01-10',
-            referenceMonth: '2026-01'
-         }
-      ]
-
-      vi.mocked(commitmentApi.listCommitments)
-         .mockResolvedValue(commitments)
-
-      const { result } = renderHook(
-         () => useCommitment('all', '2026'),
-         { wrapper: createWrapper() }
-      )
-
-      await waitFor(() => {
-         expect(result.current.commitments).toEqual(commitments)
-      })
-
-      // Agora deve buscar apenas por ano
-      expect(commitmentApi.listCommitments)
-         .toHaveBeenCalledWith('all', '2026')
-   })
-
-   // ================================
-   // CREATE CARD
-   // ================================
-   it('should create card commitment and invalidate aggregates', async () => {
-      const newCard: Omit<Commitment, 'rowIndex'> = {
-         type: 'Cartão',
-         description: 'Fatura Nubank',
-         category: 'Alimentação',
-         amount: 850,
-         dueDate: '2026-01-15',
-         card: 'Nubank',
-         installment: 1,
-         totalInstallments: 1,
-         referenceMonth: '2026-01'
+  beforeEach(() => {
+    vi.clearAllMocks()
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false }
       }
+    })
+  })
 
-      const created: Commitment = {
-         rowIndex: 10,
-         ...newCard
+  const createWrapper = () => {
+    return ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    )
+  }
+
+  // ================================
+  // LOAD
+  // ================================
+  it('should load commitments for the year', async () => {
+    const commitments: Commitment[] = [
+      {
+        rowIndex: 1,
+        description: 'Aluguel',
+        category: 'Casa',
+        type: 'Fixo',
+        amount: 2000,
+        dueDate: '2026-01-10',
+        referenceMonth: '2026-01'
       }
+    ]
 
-      vi.mocked(commitmentApi.listCommitments)
-         .mockResolvedValue([])
+    vi.mocked(commitmentApi.listCommitments).mockResolvedValue(commitments)
 
-      vi.mocked(commitmentApi.createCard)
-         .mockResolvedValue([created])
+    const { result } = renderHook(
+      () => useCommitment('all', '2026'),
+      { wrapper: createWrapper() }
+    )
 
-      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+    await waitFor(() => {
+      expect(result.current.commitments).toEqual(commitments)
+    })
 
-      const { result } = renderHook(
-         () => useCommitment('all', '2026'),
-         { wrapper: createWrapper() }
-      )
+    expect(commitmentApi.listCommitments).toHaveBeenCalledWith('2026')
+  })
 
-      await waitFor(() =>
-         expect(result.current.isLoading).toBe(false)
-      )
+  // ================================
+  // CREATE CARD
+  // ================================
+  it('should create card commitment and invalidate aggregates', async () => {
+    const newCard: Omit<Commitment, 'rowIndex'> = {
+      type: 'Cartão',
+      description: 'Fatura Nubank',
+      category: 'Alimentação',
+      amount: 850,
+      dueDate: '2026-01-15',
+      card: 'Nubank',
+      installment: 1,
+      totalInstallments: 1,
+      referenceMonth: '2026-01'
+    }
 
-      await result.current.createCard(newCard)
+    const created: Commitment = {
+      rowIndex: 10,
+      ...newCard
+    }
 
-      expect(commitmentApi.createCard)
-         .toHaveBeenCalled()
+    vi.mocked(commitmentApi.listCommitments).mockResolvedValue([])
+    vi.mocked(commitmentApi.createCard).mockResolvedValue([created])
 
-      expect(vi.mocked(commitmentApi.createCard).mock.calls[0][0])
-         .toEqual(newCard)
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
 
+    const { result } = renderHook(
+      () => useCommitment('all', '2026'),
+      { wrapper: createWrapper() }
+    )
 
-      expect(invalidateSpy).toHaveBeenCalledWith({
-         queryKey: ['summary'],
-         exact: false
-      })
+    await waitFor(() =>
+      expect(result.current.isLoading).toBe(false)
+    )
 
-      expect(invalidateSpy).toHaveBeenCalledWith({
-         queryKey: ['dashboard'],
-         exact: false
-      })
-   })
+    await result.current.createCard(newCard)
 
-   // ================================
-   // DELETE
-   // ================================
-   it('should delete commitment and invalidate aggregates', async () => {
-      const existing: Commitment = {
-         rowIndex: 1,
-         description: 'Aluguel',
-         category: 'Casa',
-         type: 'Fixo',
-         amount: 2000,
-         dueDate: '2026-01-10',
-         referenceMonth: '2026-01'
-      }
+    expect(commitmentApi.createCard).toHaveBeenCalled()
+    expect(vi.mocked(commitmentApi.createCard).mock.calls[0][0]).toEqual(newCard)
 
-      vi.mocked(commitmentApi.listCommitments)
-         .mockResolvedValue([existing])
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['summary'],
+      exact: false
+    })
 
-      vi.mocked(commitmentApi.deleteCommitment)
-         .mockResolvedValue([existing])
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['dashboard'],
+      exact: false
+    })
+  })
 
-      const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+  // ================================
+  // DELETE
+  // ================================
+  it('should delete commitment and invalidate aggregates', async () => {
+    const existing: Commitment = {
+      rowIndex: 1,
+      description: 'Aluguel',
+      category: 'Casa',
+      type: 'Fixo',
+      amount: 2000,
+      dueDate: '2026-01-10',
+      referenceMonth: '2026-01'
+    }
 
-      const { result } = renderHook(
-         () => useCommitment('all', '2026'),
-         { wrapper: createWrapper() }
-      )
+    vi.mocked(commitmentApi.listCommitments).mockResolvedValue([existing])
+    vi.mocked(commitmentApi.deleteCommitment).mockResolvedValue([existing])
 
-      await waitFor(() =>
-         expect(result.current.isLoading).toBe(false)
-      )
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
 
-      await result.current.remove(1)
+    const { result } = renderHook(
+      () => useCommitment('all', '2026'),
+      { wrapper: createWrapper() }
+    )
 
-      expect(commitmentApi.deleteCommitment)
-         .toHaveBeenCalledWith(1)
+    await waitFor(() =>
+      expect(result.current.isLoading).toBe(false)
+    )
 
-      expect(invalidateSpy).toHaveBeenCalledWith({
-         queryKey: ['summary'],
-         exact: false
-      })
+    await result.current.remove(1)
 
-      expect(invalidateSpy).toHaveBeenCalledWith({
-         queryKey: ['dashboard'],
-         exact: false
-      })
-   })
+    expect(commitmentApi.deleteCommitment).toHaveBeenCalledWith(1)
+
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['summary'],
+      exact: false
+    })
+
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['dashboard'],
+      exact: false
+    })
+  })
 })

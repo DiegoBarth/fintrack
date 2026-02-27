@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { numberToCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '@/components/ui/ModalBase'
+import { BaseModal } from '@/components/ui/BaseModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import type { Expense } from '@/types/Expense'
 import { useExpense } from '@/hooks/useExpense'

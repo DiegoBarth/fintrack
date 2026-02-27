@@ -5,105 +5,119 @@ import { useValidation } from '@/hooks/useValidation'
 
 // Mock of useToast
 vi.mock('@/contexts/toast', () => ({
-   useToast: () => ({
-      warning: vi.fn(),
-      error: vi.fn(),
-      success: vi.fn(),
-   }),
+  useToast: () => ({
+    warning: vi.fn(),
+    error: vi.fn(),
+    success: vi.fn(),
+  }),
 }))
 
 describe('useValidation', () => {
-   const TestSchema = z.object({
-      name: z.string().min(3, 'Name must be at least 3 characters'),
-      age: z.number().min(18, 'Must be of legal age'),
-      email: z.string().email('Invalid email'),
-   })
+  const TestSchema = z.object({
+    name: z.string().min(3, 'Name must be at least 3 characters'),
+    age: z.number().min(18, 'Must be of legal age'),
+    email: z.string().email('Invalid email'),
+  })
 
-   beforeEach(() => {
-      vi.clearAllMocks()
-   })
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
-   it('should return validated data when schema is valid', () => {
-      const { result } = renderHook(() => useValidation())
+  it('should return validated data when schema is valid', () => {
+    const { result } = renderHook(() => useValidation())
 
-      const data = {
-         name: 'John Doe',
-         age: 25,
-         email: 'john@example.com',
-      }
+    const data = {
+      name: 'John Doe',
+      age: 25,
+      email: 'john@example.com',
+    }
 
-      const outcome = result.current.validate(TestSchema, data)
+    const outcome = result.current.validate(TestSchema, data)
 
-      expect(outcome).toEqual(data)
-   })
+    expect(outcome).toEqual(data)
+  })
 
-   it('should return null when validation fails', () => {
-      const { result } = renderHook(() => useValidation())
+  it('should return null when validation fails', () => {
+    const { result } = renderHook(() => useValidation())
 
-      const data = {
-         name: 'Jo', // too short
-         age: 15, // underage
-         email: 'invalid', // invalid email
-      }
+    const data = {
+      name: 'Jo', // too short
+      age: 15, // underage
+      email: 'invalid', // invalid email
+    }
 
-      const outcome = result.current.validate(TestSchema, data)
+    const outcome = result.current.validate(TestSchema, data)
 
-      expect(outcome).toBeNull()
-   })
+    expect(outcome).toBeNull()
+  })
 
-   it('should validate a simple string schema', () => {
-      const { result } = renderHook(() => useValidation())
+  it('should validate a simple string schema', () => {
+    const { result } = renderHook(() => useValidation())
 
-      const StringSchema = z.string().min(1, 'Required field')
+    const StringSchema = z.string().min(1, 'Required field')
 
-      const outcome = result.current.validate(StringSchema, 'Valid text')
+    const outcome = result.current.validate(StringSchema, 'Valid text')
 
-      expect(outcome).toBe('Valid text')
-   })
+    expect(outcome).toBe('Valid text')
+  })
 
-   it('should return null for empty string in a required schema', () => {
-      const { result } = renderHook(() => useValidation())
+  it('should return null for empty string in a required schema', () => {
+    const { result } = renderHook(() => useValidation())
 
-      const StringSchema = z.string().min(1, 'Required field')
-      const outcome = result.current.validate(StringSchema, '')
+    const StringSchema = z.string().min(1, 'Required field')
+    const outcome = result.current.validate(StringSchema, '')
 
-      expect(outcome).toBeNull()
-   })
+    expect(outcome).toBeNull()
+  })
 
-   it('should validate numbers correctly', () => {
-      const { result } = renderHook(() => useValidation())
+  it('should validate numbers correctly', () => {
+    const { result } = renderHook(() => useValidation())
 
-      const NumberSchema = z.number().positive('Must be positive')
+    const NumberSchema = z.number().positive('Must be positive')
 
-      const outcome = result.current.validate(NumberSchema, 100)
+    const outcome = result.current.validate(NumberSchema, 100)
 
-      expect(outcome).toBe(100)
-   })
+    expect(outcome).toBe(100)
+  })
 
-   it('should reject negative numbers when schema requires positive', () => {
-      const { result } = renderHook(() => useValidation())
+  it('should reject negative numbers when schema requires positive', () => {
+    const { result } = renderHook(() => useValidation())
 
-      const NumberSchema = z.number().positive('Must be positive')
+    const NumberSchema = z.number().positive('Must be positive')
 
-      const outcome = result.current.validate(NumberSchema, -10)
+    const outcome = result.current.validate(NumberSchema, -10)
 
-      expect(outcome).toBeNull()
-   })
+    expect(outcome).toBeNull()
+  })
 
-   it('should validate partial objects with optional fields', () => {
-      const { result } = renderHook(() => useValidation())
+  it('should validate partial objects with optional fields', () => {
+    const { result } = renderHook(() => useValidation())
 
-      const PartialSchema = z.object({
-         required: z.string().min(1),
-         optional: z.string().optional(),
-      })
+    const PartialSchema = z.object({
+      required: z.string().min(1),
+      optional: z.string().optional(),
+    })
 
-      const data = {
-         required: 'value',
-      }
+    const data = {
+      required: 'value',
+    }
 
-      const outcome = result.current.validate(PartialSchema, data)
+    const outcome = result.current.validate(PartialSchema, data)
 
-      expect(outcome).toEqual({ required: 'value' })
-   })
+    expect(outcome).toEqual({ required: 'value' })
+  })
+
+  it('should return null even if a non-Zod error occurs during validation (Line 38 branch)', () => {
+    const { result } = renderHook(() => useValidation())
+
+    const MaliciousSchema = {
+      parse: () => {
+        throw new Error('Unexpected Generic Error');
+      },
+    } as unknown as z.ZodSchema;
+
+    const outcome = result.current.validate(MaliciousSchema, {});
+
+    expect(outcome).toBeNull();
+  });
 })

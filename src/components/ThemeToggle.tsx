@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { ThemeContext } from '@/contexts/ThemeContext'
 
-function getThemeFromDOM(): 'light' | 'dark' {
+export function getThemeFromDOM(): 'light' | 'dark' {
   if (typeof document === 'undefined') return 'light';
 
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light';

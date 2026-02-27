@@ -1,6 +1,5 @@
 import { apiGet, apiPost } from '@/api/client';
 import type { Income } from '@/types/Income';
-import { formatDateBR } from '@/utils/formatters';
 import { sanitizeText } from '@/utils/sanitizers'
 
 export function createIncome(payload: {
@@ -46,8 +45,6 @@ export async function updateIncome(payload: {
     action: 'updateIncome',
     ...payload
   });
-
-  payload.receivedDate = payload.receivedDate ? formatDateBR(payload.receivedDate) : '';
 
   return res;
 }

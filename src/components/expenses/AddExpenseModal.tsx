@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
-import { BaseModal } from '@/components/ui/ModalBase'
+import { BaseModal } from '@/components/ui/BaseModal'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { useExpense } from '@/hooks/useExpense'

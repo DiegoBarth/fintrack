@@ -8,7 +8,7 @@ import {
    parseLocalDate,
    dateBRToISO
 } from '@/utils/formatters'
-import { BaseModal } from '@/components/ui/ModalBase'
+import { BaseModal } from '@/components/ui/BaseModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { ScopeChoiceModal } from '@/components/ScopeChoiceModal'
 import { useCommitment } from '@/hooks/useCommitment'

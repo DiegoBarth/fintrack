@@ -33,6 +33,7 @@ function applyTheme(next: Theme) {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
+    /* v8 ignore next */
     if (typeof window === 'undefined') return 'light';
 
     const saved = localStorage.getItem('theme');

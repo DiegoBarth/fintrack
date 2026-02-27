@@ -127,7 +127,7 @@ export function Layout({
                 onYearChange={setYear}
               />
             ) : (
-              <div className="h-9 w-48 rounded-full bg-gray-200/50 dark:bg-gray-700/50" aria-hidden />
+              <div role="status" className="h-9 w-48 rounded-full bg-gray-200/50 dark:bg-gray-700/50" aria-label="carregando filtros de período" />
             )
           ) : null}
         </header>

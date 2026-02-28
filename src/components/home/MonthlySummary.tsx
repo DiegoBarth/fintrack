@@ -4,6 +4,7 @@ import { usePeriod } from '@/contexts/PeriodContext';
 import { useSummary } from '@/hooks/useSummary';
 import { useTheme } from '@/contexts/ThemeContext';
 import { SummaryCard } from "@/components/home/SummaryCard"
+import { numberToCurrency } from "@/utils/formatters"
 
 /**
  * Monthly summary component with optimized calculations.
@@ -23,10 +24,17 @@ export default function MonthlySummary() {
     totalPaidCommitments: summary?.totalPaidCommitments ?? 0
   }), [summary])
 
-  const balances = useMemo(() => ({
-    monthFinalBalance: totals.totalIncomes - totals.totalExpenses - totals.totalCommitments,
-    currentBalance: totals.totalReceivedAmount - totals.totalPaidExpenses - totals.totalPaidCommitments
-  }), [totals]);
+  const balances = useMemo(() => {
+    const monthBalance = totals.totalIncomes - totals.totalExpenses - totals.totalCommitments;
+    const accumulated = summary?.accumulatedBalanceFromPreviousMonth ?? 0;
+    const monthFinalBalance = Math.round((accumulated + monthBalance) * 100) / 100;
+    const currentBalance = Math.round((totals.totalReceivedAmount - totals.totalPaidExpenses - totals.totalPaidCommitments) * 100) / 100;
+    const accumulatedRounded = Math.round(accumulated * 100) / 100;
+    const monthFinalSubtitle = accumulatedRounded !== 0
+      ? `Inclui saldo do mês anterior: ${numberToCurrency(accumulatedRounded)}`
+      : undefined;
+    return { monthFinalBalance, currentBalance, monthFinalSubtitle };
+  }, [totals, summary?.accumulatedBalanceFromPreviousMonth]);
 
   return (
     <div className="space-y-3">
@@ -67,6 +75,7 @@ export default function MonthlySummary() {
           color={(balances.monthFinalBalance < 0) ? "#b91c1c" : (theme == 'dark' ? '#4ADE80' : "#15803d")}
           isLoading={isLoading}
           icon={<TrendingUp className="h-4 w-4 md:h-5 md:w-5" />}
+          subtitle={balances.monthFinalSubtitle}
         />
       </div>
     </div>

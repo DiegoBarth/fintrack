@@ -43,6 +43,7 @@ describe('App API functions', () => {
       totalReceivedInMonth: 2000,
       totalPaidExpensesInMonth: 1000,
       totalPaidCommitmentsInMonth: 600,
+      accumulatedBalanceFromPreviousMonth: 41,
       availableYears: [2024, 2025, 2026]
     };
     mockApiGet.mockResolvedValueOnce(mockResponse);

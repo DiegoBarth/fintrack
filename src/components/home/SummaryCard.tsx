@@ -7,6 +7,8 @@ interface SummaryCardProps {
   color: string
   isLoading?: boolean
   icon?: React.ReactNode
+  /** Optional line below the value (e.g. "Includes carryover from previous month: +R$ 41,00") */
+  subtitle?: string
 }
 
 /**
@@ -18,7 +20,8 @@ export function SummaryCard({
   amount,
   color,
   isLoading,
-  icon
+  icon,
+  subtitle
 }: SummaryCardProps) {
   return (
     <div className="summary-card">
@@ -41,9 +44,14 @@ export function SummaryCard({
             {isLoading ? (
               <Skeleton className="h-7 md:h-8 w-28 md:w-32 rounded-md" />
             ) : (
-              <p className="text-xl md:text-2xl font-bold" style={{ color: color }}>
-                {numberToCurrency(amount)}
-              </p>
+              <>
+                <p className="text-xl md:text-2xl font-bold" style={{ color: color }}>
+                  {numberToCurrency(amount)}
+                </p>
+                {subtitle && (
+                  <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+                )}
+              </>
             )}
           </div>
         </div>

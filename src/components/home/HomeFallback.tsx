@@ -56,13 +56,13 @@ export function HomeFallback({ onLogout }: HomeFallbackProps) {
       headerSlot={<ThemeToggle />}
       containerClassName="max-w-4xl"
     >
-      <div className="pb-20">
+      <div className="pb-48">
         <div className="border-t border-gray-200 dark:border-gray-700 my-4" />
         <section>
           <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
             Resumo do Mês
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto max-h-[min(65vh,500px)] pr-1">
             {SUMMARY_CARD_COLORS.map((color) => (
               <SummaryCardSkeleton key={color} color={color} />
             ))}

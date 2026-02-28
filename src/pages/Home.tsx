@@ -45,7 +45,7 @@ export default function Home({ onLogout }: Props) {
       headerSlot={<ThemeToggle />}
       containerClassName="max-w-4xl"
     >
-      <div className="pb-20">
+      <div className="pb-48">
         {/* Alerts */}
         <section className="mb-4">
           <Suspense fallback={<Skeleton className="h-20 w-full rounded-md" />}>

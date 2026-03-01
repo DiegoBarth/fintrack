@@ -1,0 +1,1 @@
+import{v as e}from"./index-CbnSHgej.js";function t(t,n){return e({action:`listDashboardData`,month:t,year:n})}const n=(e,n)=>({queryKey:[`dashboard`,e,n],queryFn:()=>t(e,String(n)),staleTime:1/0});export{n as t};

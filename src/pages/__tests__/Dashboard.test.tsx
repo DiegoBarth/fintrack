@@ -89,25 +89,26 @@ describe('Dashboard', () => {
     } as any)
   })
 
-  it('renders Layout with title Dashboard', () => {
+  it('renders Layout with title Dashboard', async () => {
     render(
       <MemoryRouter>
         <Dashboard />
       </MemoryRouter>
     )
-    expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument()
   })
 
-  it('uses containerClassName max-w-7xl', () => {
+  it('uses containerClassName max-w-7xl', async () => {
     render(
       <MemoryRouter>
         <Dashboard />
       </MemoryRouter>
     )
+    await screen.findByRole('heading', { name: 'Dashboard' })
     expect(document.querySelector('[data-container-class="max-w-7xl"]')).toBeInTheDocument()
   })
 
-  it('renders skeletons when isLoading', () => {
+  it('renders skeletons when isLoading', async () => {
     vi.mocked(useDashboard).mockReturnValue({
       dashboard: defaultDashboard,
       isLoading: true,
@@ -117,7 +118,7 @@ describe('Dashboard', () => {
         <Dashboard />
       </MemoryRouter>
     )
-    expect(screen.getByTestId('income-expense-skeleton')).toBeInTheDocument()
+    expect(await screen.findByTestId('income-expense-skeleton')).toBeInTheDocument()
     expect(screen.getByTestId('credit-cards-skeleton')).toBeInTheDocument()
     expect(screen.getByTestId('top-categories-skeleton')).toBeInTheDocument()
     expect(screen.getByTestId('yearly-balance-skeleton')).toBeInTheDocument()

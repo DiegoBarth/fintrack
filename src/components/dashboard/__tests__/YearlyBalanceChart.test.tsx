@@ -40,7 +40,7 @@ vi.mock('recharts', () => {
   const React = require('react')
   return {
     ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="responsive-container">{children}</div>,
-    ComposedChart: ({ children }: { children: React.ReactNode }) => <div data-testid="composed-chart">{children}</div>,
+    ComposedChart: ({ children }: { children: React.ReactNode }) => <svg data-testid="composed-chart">{children}</svg>,
     LineChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     Line: () => null,
     XAxis: () => null,

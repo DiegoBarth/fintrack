@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import Commitment from '@/pages/Commitment'
@@ -307,9 +307,11 @@ describe('Commitment', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cartão' }))
     fireEvent.click(screen.getByRole('button', { name: 'Nubank' }))
     fireEvent.click(screen.getByRole('button', { name: 'Pagar fatura' }))
-    await expect(payCardStatement).toHaveBeenCalledWith({
-      rowIndexes: [10, 11],
-      paymentDate: expect.any(String),
+    await waitFor(() => {
+      expect(payCardStatement).toHaveBeenCalledWith({
+        rowIndexes: [10, 11],
+        paymentDate: expect.any(String),
+      })
     })
   })
 
@@ -331,7 +333,9 @@ describe('Commitment', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cartão' }))
     fireEvent.click(screen.getByRole('button', { name: 'Itau' }))
     fireEvent.click(screen.getByRole('button', { name: 'Pagar fatura' }))
-    await expect(payCardStatement).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(payCardStatement).toHaveBeenCalled()
+    })
   })
 
   it('passes showStatementInGroupHeaders false when card is selected', () => {

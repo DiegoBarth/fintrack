@@ -2,15 +2,14 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue)](https://react.dev/)
-[![Tests](https://img.shields.io/badge/Tests-217%2B%20passing-success)](#-automated-testing)
+[![Tests](https://img.shields.io/badge/Tests-730%2B%20passing-success)](#-automated-testing)
 [![Coverage](https://img.shields.io/badge/Coverage-~97%25-success)](#-automated-testing)
-[![Quality](https://img.shields.io/badge/Code%20Quality-9.7%2F10-brightgreen)](#-project-quality)
 
 Modern **production-level** personal financial control web system, built with React 19, TypeScript 5.9, and industry best practices.
 
 ## ✨ Project Highlights
 
-- 🧪 **217+ Automated Tests** with ~97% coverage.
+- 🧪 **730+ Automated Tests** (86 test files) with ~97% coverage.
 - ♿ **WCAG 2.1 Accessibility** complete (ARIA, focus trap, keyboard navigation).
 - ⚡ **Optimized Performance** (React.memo, useMemo, useCallback).
 - 🔒 **Robust Security** (CSRF protection, rate limiting, timeout).
@@ -32,7 +31,7 @@ Modern **production-level** personal financial control web system, built with Re
 - 🛡️ **Robust Validation** - Centralized Zod schemas with type inference.
 - 🔄 **Global Error Handling** - ErrorBoundary + centralized useApiError.
 - ♿ **Total Accessibility** - WCAG 2.1 Level AA (keyboard navigation, ARIA, focus management).
-- 🧪 **Automated Testing** - 217+ tests (utils, hooks, components, API, cache services).
+- 🧪 **Automated Testing** - 730+ tests in 86 files (utils, hooks, components, API, cache services).
 - 🔒 **Security** - CSRF tokens, rate limiting, input validation.
 
 ## 📚 Standards Documentation
@@ -93,9 +92,10 @@ export function MyModal({ open, onClose }: ModalProps) {
 }
 ```
 
-#### 2. Custom Hooks for Business LogicTypeScript// ✅ Pattern: Separate logic into hooks
+#### 2. Custom Hooks for Business Logic
 
 ```tsx
+// ✅ Pattern: Separate logic into hooks
 export function useExpense(month: string, year: string) {
    const queryClient = useQueryClient();
    
@@ -120,9 +120,10 @@ export function useExpense(month: string, year: string) {
 }
 ```
 
-#####  3. Validation with ZodTypeScript// ✅ Pattern: Schema centralized in /schemas
+#### 3. Validation with Zod
 
 ```tsx
+// ✅ Pattern: Schema centralized in /schemas
 import { z } from 'zod';
 
 export const ExpenseCreateSchema = z.object({
@@ -137,9 +138,10 @@ const data = validate(ExpenseCreateSchema, payload);
 if (!data) return; // Error already displayed
 ```
 
-#### 4. Centralized Error HandlingTypeScript// ✅ Pattern: useApiError for global handling
+#### 4. Centralized Error Handling
 
 ```tsx
+// ✅ Pattern: useApiError for global handling
 import { useApiError } from '@/hooks/useApiError';
 
 export function useExpense(month: string, year: string) {
@@ -152,8 +154,10 @@ export function useExpense(month: string, year: string) {
 }
 ```
 
-#### 5. ErrorBoundary for React ErrorsTypeScript// ✅ Pattern: Wrap App with ErrorBoundary
+#### 5. ErrorBoundary for React Errors
+
 ```tsx
+// ✅ Pattern: Wrap App with ErrorBoundary
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 function App() {
@@ -181,7 +185,7 @@ function App() {
 
 **Query Keys Convention:**
 ```tsx
-// Formact: ['entity', 'optional_filter', 'period']
+// Format: ['entity', 'optional_filter', 'period']
 ['incomes', year]
 ['expenses', year]
 ```
@@ -229,30 +233,17 @@ npm run test:coverage     # Full coverage (~97%)
 ### Code Quality
 ```bash
 npm run lint              # Check for issues
-npm run lint:fix          # Auto-fix issues
-npm run format            # Format code
+npm run lint:fix          # Auto-fix fixable issues (ESLint)
 ```
 
 ## 🧪 Automated Testing
 
-### Current Coverage: ~97%
+### Current status
 
-```
-✅ 217+ tests in 18 files
+- **730+ tests** in **86 test files** (Vitest + Testing Library).
+- Coverage around **~97%** (run `npm run test:coverage` for the latest report).
 
-File                      | % Stmts | % Branch | % Funcs | % Lines
---------------------------|---------|----------|---------|--------
-All files                 |   95.46 |    85.60 |   98.60 |   97.52
-api/client.ts             |   93.75 |    94.28 |   85.71 |   97.72
-hooks/useCommitment.ts    |   93.75 |    82.35 |  100.00 |  100.00
-hooks/useExpense.ts       |  100.00 |    77.77 |  100.00 |  100.00
-hooks/useIncome.ts        |   95.55 |    76.19 |  100.00 |  100.00
-hooks/useValidation.ts    |  100.00 |    50.00 |  100.00 |  100.00
-hooks/useApiError.ts      |   93.75 |    92.85 |  100.00 |   93.75
-services/*CacheService   |   92.30 |    65.78 |  100.00 |   93.18
-utils/formatters.ts      |   96.55 |    87.50 |  100.00 |  100.00
-components/ui/*           |   98.61 |    93.84 |   94.44 |   98.57
-```
+Coverage includes: `api/`, `hooks/`, `services/` (cache and query layer), `utils/`, `contexts/`, UI and feature components, pages, and React Query integration.
 
 ## ♿ Accessibility (WCAG 2.1)
 
@@ -294,17 +285,15 @@ Login uses Google OAuth 2.0. The client decodes the JWT **only to read the email
 ### Configuration (client.ts)
 
 ```typescript
-// Automatic CSRF Token
-headers: {
-  'X-CSRF-Token': sessionStorage.getItem('csrf_token') || ''
-}
+// CSRF token from meta tag (meta[name="csrf-token"] or csrf_token / csrfToken)
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
 
 // Frontend rate limiting
 const POST_RATE_LIMIT_MS = 1000
 
-// Timeout protection
+// Timeout protection (AbortController, 30s)
 const controller = new AbortController()
-const timeoutId = setTimeout(() => controller.abort(), 30000)
+setTimeout(() => controller.abort(), API_TIMEOUT_MS)
 ```
 
 ## 📦 Main Dependencies
@@ -319,7 +308,7 @@ const timeoutId = setTimeout(() => controller.abort(), 30000)
 - **React Hook Form 7.71** - Performant forms
 
 ### Validation & Security
-- **Zod 4.3** - Schema validation with type inference
+- **Zod** - Schema validation with type inference (via react-hook-form / schemas)
 
 ### UI & Styling
 - **Tailwind CSS 3.4** - Utility-first CSS

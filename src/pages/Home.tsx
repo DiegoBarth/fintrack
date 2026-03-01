@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, useEffect } from "react"
 import { Layout } from '@/components/layout/Layout'
 import { ThemeToggle } from '@/components/ThemeToggle'
 import { Skeleton } from "@/components/ui/Skeleton"
@@ -21,21 +21,13 @@ export default function Home({ onLogout }: Props) {
   const queryClient = useQueryClient()
   const { month, year } = usePeriod()
 
-  queryClient.prefetchQuery(
-    getIncomesQueryOptions(String(year))
-  )
-
-  queryClient.prefetchQuery(
-    getExpensesQueryOptions(String(year))
-  )
-
-  queryClient.prefetchQuery(
-    getCommitmentsQueryOptions(String(year))
-  )
-
-  queryClient.prefetchQuery(
-    getDashboardQueryOptions(month, String(year))
-  )
+  useEffect(() => {
+    const y = String(year)
+    queryClient.prefetchQuery(getIncomesQueryOptions(y))
+    queryClient.prefetchQuery(getExpensesQueryOptions(y))
+    queryClient.prefetchQuery(getCommitmentsQueryOptions(y))
+    queryClient.prefetchQuery(getDashboardQueryOptions(month, y))
+  }, [queryClient, month, year])
 
   return (
     <Layout

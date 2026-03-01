@@ -79,6 +79,11 @@ export const CommitmentListGrouped = memo(function CommitmentListGrouped({
          if (byCard['Outros']?.length) {
             result.push({ type: 'Cartão', card: 'Outros', items: sortCardItems(byCard['Outros']) })
          }
+         const otherCards = Object.keys(byCard).filter((k) => !CARDS.includes(k) && k !== 'Outros')
+         for (const card of otherCards) {
+            const cardItems = byCard[card]
+            if (cardItems?.length) result.push({ type: 'Cartão', card, items: sortCardItems(cardItems) })
+         }
       }
 
       return result

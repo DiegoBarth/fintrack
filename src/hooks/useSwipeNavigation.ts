@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useSwipeable } from 'react-swipeable'
-import { EDGE_ZONE, SWIPE_DELTA_PX, SWIPE_MIN_DISTANCE_PX, SWIPE_ROUTES } from '@/config/constants'
+import { EDGE_ZONE, SWIPE_DELTA_PX, SWIPE_MIN_DISTANCE_PX, SWIPE_ROUTES, TOP_PULL_ZONE_PX } from '@/config/constants'
 
 export function useSwipeNavigation() {
    const navigate = useNavigate()
@@ -29,7 +29,8 @@ export function useSwipeNavigation() {
             }
          }
 
-         if (e.deltaY > SWIPE_MIN_DISTANCE_PX && window.scrollY === 0) {
+         const startedAtTop = e.initial[1] < TOP_PULL_ZONE_PX
+         if (e.deltaY > SWIPE_MIN_DISTANCE_PX && window.scrollY === 0 && startedAtTop) {
             setArrow('up')
          } else if (arrow === 'up') {
             setArrow(null)
@@ -53,7 +54,8 @@ export function useSwipeNavigation() {
       },
 
       onSwipedDown: (e) => {
-         if (window.scrollY === 0 && e.deltaY > SWIPE_MIN_DISTANCE_PX * 2) {
+         const startedAtTop = e.initial[1] < TOP_PULL_ZONE_PX
+         if (window.scrollY === 0 && startedAtTop && e.deltaY > SWIPE_MIN_DISTANCE_PX * 2) {
             setArrow(null)
             window.location.reload()
          }

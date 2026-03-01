@@ -27,6 +27,9 @@ export const API_TIMEOUT_MS = 30 * MS_PER_SECOND;
 /** Width (in pixels) of the sensitive edge zone on the screen. */
 export const EDGE_ZONE = 80;
 
+/** Height (in pixels) of the top zone where pull-down triggers refresh. */
+export const TOP_PULL_ZONE_PX = 56;
+
 /** Minimum swipe distance to trigger navigation. */
 export const SWIPE_MIN_DISTANCE_PX = 50;
 

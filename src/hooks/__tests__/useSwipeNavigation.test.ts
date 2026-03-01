@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { SWIPE_ROUTES, EDGE_ZONE, SWIPE_MIN_DISTANCE_PX } from '@/config/constants'
+import { SWIPE_ROUTES, EDGE_ZONE, SWIPE_MIN_DISTANCE_PX, TOP_PULL_ZONE_PX } from '@/config/constants'
 import { describe, it, expect, vi, beforeEach, Mock } from 'vitest'
 
 vi.mock('react-router-dom', () => ({
@@ -150,11 +150,13 @@ describe('useSwipeNavigation', () => {
   })
 
   it('should reload page on swiped down from the top', () => {
+    global.window.scrollY = 0
     const { result } = renderHook(() => useSwipeNavigation())
 
     act(() => {
       const handlers = result.current.handlers as any
       handlers.onSwipedDown({
+        initial: [100, TOP_PULL_ZONE_PX - 10],
         deltaY: SWIPE_MIN_DISTANCE_PX * 2 + 1,
       })
     })
@@ -264,6 +266,7 @@ describe('useSwipeNavigation', () => {
     act(() => {
       const handlers = result.current.handlers as any
       handlers.onSwipedDown({
+        initial: [100, TOP_PULL_ZONE_PX - 10],
         deltaY: SWIPE_MIN_DISTANCE_PX * 2 + 1,
       })
     })
@@ -279,7 +282,24 @@ describe('useSwipeNavigation', () => {
     act(() => {
       const handlers = result.current.handlers as any
       handlers.onSwipedDown({
+        initial: [100, TOP_PULL_ZONE_PX - 10],
         deltaY: SWIPE_MIN_DISTANCE_PX * 2 - 1, // deltaY pequeno
+      })
+    })
+
+    expect(window.location.reload).not.toHaveBeenCalled()
+    expect(result.current.arrow).toBeNull()
+  })
+
+  it('should not reload on onSwipedDown when touch did not start at top zone', () => {
+    global.window.scrollY = 0
+    const { result } = renderHook(() => useSwipeNavigation())
+
+    act(() => {
+      const handlers = result.current.handlers as any
+      handlers.onSwipedDown({
+        initial: [100, TOP_PULL_ZONE_PX + 20],
+        deltaY: SWIPE_MIN_DISTANCE_PX * 2 + 1,
       })
     })
 

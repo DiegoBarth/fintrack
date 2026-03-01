@@ -111,7 +111,7 @@ export default function TopCategories({ categories }: TopCategoriesProps) {
           const styles = getStyles(item.total, maxAmount)
 
           return (
-            <section className="flex items-center gap-3">
+            <section key={item.category} className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${styles.bg}`}>
                 <IconComponent className={`w-4 h-4 ${styles.icon}`} />
               </div>

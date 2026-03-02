@@ -3,7 +3,7 @@ import { useAlerts } from "@/hooks/useAlerts";
 import { useCommitment } from "@/hooks/useCommitment";
 import { usePeriod } from "@/contexts/PeriodContext";
 import { useToast } from "@/contexts/toast";
-import { groupCommitmentsForAlerts } from "@/types/AlertItem";
+import { groupCommitmentsForAlerts } from "@/utils/alertUtils";
 import type { Commitment } from "@/types/Commitment";
 import type { AlertItem } from "@/types/AlertItem";
 

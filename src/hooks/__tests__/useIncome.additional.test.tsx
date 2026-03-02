@@ -5,9 +5,6 @@ import { useIncome } from '@/hooks/useIncome'
 import * as incomeApi from '@/api/endpoints/income'
 import type { Income } from '@/types/Income'
 
-// ===============================
-// Mocks
-// ===============================
 vi.mock('@/api/endpoints/income')
 vi.mock('@/services/dashboardService')
 vi.mock('@/hooks/useApiError', () => ({
@@ -37,9 +34,6 @@ describe('useIncome - updated architecture', () => {
     )
   }
 
-  // =====================================
-  // QUERY
-  // =====================================
   it('should fetch incomes for the year and filter by month', async () => {
     const mockIncomes: Income[] = [
       {
@@ -112,9 +106,6 @@ describe('useIncome - updated architecture', () => {
     expect(result.current.incomes).toEqual(mockIncomes)
   })
 
-  // =====================================
-  // CREATE
-  // =====================================
   it('should create income and call API correctly', async () => {
     const newIncome: Omit<Income, 'rowIndex'> = {
       description: 'Salary',
@@ -147,9 +138,6 @@ describe('useIncome - updated architecture', () => {
     expect(vi.mocked(incomeApi.createIncome).mock.calls[0][0]).toEqual(newIncome)
   })
 
-  // =====================================
-  // UPDATE
-  // =====================================
   it('should update income amount', async () => {
     const existingIncome: Income = {
       rowIndex: 1,

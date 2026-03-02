@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { CommitmentTypeFilter, type CommitmentTypeFilterValue } from '@/components/commitments/CommitmentTypeFilter'
+import { CommitmentTypeFilter } from '@/components/commitments/CommitmentTypeFilter'
 
 describe('CommitmentTypeFilter', () => {
   const onChange = vi.fn()

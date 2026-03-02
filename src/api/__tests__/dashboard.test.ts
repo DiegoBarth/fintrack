@@ -3,7 +3,6 @@ import { listDashboardData } from '@/api/endpoints/dashboard';
 import { apiGet } from '@/api/client';
 import type { Dashboard, CategorySummary, MonthlyBalanceHistory, CreditCardSummary } from '@/types/Dashboard';
 
-// ---------------------- Mock do apiGet ----------------------
 vi.mock('@/api/client', () => ({
   apiGet: vi.fn()
 }));

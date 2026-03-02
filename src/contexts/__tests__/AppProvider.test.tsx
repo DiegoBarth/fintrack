@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import { QueryClient } from '@tanstack/react-query'
 import AppProvider from '../AppProvider'
 
-// 🔹 mocks dos providers internos para isolar o teste
 vi.mock('../ThemeContext', () => ({
   ThemeProvider: ({ children }: any) => (
     <div data-testid="theme-provider">{children}</div>
@@ -40,7 +39,6 @@ describe('AppProvider', () => {
   it('should provide react query context correctly', () => {
     const client = createClient()
 
-    // componente que só renderiza se o contexto do React Query existir
     const TestComponent = () => {
       return <div data-testid="react-query-ok">ok</div>
     }

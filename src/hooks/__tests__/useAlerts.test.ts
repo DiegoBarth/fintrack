@@ -2,13 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useAlerts } from '../useAlerts'
 
-// Mock constantes
 vi.mock('@/config/constants', () => ({
   MS_PER_DAY: 1000 * 60 * 60 * 24,
   WEEKLY_ALERT_DAYS: 7,
 }))
 
-// Mocks de contexto/hook
 const mockUsePeriod = vi.fn()
 vi.mock('@/contexts/PeriodContext', () => ({
   usePeriod: () => mockUsePeriod(),
@@ -19,7 +17,6 @@ vi.mock('@/hooks/useCommitment', () => ({
   useCommitment: (...args: any[]) => mockUseCommitment(...args),
 }))
 
-// Helper para criar data string dd/mm/yyyy
 function formatDate(date: Date) {
   const d = String(date.getDate()).padStart(2, '0')
   const m = String(date.getMonth() + 1).padStart(2, '0')

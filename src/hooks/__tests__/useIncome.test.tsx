@@ -5,7 +5,6 @@ import { useIncome } from '../useIncome'
 import * as incomeApi from '@/api/endpoints/income'
 import type { Income } from '@/types/Income'
 
-// Mocks
 vi.mock('@/api/endpoints/income')
 vi.mock('@/services/dashboardService')
 vi.mock('@/hooks/useApiError', () => ({

@@ -3,7 +3,6 @@ import { renderHook } from '@testing-library/react'
 import { z } from 'zod'
 import { useValidation } from '@/hooks/useValidation'
 
-// Mock of useToast
 vi.mock('@/contexts/toast', () => ({
   useToast: () => ({
     warning: vi.fn(),

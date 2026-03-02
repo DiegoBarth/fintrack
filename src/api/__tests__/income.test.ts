@@ -1,4 +1,3 @@
-// src/api/__tests__/income.test.ts
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import * as incomeApi from '@/api/endpoints/income'
 import { apiGet, apiPost } from '@/api/client'

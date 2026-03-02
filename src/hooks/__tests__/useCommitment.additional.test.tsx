@@ -5,7 +5,6 @@ import { useCommitment } from '../useCommitment'
 import * as commitmentApi from '@/api/endpoints/commitment'
 import type { Commitment } from '@/types/Commitment'
 
-// Mocks
 vi.mock('@/api/endpoints/commitment')
 vi.mock('@/hooks/useApiError', () => ({
   useApiError: () => ({
@@ -34,9 +33,6 @@ describe('useCommitment - updated architecture', () => {
     )
   }
 
-  // ================================
-  // LOAD
-  // ================================
   it('should load commitments for the year', async () => {
     const commitments: Commitment[] = [
       {
@@ -64,9 +60,6 @@ describe('useCommitment - updated architecture', () => {
     expect(commitmentApi.listCommitments).toHaveBeenCalledWith('2026')
   })
 
-  // ================================
-  // CREATE CARD
-  // ================================
   it('should create card commitment and invalidate aggregates', async () => {
     const newCard: Omit<Commitment, 'rowIndex'> = {
       type: 'Cartão',
@@ -115,9 +108,6 @@ describe('useCommitment - updated architecture', () => {
     })
   })
 
-  // ================================
-  // DELETE
-  // ================================
   it('should delete commitment and invalidate aggregates', async () => {
     const existing: Commitment = {
       rowIndex: 1,

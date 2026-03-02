@@ -1,8 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { apiGet, apiPost } from '@/api/client';
 import * as clientModule from '@/api/client';
-import { act } from '@testing-library/react';
-import { API_TIMEOUT_MS } from '@/config/constants';
 
 globalThis.fetch = vi.fn() as any
 
@@ -131,7 +129,6 @@ describe('apiClient.ts - API HTTP Client', () => {
       }
         ; (globalThis.fetch as any).mockResolvedValue(mockResponse)
 
-      // Limpa limite de ações
       clientModule.lastPostByAction.clear()
 
       await apiPost({ action: 'create', data: 1 })
@@ -238,7 +235,6 @@ describe('apiClient.ts - API HTTP Client', () => {
 
   describe('Error Handling - Network coverage', () => {
     it('should handle "Failed to fetch" error', async () => {
-      // Simula o erro exato que o Chrome/Vite costuma disparar
       const networkError = new Error('Failed to fetch');
       (globalThis.fetch as any).mockRejectedValue(networkError);
 
@@ -248,7 +244,6 @@ describe('apiClient.ts - API HTTP Client', () => {
     });
 
     it('should handle "NetworkError" error', async () => {
-      // Simula o erro exato que o Firefox/Safari costuma disparar
       const networkError = new Error('NetworkError when attempting to fetch resource.');
       (globalThis.fetch as any).mockRejectedValue(networkError);
 
@@ -258,7 +253,6 @@ describe('apiClient.ts - API HTTP Client', () => {
     });
 
     it('should rethrow unknown Errors that do not match specific conditions', async () => {
-      // Este teste é vital para cobrir o "throw err" no final do bloco catch do fetchWithTimeout
       const unknownError = new Error('Some random database error');
       (globalThis.fetch as any).mockRejectedValue(unknownError);
 

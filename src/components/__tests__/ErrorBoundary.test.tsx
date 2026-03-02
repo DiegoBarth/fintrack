@@ -32,7 +32,6 @@ describe('ErrorBoundary', () => {
   })
 
   it('should reload page when button is clicked', () => {
-    // Mock window.location safely
     const reloadMock = vi.fn()
 
     Object.defineProperty(window, 'location', {

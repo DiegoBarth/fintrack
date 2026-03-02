@@ -5,7 +5,6 @@ import { useExpense } from '../useExpense'
 import * as expenseApi from '@/api/endpoints/expense'
 import type { Expense } from '@/types/Expense'
 
-// Mocks
 vi.mock('@/api/endpoints/expense')
 vi.mock('@/services/dashboardService')
 vi.mock('@/hooks/useApiError', () => ({

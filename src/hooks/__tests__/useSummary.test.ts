@@ -84,17 +84,13 @@ describe('useSummary', () => {
   })
 
   it('should call fetchFullSummary with correct arguments (Line 36)', async () => {
-    // 1. Capturamos os argumentos passados para o useQuery
     const { result } = renderHook(() => useSummary('02', '2025'))
 
-    // 2. Extraímos a queryFn que o hook passou para o useQuery
     const callArgs = vi.mocked(useQuery).mock.calls[0][0]
     const queryFn = callArgs.queryFn as Function
 
-    // 3. Executamos a função manualmente para garantir que a linha 36 seja coberta
     await queryFn()
 
-    // 4. Verificamos se a API foi chamada com os parâmetros certos
     expect(fetchFullSummary).toHaveBeenCalledWith('02', '2025')
   })
 })

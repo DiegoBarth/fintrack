@@ -257,7 +257,6 @@ describe('BaseModal', () => {
     expect(saveBtn).toBeDisabled()
   })
   // should use create aria-label when type is create
-  // should use create aria-label when type is create
   it('should render create aria-label', () => {
     render(
       <BaseModal
@@ -275,7 +274,6 @@ describe('BaseModal', () => {
       screen.getByRole('button', { name: /salvar novo registro/i })
     ).toBeInTheDocument()
   })
-  // should use edit aria-label when type is not create
   // should use edit aria-label when type is not create
   it('should render edit aria-label', () => {
     render(

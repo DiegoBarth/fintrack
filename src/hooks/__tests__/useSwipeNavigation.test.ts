@@ -168,7 +168,6 @@ describe('useSwipeNavigation', () => {
   it('should clear arrow "up" when moving away from pull-down condition', () => {
     const { result } = renderHook(() => useSwipeNavigation())
 
-    // 1. Ativa a seta 'up'
     act(() => {
       const handlers = result.current.handlers as any
       handlers.onSwiping({
@@ -179,7 +178,6 @@ describe('useSwipeNavigation', () => {
     })
     expect(result.current.arrow).toBe('up')
 
-    // 2. Muda o movimento para lateral, forçando o "else if (arrow === 'up')"
     act(() => {
       const handlers = result.current.handlers as any
       handlers.onSwiping({
@@ -197,7 +195,7 @@ describe('useSwipeNavigation', () => {
     act(() => {
       const handlers = result.current.handlers as any
       handlers.onSwipedLeft({
-        initial: [EDGE_ZONE - 1, 0], // started no left edge (não right)
+        initial: [EDGE_ZONE - 1, 0],
         deltaX: -(SWIPE_MIN_DISTANCE_PX + 1),
         deltaY: 0,
       })
@@ -208,7 +206,6 @@ describe('useSwipeNavigation', () => {
   })
 
   it('should not navigate on onSwipedLeft when no next index', () => {
-    // Muda location para último índice (currentIndex = SWIPE_ROUTES.length - 1)
     ; (useLocation as Mock).mockReturnValue({ pathname: SWIPE_ROUTES[SWIPE_ROUTES.length - 1] })
     const { result } = renderHook(() => useSwipeNavigation())
 
@@ -231,7 +228,7 @@ describe('useSwipeNavigation', () => {
     act(() => {
       const handlers = result.current.handlers as any
       handlers.onSwipedRight({
-        initial: [window.innerWidth - EDGE_ZONE + 1, 0], // started no right edge
+        initial: [window.innerWidth - EDGE_ZONE + 1, 0],
         deltaX: SWIPE_MIN_DISTANCE_PX + 1,
         deltaY: 0,
       })
@@ -242,7 +239,6 @@ describe('useSwipeNavigation', () => {
   })
 
   it('should not navigate on onSwipedRight when no previous index', () => {
-    // Muda location para primeiro índice (currentIndex = 0)
     ; (useLocation as Mock).mockReturnValue({ pathname: SWIPE_ROUTES[0] })
     const { result } = renderHook(() => useSwipeNavigation())
 
@@ -260,7 +256,7 @@ describe('useSwipeNavigation', () => {
   })
 
   it('should not reload on onSwipedDown when scrollY !== 0', () => {
-    global.window.scrollY = 1 // scrollY não é 0
+    global.window.scrollY = 1
     const { result } = renderHook(() => useSwipeNavigation())
 
     act(() => {
@@ -283,7 +279,7 @@ describe('useSwipeNavigation', () => {
       const handlers = result.current.handlers as any
       handlers.onSwipedDown({
         initial: [100, TOP_PULL_ZONE_PX - 10],
-        deltaY: SWIPE_MIN_DISTANCE_PX * 2 - 1, // deltaY pequeno
+        deltaY: SWIPE_MIN_DISTANCE_PX * 2 - 1,
       })
     })
 
@@ -310,22 +306,19 @@ describe('useSwipeNavigation', () => {
     const { result, unmount } = renderHook(() => useSwipeNavigation())
     const handlers = result.current.handlers as any
 
-    // ATIVA arrow='up'
     act(() => {
       handlers.onSwiping({ initial: [500, 0], deltaX: 0, deltaY: 60 })
     })
 
-    // **RENDER NOVO** para forçar reavaliação do closure com arrow='up'
     unmount()
     const { result: result2 } = renderHook(() => useSwipeNavigation())
     const handlers2 = result2.current.handlers as any
 
-    // MESMO INSTANTE: deltaY abaixo threshold → linha 34 executada
     act(() => {
       handlers2.onSwiping({
         initial: [500, 0],
-        deltaX: 0,  // SAI horizontal
-        deltaY: 40  // SAI vertical → else if executado
+        deltaX: 0,
+        deltaY: 40
       })
     })
 

@@ -27,7 +27,6 @@ Object.defineProperty(window, 'localStorage', {
   value: new LocalStorageMock(),
 })
 
-// Mock icons to avoid noise in coverage
 vi.mock('lucide-react', () => ({
   Moon: () => <svg data-testid="moon-icon" />,
   Sun: () => <svg data-testid="sun-icon" />

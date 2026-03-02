@@ -2,7 +2,6 @@ import { render, screen, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { PeriodProvider, usePeriod } from '../PeriodContext'
 
-// 🔹 helper consumer para testar o contexto
 function TestConsumer() {
   const { month, year, setMonth, setYear } = usePeriod()
 
@@ -88,7 +87,6 @@ describe('PeriodContext', () => {
   })
 
   it('should throw error when usePeriod is used outside provider', () => {
-    // silencia erro esperado no console
     const spy = vi.spyOn(console, 'error').mockImplementation(() => { })
 
     const BrokenConsumer = () => {

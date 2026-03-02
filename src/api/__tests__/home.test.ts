@@ -6,7 +6,6 @@ import type { Expense } from '@/types/Expense';
 import type { Income } from '@/types/Income';
 import type { FullSummary } from '@/types/FullSummary';
 
-// Mock do apiGet
 vi.mock('@/api/client', () => ({
   apiGet: vi.fn()
 }));

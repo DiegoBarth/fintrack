@@ -26,7 +26,6 @@ Object.defineProperty(window, 'localStorage', {
   value: new LocalStorageMock(),
 })
 
-// 🔹 consumer helper
 function TestConsumer() {
   const { theme, toggleTheme } = useTheme()
 

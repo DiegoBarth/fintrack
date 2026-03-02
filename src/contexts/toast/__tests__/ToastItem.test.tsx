@@ -1,9 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { ToastItem } from '../ToastItem'
 import type { Toast } from '../ToastContext'
 
-// Use fake timers for animation timeouts
 vi.useFakeTimers()
 
 const createToast = (type: Toast['type'] = 'success'): Toast => ({

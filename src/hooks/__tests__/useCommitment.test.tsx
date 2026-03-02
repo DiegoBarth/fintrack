@@ -5,9 +5,6 @@ import { useCommitment } from '@/hooks/useCommitment'
 import * as commitmentApi from '@/api/endpoints/commitment'
 import type { Commitment } from '@/types/Commitment'
 
-// ===============================
-// Mocks
-// ===============================
 vi.mock('@/api/endpoints/commitment')
 vi.mock('@/services/dashboardService')
 vi.mock('@/hooks/useApiError', () => ({
@@ -16,9 +13,6 @@ vi.mock('@/hooks/useApiError', () => ({
   })
 }))
 
-// ===============================
-// Helper
-// ===============================
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {

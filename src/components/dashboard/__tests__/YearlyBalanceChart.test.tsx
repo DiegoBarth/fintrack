@@ -33,7 +33,7 @@ vi.mock('@/hooks/useSummary', () => ({
 }))
 
 vi.mock('@/contexts/ThemeContext', () => ({
-  useTheme: vi.fn(() => ({ theme: 'light' as const, toggleTheme: () => {} })),
+  useTheme: vi.fn(() => ({ theme: 'light' as const, toggleTheme: () => { } })),
 }))
 
 vi.mock('recharts', () => {
@@ -94,7 +94,7 @@ describe('YearlyBalanceChart', () => {
       isLoading: false,
       isError: false,
     })
-    vi.mocked(useTheme).mockReturnValue({ theme: 'light', toggleTheme: () => {} })
+    vi.mocked(useTheme).mockReturnValue({ theme: 'light', toggleTheme: () => { } })
   })
 
   it('renders section with title Saldo ao longo do ano', () => {
@@ -218,7 +218,7 @@ describe('YearlyBalanceChart', () => {
   })
 
   it('uses dark theme colors when theme is dark', () => {
-    vi.mocked(useTheme).mockReturnValue({ theme: 'dark', toggleTheme: () => {} })
+    vi.mocked(useTheme).mockReturnValue({ theme: 'dark', toggleTheme: () => { } })
     const { container } = render(<YearlyBalanceChart data={chartData} />)
     expect(container).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Saldo ao longo do ano' })).toBeInTheDocument()

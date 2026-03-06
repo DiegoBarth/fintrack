@@ -126,7 +126,10 @@ export default function TopCategories({ categories }: TopCategoriesProps) {
                   </span>
                 </div>
                 <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700">
-                  <section className={`h-2 rounded-full ${styles.bar}`} />
+                  <section
+                    className={`h-2 rounded-full ${styles.bar}`}
+                    style={{ width: `${percentage}%` }}
+                  />
                 </div>
               </div>
             </section>

@@ -10,26 +10,36 @@ describe('SwipeArrow', () => {
 
   it('renders ChevronLeft when direction is left', () => {
     render(<SwipeArrow direction="left" />)
+
     const wrapper = document.querySelector('.fixed.z-\\[9999\\]')
     expect(wrapper).toBeInTheDocument()
     expect(wrapper).toHaveClass('left-4')
-    expect(wrapper).toHaveStyle({ '--swipe-x': '-24px', '--swipe-y': '0' })
+
+    const animated = wrapper?.firstChild as HTMLElement
+    expect(animated).toHaveStyle({ '--swipe-x': '-24px', '--swipe-y': '0' })
   })
 
   it('renders ChevronRight when direction is right', () => {
     render(<SwipeArrow direction="right" />)
+
     const wrapper = document.querySelector('.fixed.z-\\[9999\\]')
     expect(wrapper).toBeInTheDocument()
     expect(wrapper).toHaveClass('right-4')
-    expect(wrapper).toHaveStyle({ '--swipe-x': '24px', '--swipe-y': '0' })
+
+    const animated = wrapper?.firstChild as HTMLElement
+    expect(animated).toHaveStyle({ '--swipe-x': '24px', '--swipe-y': '0' })
   })
 
   it('renders RefreshCcw when direction is up', () => {
     render(<SwipeArrow direction="up" />)
+
     const wrapper = document.querySelector('.fixed.z-\\[9999\\]')
     expect(wrapper).toBeInTheDocument()
     expect(wrapper).toHaveClass('top-4')
-    expect(wrapper).toHaveStyle({ '--swipe-x': '0', '--swipe-y': '-24px' })
+    expect(wrapper).toHaveClass('left-1/2')
+
+    const animated = wrapper?.firstChild as HTMLElement
+    expect(animated).toHaveStyle({ '--swipe-x': '0', '--swipe-y': '-24px' })
   })
 
   it('applies correct position classes for left', () => {
@@ -45,9 +55,9 @@ describe('SwipeArrow', () => {
     expect(el).toBeInTheDocument()
   })
 
-  it('applies top-4 and left-[45%] for up direction', () => {
+  it('applies top-4 and centered positioning for up direction', () => {
     const { container } = render(<SwipeArrow direction="up" />)
-    const el = container.querySelector('.top-4.left-\\[45\\%\\]')
+    const el = container.querySelector('.top-4.left-1\\/2')
     expect(el).toBeInTheDocument()
   })
 })

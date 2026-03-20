@@ -60,7 +60,7 @@ describe('SummaryCard', () => {
       expect(screen.queryByText('R$ 1.000,00')).not.toBeInTheDocument()
 
       // Skeleton should be present
-      const skeleton = document.querySelector('.h-7')
+      const skeleton = document.querySelector('.h-6')
       expect(skeleton).toBeInTheDocument()
    })
 
@@ -91,7 +91,7 @@ describe('SummaryCard', () => {
          />
       )
 
-      const iconContainer = container.querySelector('.h-10') as HTMLElement
+      const iconContainer = container.querySelector('.h-9') as HTMLElement
       expect(iconContainer).toBeInTheDocument()
       expect(iconContainer.style.backgroundColor).toBeTruthy()
    })
@@ -105,7 +105,7 @@ describe('SummaryCard', () => {
          />
       )
 
-      const iconContainer = container.querySelector('.h-10')
+      const iconContainer = container.querySelector('.h-9')
       expect(iconContainer).not.toBeInTheDocument()
    })
 

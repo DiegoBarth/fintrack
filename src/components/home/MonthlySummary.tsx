@@ -37,10 +37,10 @@ export default function MonthlySummary() {
   }, [totals, summary?.accumulatedBalanceFromPreviousMonth]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2 md:space-y-3">
       <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-gray-100">Resumo do Mês</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto max-h-[min(65vh,500px)] pr-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 overflow-y-auto max-h-[min(65vh,500px)] pr-1">
         <SummaryCard
           title="Entradas"
           amount={totals.totalIncomes}

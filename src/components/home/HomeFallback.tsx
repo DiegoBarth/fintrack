@@ -7,20 +7,20 @@ const SUMMARY_CARD_COLORS = ['#3b82f6', '#ef4444', '#b45309', '#6366f1', '#15803
 function SummaryCardSkeleton({ color }: { color: string }) {
   return (
     <div
-      className="h-[78px] animate-summary-card flex items-center justify-between rounded-xl
-        bg-white dark:bg-gray-800 p-4 md:p-5 shadow-sm border border-gray-100 dark:border-gray-700"
+      className="h-[68px] md:h-[78px] animate-summary-card flex items-center justify-between rounded-xl
+        bg-white dark:bg-gray-800 p-3 md:p-5 shadow-sm border border-gray-100 dark:border-gray-700"
       style={{ borderLeft: `5px solid ${color}` }}
     >
-      <div className="flex items-center gap-3 md:gap-4">
+      <div className="flex items-center gap-2.5 md:gap-4">
         <div
-          className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg shrink-0"
+          className="flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-lg shrink-0"
           style={{ backgroundColor: `${color}20` }}
         >
-          <Skeleton className="h-5 w-5 md:h-6 md:w-6 rounded" />
+          <Skeleton className="h-4 w-4 md:h-6 md:w-6 rounded" />
         </div>
-        <div className="space-y-2 min-w-0">
-          <Skeleton className="h-3.5 w-20 md:w-24 rounded-md" />
-          <Skeleton className="h-7 md:h-8 w-28 md:w-32 rounded-md" />
+        <div className="space-y-1.5 md:space-y-2 min-w-0">
+          <Skeleton className="h-3 w-14 md:w-24 rounded-md" />
+          <Skeleton className="h-6 md:h-8 w-24 md:w-32 rounded-md" />
         </div>
       </div>
     </div>

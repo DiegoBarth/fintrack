@@ -24,17 +24,18 @@ export function SummaryCard({
   subtitle
 }: SummaryCardProps) {
   const hasSubtitle = Boolean(subtitle)
+  /** Mobile: shorter cards; desktop (md+): fixed height so all summary cards align. */
+  const sizeClasses = hasSubtitle
+    ? 'min-h-[68px] items-start md:h-[100px] md:min-h-[100px] md:items-center'
+    : 'h-[68px] items-center md:h-[100px] md:min-h-[100px]'
+
   return (
     <div className="summary-card">
       <div
-        className={`flex justify-between rounded-xl bg-white dark:bg-gray-800 p-3 md:p-5 shadow-sm transition-shadow hover:shadow-lg border border-gray-100 dark:border-gray-700 ${
-          hasSubtitle
-            ? 'min-h-[68px] items-start md:min-h-[78px]'
-            : 'h-[68px] items-center md:h-[78px]'
-        }`}
+        className={`flex justify-between rounded-xl bg-white dark:bg-gray-800 p-3 md:p-5 shadow-sm transition-shadow hover:shadow-lg border border-gray-100 dark:border-gray-700 ${sizeClasses}`}
         style={{ borderLeft: `5px solid ${color}` }}
       >
-        <div className={`flex gap-2.5 md:gap-4 ${hasSubtitle ? 'items-start pt-0.5' : 'items-center'}`}>
+        <div className={`flex gap-2.5 md:gap-4 ${hasSubtitle ? 'items-start pt-0.5 md:items-center md:pt-0' : 'items-center'}`}>
           {icon && (
             <div
               className="flex h-9 w-9 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-lg"
@@ -53,7 +54,7 @@ export function SummaryCard({
                   {numberToCurrency(amount)}
                 </p>
                 {subtitle && (
-                  <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 md:leading-snug">{subtitle}</p>
                 )}
               </>
             )}

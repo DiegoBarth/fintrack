@@ -7,7 +7,7 @@ const SUMMARY_CARD_COLORS = ['#3b82f6', '#ef4444', '#b45309', '#6366f1', '#15803
 function SummaryCardSkeleton({ color }: { color: string }) {
   return (
     <div
-      className="h-[68px] md:h-[78px] animate-summary-card flex items-center justify-between rounded-xl
+      className="h-[68px] md:h-[100px] animate-summary-card flex items-center justify-between rounded-xl
         bg-white dark:bg-gray-800 p-3 md:p-5 shadow-sm border border-gray-100 dark:border-gray-700"
       style={{ borderLeft: `5px solid ${color}` }}
     >

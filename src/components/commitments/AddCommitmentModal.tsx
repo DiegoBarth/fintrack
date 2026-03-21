@@ -13,6 +13,7 @@ import type { Commitment } from '@/types/Commitment'
 
 import { DateField } from '@/components/ui/DateField'
 import { MonthField } from '@/components/ui/MonthField'
+import { syncReferenceMonthFromDate } from '@/utils/periodFromDate'
 
 interface AddCommitmentModalProps {
    isOpen: boolean
@@ -248,7 +249,12 @@ export default function AddCommitmentModal({ isOpen, onClose }: AddCommitmentMod
                         render={({ field }) => (
                            <DateField
                               value={field.value ? new Date(field.value) : undefined}
-                              onChange={date => field.onChange(date)}
+                              onChange={date => {
+                                 field.onChange(date)
+                                 syncReferenceMonthFromDate(date, ref =>
+                                    setValue('referenceMonth', ref)
+                                 )
+                              }}
                            />
                         )}
                      />
@@ -339,7 +345,12 @@ export default function AddCommitmentModal({ isOpen, onClose }: AddCommitmentMod
                         render={({ field }) => (
                            <DateField
                               value={field.value ? new Date(field.value) : undefined}
-                              onChange={date => field.onChange(date)}
+                              onChange={date => {
+                                 field.onChange(date)
+                                 syncReferenceMonthFromDate(date, ref =>
+                                    setValue('referenceMonth', ref)
+                                 )
+                              }}
                            />
                         )}
                      />

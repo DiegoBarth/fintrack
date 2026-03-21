@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { usePeriod } from '@/contexts/PeriodContext'
+import { syncReferenceMonthFromDate } from '@/utils/periodFromDate'
 import { currencyToNumber, formatCurrency } from '@/utils/formatters'
 import { BaseModal } from '@/components/ui/BaseModal'
 import { useIncome } from '@/hooks/useIncome'
@@ -188,7 +189,12 @@ export default function AddIncomeModal({ isOpen, onClose }: AddIncomeModalProps)
                   render={({ field }) => (
                      <DateField
                         value={field.value ? new Date(field.value) : undefined}
-                        onChange={date => field.onChange(date)}
+                        onChange={date => {
+                           field.onChange(date)
+                           syncReferenceMonthFromDate(date, ref =>
+                              setValue('referenceMonth', ref)
+                           )
+                        }}
                      />
                   )}
                />

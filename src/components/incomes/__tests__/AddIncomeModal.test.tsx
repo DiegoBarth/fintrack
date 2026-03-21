@@ -6,7 +6,7 @@ const mockCreate = vi.fn()
 const mockValidate = vi.fn()
 
 vi.mock('@/contexts/PeriodContext', () => ({
-  usePeriod: () => ({ month: '1', year: '2026' }),
+  usePeriod: () => ({ month: '1', year: 2026 }),
 }))
 
 vi.mock('@/hooks/useIncome', () => ({

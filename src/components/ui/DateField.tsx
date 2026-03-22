@@ -41,6 +41,22 @@ export function DateField({
       }
    }, [open])
 
+   useEffect(() => {
+      if (!open) return
+      const closeIfOutside = (e: MouseEvent | TouchEvent) => {
+         const target = e.target as Node
+         if (buttonRef.current?.contains(target)) return
+         if (calendarRef.current?.contains(target)) return
+         setOpen(false)
+      }
+      document.addEventListener('mousedown', closeIfOutside)
+      document.addEventListener('touchstart', closeIfOutside)
+      return () => {
+         document.removeEventListener('mousedown', closeIfOutside)
+         document.removeEventListener('touchstart', closeIfOutside)
+      }
+   }, [open])
+
    return (
       <div className="relative flex items-center gap-2">
          <button

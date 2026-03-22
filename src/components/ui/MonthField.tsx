@@ -32,6 +32,7 @@ export function MonthField({
    const [year, setYear] = useState<number>(initialYear)
 
    const buttonRef = useRef<HTMLButtonElement | null>(null)
+   const panelRef = useRef<HTMLDivElement | null>(null)
    const buttonRect = buttonRef.current?.getBoundingClientRect()
 
    const selectedMonthIndex = value
@@ -61,6 +62,22 @@ export function MonthField({
                onAnyOpen as EventListener
             )
          }
+      }
+   }, [open])
+
+   useEffect(() => {
+      if (!open) return
+      const closeIfOutside = (e: MouseEvent | TouchEvent) => {
+         const target = e.target as Node
+         if (buttonRef.current?.contains(target)) return
+         if (panelRef.current?.contains(target)) return
+         setOpen(false)
+      }
+      document.addEventListener("mousedown", closeIfOutside)
+      document.addEventListener("touchstart", closeIfOutside)
+      return () => {
+         document.removeEventListener("mousedown", closeIfOutside)
+         document.removeEventListener("touchstart", closeIfOutside)
       }
    }, [open])
 
@@ -108,6 +125,7 @@ export function MonthField({
          {open && buttonRect &&
             createPortal(
                <div
+                  ref={panelRef}
                   className="fixed z-[9999]
                      bg-white dark:bg-gray-800
                      border border-gray-200 dark:border-gray-700

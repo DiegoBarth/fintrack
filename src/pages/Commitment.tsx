@@ -11,7 +11,7 @@ import { Layout } from '@/components/layout/Layout';
 import { numberToCurrency } from '@/utils/formatters';
 import { format } from 'date-fns/format';
 import { ptBR } from 'date-fns/locale/pt-BR';
-import { Plus } from 'lucide-react';
+import { Plus, Wallet, AlertCircle } from 'lucide-react';
 import type { Commitment } from '@/types/Commitment';
 
 const AddCommitmentModal = lazy(() => import('@/components/commitments/AddCommitmentModal'))
@@ -50,6 +50,21 @@ export default function Commitment() {
     [filteredCommitments]
   )
 
+  // NOVO: Cálculo dinâmico do valor total e pendente baseado nos filtros ativos
+  const { totalAmount, pendingAmount } = useMemo(() => {
+    return filteredCommitments.reduce(
+      (acc, c) => {
+        const amountNum = Number(c.amount) || 0;
+        acc.totalAmount += amountNum;
+        if (!c.paymentDate) {
+          acc.pendingAmount += amountNum;
+        }
+        return acc;
+      },
+      { totalAmount: 0, pendingAmount: 0 }
+    );
+  }, [filteredCommitments]);
+
   const totalStatement = useMemo(
     () => filteredCommitments.reduce((sum, c) => sum + Number(c.amount), 0),
     [filteredCommitments]
@@ -63,9 +78,10 @@ export default function Commitment() {
         ? String(year)
         : format(new Date(Number(year), Number(month) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })
     const monthLabel = month === 'all' ? raw : raw.charAt(0).toUpperCase() + raw.slice(1)
-    const total = filteredCommitments.reduce((sum, c) => sum + Number(c.amount), 0)
-    return `${monthLabel} • Total: ${numberToCurrency(total)}`
-  }, [month, year, filteredCommitments])
+    
+    // Simplificado o subtítulo do Header para focar apenas na data, já que o valor ganhou área nobre
+    return monthLabel
+  }, [month, year])
 
   const handlePayStatement = useCallback(async () => {
     if (unpaidFiltered.length === 0) return
@@ -94,6 +110,32 @@ export default function Commitment() {
   return (
     <Layout title="Compromissos" onBack={handleBack} subtitle={headerSubtitle} headerVariant="commitment">
       <div className="space-y-4 pb-20">
+        
+        {/* NOVO: Grid de Indicadores Financeiros */}
+        <div className="grid grid-cols-2 gap-3 bit-cards-wrapper">
+          {/* Card Total */}
+          <div className="flex flex-col justify-between p-3.5 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+            <div className="flex items-center justify-between gap-2 text-muted-foreground mb-1">
+              <span className="text-xs font-medium tracking-tight">Total Geral</span>
+              <Wallet className="h-3.5 w-3.5" />
+            </div>
+            <p className="text-lg font-bold tracking-tight text-foreground truncate">
+              {numberToCurrency(totalAmount)}
+            </p>
+          </div>
+
+          {/* Card Pendente (Foco do seu problema) */}
+          <div className="flex flex-col justify-between p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/5 text-card-foreground shadow-sm">
+            <div className="flex items-center justify-between gap-2 text-amber-600 dark:text-amber-400 mb-1">
+              <span className="text-xs font-medium tracking-tight">A Pagar</span>
+              <AlertCircle className="h-3.5 w-3.5" />
+            </div>
+            <p className="text-lg font-bold tracking-tight text-amber-700 dark:text-amber-400 truncate">
+              {numberToCurrency(pendingAmount)}
+            </p>
+          </div>
+        </div>
+
         <div className="space-y-3 pb-3 border-b border-border">
           <CommitmentTypeFilter
             value={typeFilter}

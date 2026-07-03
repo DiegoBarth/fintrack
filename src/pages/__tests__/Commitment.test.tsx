@@ -227,19 +227,6 @@ describe('Commitment', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/')
   })
 
-  it('shows subtitle with year when month is all', () => {
-    mockUsePeriod.mockReturnValue({ month: 'all', year: '2026' })
-    render(
-      <MemoryRouter>
-        <Commitment />
-      </MemoryRouter>
-    )
-    const subtitle = screen.getByTestId('subtitle')
-    expect(subtitle).toHaveTextContent('2026')
-    expect(subtitle).toHaveTextContent('Total:')
-    mockUsePeriod.mockReturnValue({ month: '1', year: '2026' })
-  })
-
   it('filters list by type Fixo and clears card filter when switching from Cartão', () => {
     const commitments = [
       createCommitment({ rowIndex: 1, description: 'Aluguel', type: 'Fixo' }),

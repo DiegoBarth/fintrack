@@ -12,6 +12,8 @@ import { useQueryClient } from '@tanstack/react-query'
 const QuickActions = lazy(() => import('@/components/home/QuickActions'))
 const Alerts = lazy(() => import('@/components/home/Alerts'))
 const MonthlySummary = lazy(() => import('@/components/home/MonthlySummary'))
+// Novo componente Lazy Load injetado seguindo o ecossistema atual
+const GeminiAdvisor = lazy(() => import('@/components/home/GeminiAdvisor'))
 
 interface Props {
   onLogout: () => void
@@ -42,6 +44,13 @@ export default function Home({ onLogout }: Props) {
         <section className="mb-4">
           <Suspense fallback={<Skeleton className="h-20 w-full rounded-md" />}>
             <Alerts />
+          </Suspense>
+        </section>
+
+        {/* Feature: Fintrack AI Advisor */}
+        <section className="mb-4">
+          <Suspense fallback={<Skeleton className="h-14 w-full rounded-md" />}>
+            <GeminiAdvisor />
           </Suspense>
         </section>
 

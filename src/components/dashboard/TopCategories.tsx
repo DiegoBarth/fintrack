@@ -102,7 +102,7 @@ export default function TopCategories({ categories }: TopCategoriesProps) {
         animate-[fadeUp_.4s_ease-out_forwards]
       ">
       <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-100">
-        Top Categories
+        Top Categorias
       </h2>
       <div className="space-y-4 flex-1 overflow-y-auto pr-1 custom-scrollbar">
         {categories.map((item, index) => {

@@ -14,7 +14,7 @@ export default function GeminiAdvisor() {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+  
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,34 +57,26 @@ export default function GeminiAdvisor() {
 
   return (
     <>
-      {/* Botão de Gatilho na Home */}
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all group"
+        className="p-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-blue-500 dark:text-blue-400 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm transition-all relative group"
+        title="Consultor Fintrack AI"
+        aria-label="Abrir Consultor AI"
       >
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm group-hover:scale-110 transition-transform">
-            <Sparkles className="h-5 w-5 animate-pulse" />
-          </div>
-          <div className="text-left">
-            <h3 className="font-semibold text-sm">Fintrack AI</h3>
-            <p className="text-xs text-blue-100">Dúvidas sobre seu orçamento? Pergunte ao consultor virtual.</p>
-          </div>
-        </div>
-        <span className="text-xs bg-white/20 px-2.5 py-1 rounded-full backdrop-blur-sm font-medium">
-          Abrir Chat
+        <Sparkles className="h-[18px] w-[18px]" />
+        
+        <span className="absolute top-full right-0 mt-2 hidden group-hover:block bg-gray-900 text-white text-[11px] px-2 py-1 rounded shadow-md whitespace-nowrap z-50">
+          Fintrack AI
         </span>
       </button>
 
-      {/* Backdrop e Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div
+          <div 
             className="bg-gray-50 dark:bg-gray-950 w-full max-w-lg h-[80vh] max-h-[600px] rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden animate-scale-up"
             role="dialog"
             aria-modal="true"
           >
-            {/* Header do Modal */}
             <div className="p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 bg-blue-500 rounded-lg text-white">
@@ -105,7 +97,6 @@ export default function GeminiAdvisor() {
               </button>
             </div>
 
-            {/* Corpo / Mensagens do Chat */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar relative">
               {messages.length === 0 && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 text-gray-500 dark:text-gray-400 space-y-2 pointer-events-none">
@@ -123,10 +114,11 @@ export default function GeminiAdvisor() {
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] p-3 rounded-xl text-sm leading-relaxed whitespace-pre-line shadow-sm ${msg.role === 'user'
+                    className={`max-w-[85%] p-3 rounded-xl text-sm leading-relaxed whitespace-pre-line shadow-sm ${
+                      msg.role === 'user'
                         ? 'bg-blue-600 text-white rounded-br-none'
                         : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800/60 rounded-bl-none'
-                      }`}
+                    }`}
                   >
                     {msg.content}
                   </div>
@@ -156,7 +148,7 @@ export default function GeminiAdvisor() {
                 type="text"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Ex: Minha receita atual cobre uma despesa extra de R$ 500?"
+                placeholder="Ex: Quero comprar um item de R$ 800, meu orçamento aguenta?"
                 disabled={loading}
                 className="flex-1 min-w-0 bg-gray-50 dark:bg-gray-950 border border-gray-300 dark:border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60"
               />

@@ -12,7 +12,6 @@ import { useQueryClient } from '@tanstack/react-query'
 const QuickActions = lazy(() => import('@/components/home/QuickActions'))
 const Alerts = lazy(() => import('@/components/home/Alerts'))
 const MonthlySummary = lazy(() => import('@/components/home/MonthlySummary'))
-// Novo componente Lazy Load injetado seguindo o ecossistema atual
 const GeminiAdvisor = lazy(() => import('@/components/home/GeminiAdvisor'))
 
 interface Props {
@@ -36,7 +35,14 @@ export default function Home({ onLogout }: Props) {
       title="Home"
       onLogout={onLogout}
       showPeriodoFilters
-      headerSlot={<ThemeToggle />}
+      headerSlot={
+        <div className="flex items-center gap-2">
+          <Suspense fallback={<div className="h-9 w-9 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />}>
+            <GeminiAdvisor />
+          </Suspense>
+          <ThemeToggle />
+        </div>
+      }
       containerClassName="max-w-4xl"
     >
       <div className="pb-48">
@@ -46,15 +52,6 @@ export default function Home({ onLogout }: Props) {
             <Alerts />
           </Suspense>
         </section>
-
-        {/* Feature: Fintrack AI Advisor */}
-        <section className="mb-4">
-          <Suspense fallback={<Skeleton className="h-14 w-full rounded-md" />}>
-            <GeminiAdvisor />
-          </Suspense>
-        </section>
-
-        <div className="border-t border-gray-200 dark:border-gray-700 my-4"></div>
 
         <section>
           <Suspense fallback={<Skeleton className="h-72 w-full rounded-md" />}>

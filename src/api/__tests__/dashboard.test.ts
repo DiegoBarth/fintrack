@@ -39,7 +39,7 @@ describe('listDashboardData', () => {
   it('should return data correctly with proper types', async () => {
     const mockResponse: Dashboard = {
       monthlyBalance: [
-        { date: '2026-02-01', balance: 1000 } as MonthlyBalanceHistory
+        { month: 'JAN', balance: 1000 } as MonthlyBalanceHistory
       ],
       topCategories: [
         { category: 'Alimentação', total: 200 } as CategorySummary
@@ -61,7 +61,7 @@ describe('listDashboardData', () => {
     const result = await listDashboardData('02', '2026');
 
     expect(result).toEqual(mockResponse);
-    expect(result.monthlyBalance[0].date).toBe('2026-02-01');
+    expect(result.monthlyBalance[0].month).toBe('JAN');
     expect(result.topCategories[0].category).toBe('Alimentação');
     expect(result.cardsSummary[0].cardName).toBe('Nubank');
   });

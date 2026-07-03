@@ -24,8 +24,8 @@ describe('useDashboard', () => {
   it('should return data when query returns data', () => {
     const mockData: Dashboard = {
       monthlyBalance: [
-        { date: '2026-03-01', balance: 100 },
-        { date: '2026-03-02', balance: 200 },
+        { month: 'JAN', balance: 100 },
+        { month: 'FEV', balance: 200 },
       ],
       topCategories: [
         { category: 'Food', total: 150 },

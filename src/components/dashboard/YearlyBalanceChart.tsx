@@ -9,6 +9,11 @@ interface YearlyBalanceProps {
   data: MonthlyBalanceHistory[]
 }
 
+const MONTH_MAP: Record<string, number> = {
+  JAN: 0, FEV: 1, MAR: 2, ABR: 3, MAI: 4, JUN: 5,
+  JUL: 6, AGO: 7, SET: 8, OUT: 9, NOV: 10, DEZ: 11
+}
+
 export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
   const { month, year } = usePeriod();
   const { summary } = useSummary(month, String(year));
@@ -21,15 +26,22 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
     ? summary.totalReceivedAmount - summary.totalPaidExpenses - summary.totalPaidCommitments
     : 0
 
+  const currentMonthIndex = Number(month) - 1;
+
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
-      const value = payload[0].value
+      const activePayload = payload.find((p: any) => p.value !== undefined && p.value !== null)
+      if (!activePayload) return null
+
+      const value = activePayload.value
       const isPositive = value >= 0
+      const itemMonthIndex = MONTH_MAP[activePayload.payload.month.toUpperCase()]
+      const isFuture = itemMonthIndex > currentMonthIndex
 
       return (
         <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-lg border-2 border-gray-100 dark:border-gray-700">
           <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-            {payload[0].payload.month}
+            {activePayload.payload.month} {isFuture && <span className="text-blue-500 ml-1">(Projeção)</span>}
           </p>
           <p className={`text-lg font-bold ${isPositive ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'}`}>
             {numberToCurrency(value)}
@@ -51,12 +63,19 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
     return `${value >= 0 ? '+' : ''}${value}`
   }
 
-  // Splits data into positive and negative for different area colors
-  const dataWithColors = data.map(item => ({
-    ...item,
-    positiveBalance: item.balance >= 0 ? item.balance : null,
-    negativeBalance: item.balance < 0 ? item.balance : null,
-  }))
+  const dataWithColors = data.map(item => {
+    const itemMonthIndex = MONTH_MAP[item.month.toUpperCase()];
+    const isFuture = itemMonthIndex > currentMonthIndex;
+    const isCurrent = itemMonthIndex === currentMonthIndex;
+
+    return {
+      ...item,
+      positiveBalance: item.balance >= 0 ? item.balance : null,
+      negativeBalance: item.balance < 0 ? item.balance : null,
+      realBalance: !isFuture ? item.balance : null,
+      futureBalance: isFuture || isCurrent ? item.balance : null,
+    };
+  })
 
   return (
     <section
@@ -157,7 +176,7 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
 
             <Line
               type="monotone"
-              dataKey="balance"
+              dataKey="realBalance"
               stroke="url(#lineGradient)"
               strokeWidth={3}
               dot={{
@@ -171,6 +190,28 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
                 stroke: '#fff',
                 strokeWidth: 2,
                 r: 6,
+              }}
+              animationDuration={2000}
+            />
+
+            <Line
+              type="monotone"
+              dataKey="futureBalance"
+              stroke="url(#lineGradient)"
+              strokeWidth={3}
+              strokeDasharray="6 4"
+              opacity={0.65}
+              dot={{
+                fill: '#fff',
+                stroke: '#9ca3af',
+                strokeWidth: 1.5,
+                r: 3
+              }}
+              activeDot={{
+                fill: '#9ca3af',
+                stroke: '#fff',
+                strokeWidth: 2,
+                r: 5,
               }}
               animationDuration={2000}
             />

@@ -5,20 +5,20 @@ export interface Dashboard {
 }
 
 export interface CreditCardSummary {
-   cardName: string;
-   image: string;
-   totalLimit: number;
-   availableLimit: number;
-   usedPercentage: number;
-   statementTotal: number;
+  cardName: string;
+  image: string;
+  totalLimit: number;
+  availableLimit: number;
+  usedPercentage: number;
+  statementTotal: number;
 }
 
 export interface CategorySummary {
-   category: string;
-   total: number;
+  category: string;
+  total: number;
 }
 
 export interface MonthlyBalanceHistory {
-   date: string;
-   balance: number;
+  month: string;
+  balance: number;
 }

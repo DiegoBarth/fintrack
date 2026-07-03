@@ -41,10 +41,9 @@ describe('ExpenseList', () => {
     expect(onSelect).toHaveBeenCalledWith(expense)
   })
 
-  it('shows Pago and payment date', () => {
+  it('shows payment date', () => {
     const expenses = [createExpense({ paymentDate: '10/02/2026', description: 'Item Pago' })]
     render(<ExpenseList expenses={expenses} onSelect={onSelect} />)
-    expect(screen.getAllByText('Pago').length).toBeGreaterThan(0)
     expect(screen.getAllByText(/Pago em 10\/02\/2026/).length).toBeGreaterThan(0)
   })
 

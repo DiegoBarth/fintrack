@@ -15,8 +15,8 @@ describe('dashboardUpdater', () => {
     it('should add a positive value to the existing balance', () => {
       const dashboard: Dashboard = {
         monthlyBalance: [
-          { date: '2026-01', balance: 1000 },
-          { date: '2026-02', balance: 2000 }
+          { month: 'JAN', balance: 1000 },
+          { month: 'FEV', balance: 2000 }
         ],
         topCategories: [],
         cardsSummary: []
@@ -30,7 +30,7 @@ describe('dashboardUpdater', () => {
 
     it('should subtract a negative value from the balance', () => {
       const dashboard: Dashboard = {
-        monthlyBalance: [{ date: '2026-01', balance: 1000 }],
+        monthlyBalance: [{ month: 'JAN', balance: 1000 }],
         topCategories: [],
         cardsSummary: []
       }
@@ -43,9 +43,9 @@ describe('dashboardUpdater', () => {
     it('should not change other months', () => {
       const dashboard: Dashboard = {
         monthlyBalance: [
-          { date: '2026-01', balance: 1000 },
-          { date: '2026-02', balance: 2000 },
-          { date: '2026-03', balance: 3000 }
+          { month: 'JAN', balance: 1000 },
+          { month: 'FEV', balance: 2000 },
+          { month: 'MAR', balance: 3000 }
         ],
         topCategories: [],
         cardsSummary: []

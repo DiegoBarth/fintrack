@@ -19,7 +19,7 @@ describe('TopCategories', () => {
 
   it('renders section with title Top Categories', () => {
     render(<TopCategories categories={[createCategory()]} />)
-    expect(screen.getByRole('heading', { name: 'Top Categories' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Top Categorias' })).toBeInTheDocument()
   })
 
   it('renders category name and formatted total', () => {

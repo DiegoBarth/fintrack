@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { askGeminiAdvisor } from '@/api/endpoints/home';
 import { Button } from '@/components/ui/Button';
-import { Sparkles, Loader2, Send, X } from 'lucide-react';
+import { Sparkles, Loader2, Send, X, RefreshCw } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -14,7 +14,8 @@ export default function GeminiAdvisor() {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
-  
+  const [lastUserMessage, setLastUserMessage] = useState<string>('');
+
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,20 +29,14 @@ export default function GeminiAdvisor() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+  }, [messages, loading, error]);
 
-  const handleAsk = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!prompt.trim() || loading) return;
-
-    const userMessage = prompt.trim();
-    setPrompt('');
-    setError(null);
-    setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
+  const executeRequest = async (messageContent: string) => {
     setLoading(true);
+    setError(null);
 
     try {
-      const response = await askGeminiAdvisor(userMessage);
+      const response = await askGeminiAdvisor(messageContent);
 
       if (response.success && response.answer) {
         setMessages((prev) => [...prev, { role: 'assistant', content: response.answer! }]);
@@ -55,6 +50,27 @@ export default function GeminiAdvisor() {
     }
   };
 
+  const handleAsk = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!prompt.trim() || loading) return;
+
+    const userMessage = prompt.trim();
+    setPrompt('');
+    setLastUserMessage(userMessage);
+    setError(null);
+    setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
+
+    await executeRequest(userMessage);
+  };
+
+  const handleRetry = async () => {
+    if (!lastUserMessage || loading) return;
+
+    setError(null);
+
+    await executeRequest(lastUserMessage);
+  };
+
   return (
     <>
       <button
@@ -64,7 +80,7 @@ export default function GeminiAdvisor() {
         aria-label="Abrir Consultor AI"
       >
         <Sparkles className="h-[18px] w-[18px]" />
-        
+
         <span className="absolute top-full right-0 mt-2 hidden group-hover:block bg-gray-900 text-white text-[11px] px-2 py-1 rounded shadow-md whitespace-nowrap z-50">
           Fintrack AI
         </span>
@@ -72,7 +88,7 @@ export default function GeminiAdvisor() {
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div 
+          <div
             className="bg-gray-50 dark:bg-gray-950 w-full max-w-lg h-[80vh] max-h-[600px] rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col overflow-hidden animate-scale-up"
             role="dialog"
             aria-modal="true"
@@ -108,22 +124,40 @@ export default function GeminiAdvisor() {
                 </div>
               )}
 
-              {messages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
+              {messages.map((msg, idx) => {
+                const isLastMessage = idx === messages.length - 1;
+                const isUserMsg = msg.role === 'user';
+                const showRetryButton = error && isLastMessage && isUserMsg && !loading;
+
+                return (
                   <div
-                    className={`max-w-[85%] p-3 rounded-xl text-sm leading-relaxed whitespace-pre-line shadow-sm ${
-                      msg.role === 'user'
-                        ? 'bg-blue-600 text-white rounded-br-none'
-                        : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800/60 rounded-bl-none'
-                    }`}
+                    key={idx}
+                    className={`flex flex-col ${isUserMsg ? 'items-end' : 'items-start'}`}
                   >
-                    {msg.content}
+                    <div className={`flex items-center gap-2 max-w-[85%] ${isUserMsg ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <div
+                        className={`p-3 rounded-xl text-sm leading-relaxed whitespace-pre-line shadow-sm ${isUserMsg
+                          ? 'bg-blue-600 text-white rounded-br-none'
+                          : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800/60 rounded-bl-none'
+                          }`}
+                      >
+                        {msg.content}
+                      </div>
+
+                      {showRetryButton && (
+                        <button
+                          onClick={handleRetry}
+                          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl transition-all shadow-sm group animate-fade-in"
+                          title="Tentar reenviar mensagem"
+                          aria-label="Reenviar mensagem"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5 transition-transform group-hover:rotate-180 duration-500" />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {loading && (
                 <div className="flex justify-start">
@@ -135,14 +169,13 @@ export default function GeminiAdvisor() {
               )}
 
               {error && (
-                <div className="p-2.5 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/30 rounded-xl text-xs text-red-600 dark:text-red-400 text-center">
+                <div className="p-2.5 bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/30 rounded-xl text-xs text-red-600 dark:text-red-400 text-center animate-fade-in">
                   {error}
                 </div>
               )}
               <div ref={chatEndRef} />
             </div>
 
-            {/* Input Form */}
             <form onSubmit={handleAsk} className="p-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 flex gap-2">
               <input
                 type="text"

@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown';
 import { useState, useRef, useEffect } from 'react';
 import { askGeminiAdvisor } from '@/api/endpoints/home';
 import { Button } from '@/components/ui/Button';
@@ -136,12 +137,24 @@ export default function GeminiAdvisor() {
                   >
                     <div className={`flex items-center gap-2 max-w-[85%] ${isUserMsg ? 'flex-row-reverse' : 'flex-row'}`}>
                       <div
-                        className={`p-3 rounded-xl text-sm leading-relaxed whitespace-pre-line shadow-sm ${isUserMsg
+                        className={`p-3 rounded-xl text-sm leading-relaxed shadow-sm ${isUserMsg
                           ? 'bg-blue-600 text-white rounded-br-none'
                           : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800/60 rounded-bl-none'
                           }`}
                       >
-                        {msg.content}
+                        {isUserMsg ? (
+                          <span className="whitespace-pre-line">{msg.content}</span>
+                        ) : (
+                          <div
+                            className="prose prose-sm dark:prose-invert max-w-none 
+                            prose-p:leading-relaxed prose-pre:bg-gray-100 dark:prose-pre:bg-gray-950
+                            prose-ul:list-disc prose-ol:list-decimal"
+                          >
+                            <ReactMarkdown>
+                              {msg.content}
+                            </ReactMarkdown>
+                          </div>
+                        )}
                       </div>
 
                       {showRetryButton && (

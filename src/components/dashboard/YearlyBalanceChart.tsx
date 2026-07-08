@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Area, ComposedChart } from 'recharts'
+import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine, Area, ComposedChart } from 'recharts'
 import { numberToCurrency } from '@/utils/formatters'
 import { usePeriod } from '@/contexts/PeriodContext'
 import { useSummary } from '@/hooks/useSummary'
@@ -26,7 +26,12 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
     ? summary.totalReceivedAmount - summary.totalPaidExpenses - summary.totalPaidCommitments
     : 0
 
-  const currentMonthIndex = Number(month) - 1;
+  const today = new Date();
+  const systemYear = today.getFullYear();
+  const systemMonthIndex = today.getMonth(); // 0-11
+
+  const selectedYear = Number(year);
+  const selectedMonthIndex = Number(month) - 1;
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -36,7 +41,8 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
       const value = activePayload.value
       const isPositive = value >= 0
       const itemMonthIndex = MONTH_MAP[activePayload.payload.month.toUpperCase()]
-      const isFuture = itemMonthIndex > currentMonthIndex
+
+      const isFuture = selectedYear > systemYear || (selectedYear === systemYear && itemMonthIndex > systemMonthIndex);
 
       return (
         <div className="bg-white dark:bg-gray-800 px-4 py-3 rounded-xl shadow-lg border-2 border-gray-100 dark:border-gray-700">
@@ -65,8 +71,9 @@ export default function YearlyBalanceChart({ data }: YearlyBalanceProps) {
 
   const dataWithColors = data.map(item => {
     const itemMonthIndex = MONTH_MAP[item.month.toUpperCase()];
-    const isFuture = itemMonthIndex > currentMonthIndex;
-    const isCurrent = itemMonthIndex === currentMonthIndex;
+
+    const isFuture = selectedYear > systemYear || (selectedYear === systemYear && itemMonthIndex > systemMonthIndex);
+    const isCurrent = selectedYear === systemYear && itemMonthIndex === systemMonthIndex;
 
     return {
       ...item,

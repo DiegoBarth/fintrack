@@ -23,15 +23,9 @@ export default function Income() {
   const [incomeSelected, setIncomeSelected] = useState<Income | null>(null)
   const [modalIsOpen, setModalOpen] = useState(false)
 
-  const headerSubtitle = useMemo(() => {
-    const raw =
-      month === 'all'
-        ? String(year)
-        : format(new Date(Number(year), Number(month) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })
-    const monthLabel = month === 'all' ? raw : raw.charAt(0).toUpperCase() + raw.slice(1)
-    const total = incomes.reduce((sum, i) => sum + Number(i.amount), 0)
-    return `${monthLabel} • Total: ${numberToCurrency(total)}`
-  }, [month, year, incomes])
+  const totalAmount = useMemo(() => {
+    return incomes.reduce((sum, i) => sum + Number(i.amount), 0)
+  }, [incomes])
 
   if (isLoading) {
     return (
@@ -43,7 +37,16 @@ export default function Income() {
 
   return (
     <Layout title="Receitas" onBack={handleBack} showPeriodoFilters headerVariant="income">
-      <div className="pt-1 pb-20">
+      <div className="pb-20">
+        {totalAmount > 0 && (
+          <h2 className="text-sm font-semibold text-muted-foreground mb-4 px-0.5 flex flex-wrap items-baseline justify-between gap-2">
+            <span>Total de Receitas</span>
+            <span className="font-bold text-foreground text-base">
+              {numberToCurrency(totalAmount)}
+            </span>
+          </h2>
+        )}
+
         <IncomeList
           incomes={incomes}
           onSelect={setIncomeSelected}

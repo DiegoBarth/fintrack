@@ -23,15 +23,9 @@ export default function Expense() {
   const [expenseSelected, setExpenseSelected] = useState<Expense | null>(null)
   const [modalIsOpen, setModalOpen] = useState(false)
 
-  const headerSubtitle = useMemo(() => {
-    const raw =
-      month === 'all'
-        ? String(year)
-        : format(new Date(Number(year), Number(month) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })
-    const monthLabel = month === 'all' ? raw : raw.charAt(0).toUpperCase() + raw.slice(1)
-    const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0)
-    return `Total: ${numberToCurrency(total)}`
-  }, [month, year, expenses])
+  const totalAmount = useMemo(() => {
+    return expenses.reduce((sum, e) => sum + Number(e.amount), 0)
+  }, [expenses])
 
   if (isLoading) {
     return (
@@ -42,8 +36,17 @@ export default function Expense() {
   }
 
   return (
-    <Layout title="Gastos" onBack={handleBack} showPeriodoFilters  headerVariant="expense">
-      <div className="pt-1 pb-20">
+    <Layout title="Gastos" onBack={handleBack} showPeriodoFilters headerVariant="expense">
+      <div className="pb-20">
+        {totalAmount > 0 && (
+          <h2 className="text-sm font-semibold text-muted-foreground mb-4 px-0.5 flex flex-wrap items-baseline justify-between gap-2">
+            <span>Total de Gastos</span>
+            <span className="font-bold text-foreground text-base">
+              {numberToCurrency(totalAmount)}
+            </span>
+          </h2>
+        )}
+
         <ExpenseList
           expenses={expenses}
           onSelect={setExpenseSelected}

@@ -61,7 +61,7 @@ export function Layout({
         <header
           className={`${headerVariant ? 'h-[150px]' : ''}
             ${hasColoredHeader
-              ? `mb-6 space-y-4 -mx-4 -mt-4 px-4 pt-6 pb-5 rounded-b-2xl ${headerBg} shadow-md`
+              ? `mb-3 space-y-4 -mx-4 -mt-4 px-4 pt-6 pb-5 rounded-b-2xl ${headerBg} shadow-md`
               : 'mb-6 space-y-4'}
           `}
         >

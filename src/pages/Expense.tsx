@@ -30,7 +30,7 @@ export default function Expense() {
         : format(new Date(Number(year), Number(month) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })
     const monthLabel = month === 'all' ? raw : raw.charAt(0).toUpperCase() + raw.slice(1)
     const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0)
-    return `${monthLabel} • Total: ${numberToCurrency(total)}`
+    return `Total: ${numberToCurrency(total)}`
   }, [month, year, expenses])
 
   if (isLoading) {
@@ -42,7 +42,7 @@ export default function Expense() {
   }
 
   return (
-    <Layout title="Gastos" onBack={handleBack} subtitle={headerSubtitle} headerVariant="expense">
+    <Layout title="Gastos" onBack={handleBack} showPeriodoFilters  headerVariant="expense">
       <div className="pt-1 pb-20">
         <ExpenseList
           expenses={expenses}

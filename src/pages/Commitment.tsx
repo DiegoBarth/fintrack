@@ -50,7 +50,6 @@ export default function Commitment() {
     [filteredCommitments]
   )
 
-  // NOVO: Cálculo dinâmico do valor total e pendente baseado nos filtros ativos
   const { totalAmount, pendingAmount } = useMemo(() => {
     return filteredCommitments.reduce(
       (acc, c) => {
@@ -72,17 +71,6 @@ export default function Commitment() {
 
   const statementAllPaid = unpaidFiltered.length === 0
 
-  const headerSubtitle = useMemo(() => {
-    const raw =
-      month === 'all'
-        ? String(year)
-        : format(new Date(Number(year), Number(month) - 1, 1), "MMMM 'de' yyyy", { locale: ptBR })
-    const monthLabel = month === 'all' ? raw : raw.charAt(0).toUpperCase() + raw.slice(1)
-    
-    // Simplificado o subtítulo do Header para focar apenas na data, já que o valor ganhou área nobre
-    return monthLabel
-  }, [month, year])
-
   const handlePayStatement = useCallback(async () => {
     if (unpaidFiltered.length === 0) return
     const paymentDate = new Date().toISOString().slice(0, 10)
@@ -93,7 +81,6 @@ export default function Commitment() {
         paymentDate
       })
     } catch {
-      // handleError já foi chamado pelo hook
     } finally {
       setIsPayingStatement(false)
     }
@@ -108,12 +95,10 @@ export default function Commitment() {
   }
 
   return (
-    <Layout title="Compromissos" onBack={handleBack} subtitle={headerSubtitle} headerVariant="commitment">
+    <Layout title="Compromissos" onBack={handleBack} showPeriodoFilters headerVariant="commitment">
       <div className="space-y-4 pb-20">
-        
-        {/* NOVO: Grid de Indicadores Financeiros */}
+
         <div className="grid grid-cols-2 gap-3 bit-cards-wrapper">
-          {/* Card Total */}
           <div className="flex flex-col justify-between p-3.5 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
             <div className="flex items-center justify-between gap-2 text-muted-foreground mb-1">
               <span className="text-xs font-medium tracking-tight">Total Geral</span>
@@ -124,7 +109,6 @@ export default function Commitment() {
             </p>
           </div>
 
-          {/* Card Pendente (Foco do seu problema) */}
           <div className="flex flex-col justify-between p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/5 text-card-foreground shadow-sm">
             <div className="flex items-center justify-between gap-2 text-amber-600 dark:text-amber-400 mb-1">
               <span className="text-xs font-medium tracking-tight">A Pagar</span>

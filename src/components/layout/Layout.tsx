@@ -14,7 +14,7 @@ const HEADER_GRADIENTS: Record<HeaderVariant, string> = {
   commitment:
     'bg-gradient-to-bl from-amber-100 to-amber-300/90 dark:from-amber-400/80 dark:to-amber-600/88',
   dashboard:
-  'bg-gradient-to-b from-zinc-50 to-indigo-100/80 dark:from-zinc-900 dark:to-indigo-950/40 border-b border-zinc-200 dark:border-zinc-800'
+    'bg-gradient-to-b from-zinc-50 to-indigo-100/80 dark:from-zinc-900 dark:to-indigo-950/40 border-b border-zinc-200 dark:border-zinc-800'
 }
 
 interface LayoutProps {
@@ -125,6 +125,7 @@ export function Layout({
                 year={year}
                 onMonthChange={setMonth}
                 onYearChange={setYear}
+                className={hasColoredHeader ? "!mt-[5px]" : ""}
               />
             ) : (
               <div role="status" className="h-9 w-48 rounded-full bg-gray-200/50 dark:bg-gray-700/50" aria-label="carregando filtros de período" />

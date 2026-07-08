@@ -42,7 +42,7 @@ export default function Income() {
   }
 
   return (
-    <Layout title="Receitas" onBack={handleBack} subtitle={headerSubtitle} headerVariant="income">
+    <Layout title="Receitas" onBack={handleBack} showPeriodoFilters headerVariant="income">
       <div className="pt-1 pb-20">
         <IncomeList
           incomes={incomes}

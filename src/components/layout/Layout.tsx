@@ -1,11 +1,10 @@
-import { type ReactNode, useState, useEffect } from 'react'
+import { type ReactNode } from 'react'
 
 import { PeriodFilters } from '@/components/home/PeriodFilters'
 import { usePeriod } from '@/contexts/PeriodContext'
 
 export type HeaderVariant = 'income' | 'expense' | 'commitment' | 'dashboard'
 
-/** Gradientes: light mode = tons pastel que combinam com fundo claro; dark mode = mais saturados com transparência. */
 const HEADER_GRADIENTS: Record<HeaderVariant, string> = {
   income:
     'bg-gradient-to-bl from-emerald-200 to-emerald-400/90 dark:from-emerald-400/80 dark:to-emerald-700/88',
@@ -37,7 +36,7 @@ export function Layout({
   children,
   onBack,
   onLogout,
-  showPeriodoFilters = false,
+  showPeriodoFilters = true,
   headerSlot,
   subtitle,
   headerVariant,
@@ -45,12 +44,6 @@ export function Layout({
   contentClassName = '',
 }: LayoutProps) {
   const { month, setMonth, year, setYear } = usePeriod()
-  const [showFilters, setShowFilters] = useState(false)
-
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setShowFilters(true))
-    return () => cancelAnimationFrame(id)
-  }, [])
 
   const hasColoredHeader = !!headerVariant
   const headerBg = headerVariant ? HEADER_GRADIENTS[headerVariant] : ''
@@ -119,17 +112,13 @@ export function Layout({
           </div>
 
           {showPeriodoFilters ? (
-            showFilters ? (
-              <PeriodFilters
-                month={month}
-                year={year}
-                onMonthChange={setMonth}
-                onYearChange={setYear}
-                className={hasColoredHeader ? "!mt-[5px]" : ""}
-              />
-            ) : (
-              <div role="status" className="h-9 w-48 rounded-full bg-gray-200/50 dark:bg-gray-700/50" aria-label="carregando filtros de período" />
-            )
+            <PeriodFilters
+              month={month}
+              year={year}
+              onMonthChange={setMonth}
+              onYearChange={setYear}
+              className={hasColoredHeader ? "!mt-[5px]" : ""}
+            />
           ) : null}
         </header>
 

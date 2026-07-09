@@ -29,7 +29,7 @@ export default function Income() {
 
   if (isLoading) {
     return (
-      <Layout title="Receitas" onBack={handleBack} headerVariant="income">
+      <Layout title="Receitas" onBack={handleBack} showPeriodoFilters headerVariant="income">
         <IncomeSkeleton />
       </Layout>
     )

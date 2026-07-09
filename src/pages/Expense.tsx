@@ -29,7 +29,7 @@ export default function Expense() {
 
   if (isLoading) {
     return (
-      <Layout title="Gastos" onBack={handleBack} headerVariant="expense">
+      <Layout title="Gastos" onBack={handleBack} showPeriodoFilters headerVariant="expense">
         <ExpenseSkeleton />
       </Layout>
     )

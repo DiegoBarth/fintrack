@@ -88,7 +88,7 @@ export default function Commitment() {
 
   if (isLoading) {
     return (
-      <Layout title="Compromissos" onBack={handleBack} headerVariant="commitment">
+      <Layout title="Compromissos" onBack={handleBack} showPeriodoFilters headerVariant="commitment">
         <CommitmentSkeleton />
       </Layout>
     )

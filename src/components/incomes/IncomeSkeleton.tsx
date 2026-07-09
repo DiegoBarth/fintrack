@@ -4,8 +4,12 @@ export function IncomeSkeleton() {
   return (
     <div className="pt-1 max-w-7xl mx-auto w-full">
       <div className="space-y-3">
+        <div className="flex justify-between items-center px-1">
+          <Skeleton className="h-4 w-28" />
+          <Skeleton className="h-5 w-20" />
+        </div>
         {[...Array(8)].map((_, i) => (
-          <div key={i}>
+          <div key={i} className={i === 0 ? "pt-1" : ""}>
             <div className="md:hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/80 p-3 shadow-sm h-[94px] flex flex-col justify-between">
               <div className="flex justify-between items-start">
                 <Skeleton className="h-5 w-40" />
